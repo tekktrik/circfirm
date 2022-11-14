@@ -1,5 +1,8 @@
-# SPDX-FileCopyrightText: 2022 Alec Delaney
+# SPDX-FileCopyrightText: 2022 Alec Delaney, for Adafruit Industries
 #
 # SPDX-License-Identifier: MIT
 
-click~=8.1
+click~=8.1  # TODO: should match circup
+psutil~=5.9
+pyyaml  # TODO: Pin version
+requests  # Pin version

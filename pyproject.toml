@@ -1,0 +1,59 @@
+# SPDX-FileCopyrightText: 2022 Alec Delaney, for Adafruit Industries
+#
+# SPDX-License-Identifier: MIT
+
+[build-system]
+requires = [
+    "setuptools",
+    "wheel",
+    "setuptools-scm",
+]
+
+[project]
+name = "circfirm"
+description = "CLI tool for install firmware for CircuitPython boards"
+version = "0.0.0+auto.0"
+requires-python = ">=3.8.0"
+readme = "README.rst"
+authors = [
+    {name = "Alec Delaney", email = "tekktrik@gmail.com"}
+]
+urls = {Homepage = "https://github.com/tekktrik/circlink.git"}
+keywords = [
+    "adafruit",
+    "circuitpython",
+    "tool",
+    "cli",
+    "firmware",
+    "install",
+    "upload",
+]
+license = {text = "MIT"}
+classifiers = [
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Embedded Systems",
+    "Topic :: System :: Hardware",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: Unix",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+]
+dynamic = ["dependencies", "optional-dependencies"]
+
+[project.scripts]
+circfirm = "circfirm.cli:cli"
+
+[tool.setuptools]
+packages = ["circfirm"]
+include-package-data = true
+
+[tools.setuptools.package-data]
+templates = ["*.yaml"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+optional-dependencies = {dev = {file = ["requirements-dev.txt"]}}

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2022 Alec Delaney
+# SPDX-FileCopyrightText: 2022 Alec Delaney, for Adafruit Industries
 #
 # SPDX-License-Identifier: MIT
 
@@ -50,3 +50,5 @@ repos:
         name: pylint
         types: [python]
         exclude: "^(docs/conf.py)"
+        args:
+          - --disable=import-error
