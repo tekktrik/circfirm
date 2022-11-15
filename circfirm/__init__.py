@@ -48,5 +48,5 @@ def get_setting(*settings_path: Union[str, int]) -> Any:
 #         with open(MOUNT_LIST, mode="a", encoding="utf-8") as mountfile:
 #             mountfile.write(f"{device_name}\n")
 #     else:
-#         print("This device name is already allowed.")
+#         click.echo("This device name is already allowed.")
 #         sys.exit(0)

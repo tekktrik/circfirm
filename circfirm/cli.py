@@ -35,20 +35,20 @@ def install(version: str) -> None:
     """Install the specified version of CircuitPython."""
     mount_path = circfirm.backend.find_bootloader()
     if not mount_path:
-        print("CircuitPython device not found!")
-        print("Check that the device is connected and mounted.")
+        click.echo("CircuitPython device not found!")
+        click.echo("Check that the device is connected and mounted.")
         sys.exit(1)
 
     board = circfirm.backend.get_board_name(mount_path)
 
     if not circfirm.backend.is_downloaded(board, version):
-        print("Downloading UF2...")
+        click.echo("Downloading UF2...")
         circfirm.backend.download_uf2(board, version)
 
     uf2file = circfirm.backend.get_uf2_filepath(board, version)
     shutil.copy(uf2file, mount_path)
-    print("UF2 file copied to device!")
-    print("Device should reboot momentarily.")
+    click.echo("UF2 file copied to device!")
+    click.echo("Device should reboot momentarily.")
 
 
 @cli.group()
@@ -75,19 +75,19 @@ def clear(board: Optional[str]) -> None:
 
     # No UF2 files exist for the board
     if not os.path.exists(board_folder):
-        print("No UF2 files downloaded for this board!")
+        click.echo("No UF2 files downloaded for this board!")
         sys.exit(1)
 
     # Board cache exists, and no specific version given
     if version is None and os.path.exists(board_folder):
         shutil.rmtree(board_folder)
-        print("Cache cleared!")
+        click.echo("Cache cleared!")
         sys.exit(0)
 
     # Specific board and version given, but do not exist
     if not os.path.exists(uf2_file):
         board_name = board.replace(" ", "_").lower()
-        print(f"No UF2 downloaded for version {version} of the {board_name}!")
+        click.echo(f"No UF2 downloaded for version {version} of the {board_name}!")
         sys.exit(1)
 
     # Specific board and version given that do exist
@@ -107,11 +107,11 @@ def cache_list(board: Optional[str]) -> None:
     board_list = os.listdir(circfirm.UF2_ARCHIVE)
 
     if not board_list:
-        print("Versions have not been cached yet for any boards.")
+        click.echo("Versions have not been cached yet for any boards.")
         sys.exit(0)
 
     if board is not None and board_name not in board_list:
-        print(f"No versions for board '{board_name}' are not cached.")
+        click.echo(f"No versions for board '{board_name}' are not cached.")
         sys.exit(0)
 
     boards: Dict[str, Set[str]] = {}
@@ -127,9 +127,9 @@ def cache_list(board: Optional[str]) -> None:
         boards[board_folder] = versions
 
     for rec_boardname, rec_boardvers in boards.items():
-        print(f"{rec_boardname}")
+        click.echo(f"{rec_boardname}")
         for rec_boardver in rec_boardvers:
-            print(f"  * {rec_boardver}")
+            click.echo(f"  * {rec_boardver}")
 
 
 @cache.command(name="install")

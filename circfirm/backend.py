@@ -59,8 +59,8 @@ def download_uf2(board: str, version: str) -> None:
     response = requests.get(url)
 
     if response.status_code != 200:
-        print("Error downloading the requests UF2 file.")
-        print("Please check the name and version of the board.")
+        click.echo("Error downloading the requests UF2 file.")
+        click.echo("Please check the name and version of the board.")
         sys.exit(1)
 
     with open(uf2_file, mode="wb") as uf2file:
