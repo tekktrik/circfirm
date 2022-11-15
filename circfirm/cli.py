@@ -20,7 +20,6 @@ import circfirm.backend
 import circfirm.startup
 
 
-# pydocstyle: disable=D401
 @click.group()
 def cli() -> None:
     """Install CircuitPython firmware from the command line."""
