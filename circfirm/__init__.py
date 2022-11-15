@@ -35,24 +35,18 @@ def get_setting(*settings_path: Union[str, int]) -> Any:
         return settings
 
 
-def get_mountables() -> Set[str]:
-    """Get a list of mountable drives."""
-    with open(MOUNT_LIST, encoding="utf-8") as mountfile:
-        mount_contents = mountfile.read()
-        return {mount.strip() for mount in mount_contents.split("\n")}
+# def get_mountables() -> Set[str]:
+#     """Get a list of mountable drives."""
+#     with open(MOUNT_LIST, encoding="utf-8") as mountfile:
+#         mount_contents = mountfile.read()
+#         return {mount.strip() for mount in mount_contents.split("\n")}
 
 
-def add_mountable(device_name: str) -> None:
-    """Add an allowable mountable device."""
-    if device_name not in get_mountables():
-        with open(MOUNT_LIST, mode="a", encoding="utf-8") as mountfile:
-            mountfile.write(f"{device_name}\n")
-    else:
-        print("This device name is already allowed.")
-        sys.exit(0)
-
-
-def get_uf2_filename(board: str, version: str) -> str:
-    """Get the structured name for a specific board/version CircuitPython."""
-    board_name = board.replace(" ", "_").lower()
-    return f"adafruit-circuitpython-{board_name}-en_US-{version}.uf2"
+# def add_mountable(device_name: str) -> None:
+#     """Add an allowable mountable device."""
+#     if device_name not in get_mountables():
+#         with open(MOUNT_LIST, mode="a", encoding="utf-8") as mountfile:
+#             mountfile.write(f"{device_name}\n")
+#     else:
+#         print("This device name is already allowed.")
+#         sys.exit(0)

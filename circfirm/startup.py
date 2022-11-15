@@ -2,11 +2,16 @@
 #
 # SPDX-License-Identifier: MIT
 
+"""
+Basic startup functionality for the tools.
+
+Author(s): Alec Delaney
+"""
+
 import os
 import pathlib
 
 import click
-
 
 FOLDER_LIST = []
 FILE_LIST = []
@@ -14,7 +19,11 @@ FILE_LIST = []
 
 def folder(*paths) -> str:
     """Add a folder to the global record list."""
-    folder_path = click.get_app_dir("circfirm") if len(paths) == 1 else os.path.join(paths[0], *paths[1:])
+    folder_path = (
+        click.get_app_dir("circfirm")
+        if len(paths) == 1
+        else os.path.join(paths[0], *paths[1:])
+    )
     FOLDER_LIST.append(folder_path)
     return folder_path
 
