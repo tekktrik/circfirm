@@ -19,8 +19,11 @@ import circfirm
 import circfirm.backend
 import circfirm.startup
 
+__version__ = "0.0.0+auto.0"
+
 
 @click.group()
+@click.version_option(__version__)
 def cli() -> None:
     """Install CircuitPython firmware from the command line."""
     circfirm.startup.ensure_app_setup()
