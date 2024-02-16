@@ -129,7 +129,10 @@ def cache_list(board: Optional[str]) -> None:
 @click.option("-l", "--language", default="en_US")
 def cache_save(board: str, version: str, language: str) -> None:
     """Install a version of CircuitPython to cache."""
-    circfirm.backend.download_uf2(board, version, language)
+    try:
+        circfirm.backend.download_uf2(board, version, language)
+    except ConnectionError as err:
+        raise click.exceptions.ClickException(err.args[0])
 
 
 if __name__ == "__main__":

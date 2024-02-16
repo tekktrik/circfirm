@@ -86,10 +86,10 @@ def download_uf2(board: str, version: str, language: str = "en_US") -> None:
     response = requests.get(url)
 
     if response.status_code != 200:
-        uf2_file.parent.rmdir()
-        click.echo("Error downloading the requests UF2 file.")
-        click.echo("Please check the name and version of the board.")
-        sys.exit(1)
+        if not len(list(uf2_file.parent.glob("*"))):
+            uf2_file.parent.rmdir()
+        raise ConnectionError("Could not download spectified UF2 file")
+        
 
     with open(uf2_file, mode="wb") as uf2file:
         uf2file.write(response.content)
