@@ -4,15 +4,15 @@
 
 repos:
   - repo: https://github.com/Yelp/detect-secrets
-    name: Detect secrets
     rev: v1.4.0
     hooks:
       - id: detect-secrets
+        name: Detect secrets
   - repo: https://github.com/fsfe/reuse-tool
-    name: Check REUSE compatibility
     rev: v3.0.1
     hooks:
       - id: reuse
+        name: Check REUSE compatibility
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
@@ -31,37 +31,36 @@ repos:
       - id: trailing-whitespace
         name: Trim trailing whitespace
   - repo: https://github.com/PyCQA/isort
-    name: Sort imports via isort
     rev: 5.13.2
     hooks:
       - id: isort
+        name: Sort imports via isort
         args:
           - --multi-line
           - VERTICAL_HANGING_INDENT
           - --tc
   - repo: https://github.com/psf/black
-    name: Format via black
     rev: 24.2.0
     hooks:
       - id: black
+        name: Format via black
   - repo: https://github.com/asottile/pyupgrade
-    name: Upgrade to Python 3.8+ syntax
     rev: v3.15.0
     hooks:
       - id: pyupgrade
+        name: Upgrade to Python 3.8+ syntax
         args:
           - --py38-plus
   - repo: https://github.com/PyCQA/pydocstyle
-    name: Check docstyle
     rev: 6.3.0
     hooks:
       - id: pydocstyle
+        name: Check docstyle
   - repo: https://github.com/PyCQA/pylint
-    name: Lint via pylint
     rev: v3.0.3
     hooks:
       - id: pylint
-        name: pylint
+        name: Lint via pylint
         types: [python]
         exclude: "^(docs/conf.py)"
         args:
