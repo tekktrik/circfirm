@@ -17,7 +17,7 @@ FOLDER_LIST = []
 FILE_LIST = []
 
 
-def folder(*paths) -> str:
+def setup_folder(*paths: str) -> str:
     """Add a folder to the global record list."""
     folder_path = (
         click.get_app_dir("circfirm")
@@ -28,7 +28,7 @@ def folder(*paths) -> str:
     return folder_path
 
 
-def file(*paths) -> str:
+def setup_file(*paths: str) -> str:
     """Add a file to the global record list."""
     file_path = os.path.join(*paths)
     FILE_LIST.append(file_path)
@@ -49,7 +49,7 @@ def _ensure_file(file_path: str, /) -> None:
 
 def ensure_app_setup() -> None:
     """Ensure the entire application folder is set up."""
-    for fol in FOLDER_LIST:
-        ensure_dir(fol)
-    for fil in FILE_LIST:
-        _ensure_file(fil)
+    for folder in FOLDER_LIST:
+        ensure_dir(folder)
+    for file in FILE_LIST:
+        _ensure_file(file)

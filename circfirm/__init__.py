@@ -8,22 +8,22 @@ Shared functionality for the tool.
 Author(s): Alec Delaney
 """
 
-import sys
-from typing import Any, Set, Union
+from typing import Any, Union
 
 import yaml
 
-from circfirm.startup import file, folder
+from circfirm.startup import setup_file, setup_folder
 
 # Folders
-APP_DIR = folder("circfirm")
-UF2_ARCHIVE = folder(APP_DIR, "archive")
+APP_DIR = setup_folder("circfirm")
+UF2_ARCHIVE = setup_folder(APP_DIR, "archive")
 
 # Files
-MOUNT_LIST = file(APP_DIR, "mountable.txt")
-SETTINGS_FILE = file(APP_DIR, "settings.yaml")
+MOUNT_LIST = setup_file(APP_DIR, "mountable.txt")
+SETTINGS_FILE = setup_file(APP_DIR, "settings.yaml")
 
 UF2INFO_FILE = "info_uf2.txt"
+BOOTOUT_FILE = "boot_out.txt"
 
 
 def get_setting(*settings_path: Union[str, int]) -> Any:
@@ -33,20 +33,3 @@ def get_setting(*settings_path: Union[str, int]) -> Any:
         for setting_opt in settings_path:
             settings = settings[setting_opt]
         return settings
-
-
-# def get_mountables() -> Set[str]:
-#     """Get a list of mountable drives."""
-#     with open(MOUNT_LIST, encoding="utf-8") as mountfile:
-#         mount_contents = mountfile.read()
-#         return {mount.strip() for mount in mount_contents.split("\n")}
-
-
-# def add_mountable(device_name: str) -> None:
-#     """Add an allowable mountable device."""
-#     if device_name not in get_mountables():
-#         with open(MOUNT_LIST, mode="a", encoding="utf-8") as mountfile:
-#             mountfile.write(f"{device_name}\n")
-#     else:
-#         click.echo("This device name is already allowed.")
-#         sys.exit(0)

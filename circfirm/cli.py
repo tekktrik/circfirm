@@ -9,9 +9,10 @@ Author(s): Alec Delaney
 """
 
 import os
+import pathlib
 import shutil
 import sys
-from typing import Dict, Optional, Set
+from typing import Dict, Optional, Set, Tuple
 
 import click
 
@@ -31,7 +32,8 @@ def cli() -> None:
 
 @cli.command()
 @click.argument("version")
-def install(version: str) -> None:
+@click.option("-l", "--language", default="en_US")
+def install(version: str, language: str) -> None:
     """Install the specified version of CircuitPython."""
     mount_path = circfirm.backend.find_bootloader()
     if not mount_path:
@@ -41,11 +43,11 @@ def install(version: str) -> None:
 
     board = circfirm.backend.get_board_name(mount_path)
 
-    if not circfirm.backend.is_downloaded(board, version):
+    if not circfirm.backend.is_downloaded(board, version, language):
         click.echo("Downloading UF2...")
-        circfirm.backend.download_uf2(board, version)
+        circfirm.backend.download_uf2(board, version, language)
 
-    uf2file = circfirm.backend.get_uf2_filepath(board, version)
+    uf2file = circfirm.backend.get_uf2_filepath(board, version, language)
     shutil.copy(uf2file, mount_path)
     click.echo("UF2 file copied to device!")
     click.echo("Device should reboot momentarily.")
@@ -58,44 +60,35 @@ def cache():
 
 @cache.command()
 @click.option("-b", "--board", default=None)
-def clear(board: Optional[str]) -> None:
+@click.option("-v", "--version", default=None)
+@click.option("-l", "--language", default=None)
+def clear(
+    board: Optional[str], version: Optional[str], language: Optional[str]
+) -> None:
     """Clear the cache, either entirely or for a specific board/version."""
-    if board is None:
+    if board is None and version is None and language is None:
         shutil.rmtree(circfirm.UF2_ARCHIVE)
         circfirm.startup.ensure_app_setup()
         return
-    if "=" not in board:
-        version = None
-    else:
-        board, version = board.split("=")
+
     board = board.replace(" ", "_").lower()
 
-    uf2_file = circfirm.backend.get_uf2_filepath(board, version)
-    board_folder = os.path.dirname(uf2_file)
-
-    # No UF2 files exist for the board
-    if not os.path.exists(board_folder):
-        click.echo("No UF2 files downloaded for this board!")
-        sys.exit(1)
-
-    # Board cache exists, and no specific version given
-    if version is None and os.path.exists(board_folder):
-        shutil.rmtree(board_folder)
-        click.echo("Cache cleared!")
-        sys.exit(0)
-
-    # Specific board and version given, but do not exist
-    if not os.path.exists(uf2_file):
-        board_name = board.replace(" ", "_").lower()
-        click.echo(f"No UF2 downloaded for version {version} of the {board_name}!")
-        sys.exit(1)
-
-    # Specific board and version given that do exist
-    os.remove(uf2_file)
+    glob_pattern = "*-*" if board is None else f"*-{board}"
+    language_pattern = "-*" if language is None else f"-{language}"
+    glob_pattern += language_pattern
+    version_pattern = "-*" if version is None else f"-{version}*"
+    glob_pattern += version_pattern
+    matching_files = pathlib.Path(circfirm.UF2_ARCHIVE).rglob(glob_pattern)
+    for matching_file in matching_files:
+        matching_file.unlink()
 
     # Delete board folder if empty
-    if len(os.listdir(board_folder)) == 0:
-        shutil.rmtree(board_folder)
+    for board_folder in pathlib.Path(circfirm.UF2_ARCHIVE).glob("*"):
+        if len(os.listdir(board_folder)) == 0:
+            shutil.rmtree(board_folder)
+
+    click.echo("Cache cleared!")
+    sys.exit(0)
 
 
 @cache.command(name="list")
@@ -114,30 +107,29 @@ def cache_list(board: Optional[str]) -> None:
         click.echo(f"No versions for board '{board_name}' are not cached.")
         sys.exit(0)
 
-    boards: Dict[str, Set[str]] = {}
+    boards: Dict[str, Set[Tuple[str, str]]] = {}
     for board_folder in os.listdir(circfirm.UF2_ARCHIVE):
         if board is not None and board_name != board_folder:
             continue
-        dummy_file = os.path.basename(
-            circfirm.backend.get_uf2_filepath(board_folder, "0.0.0")
-        )
-        leading, _ = dummy_file.split("0.0.0")
-        board_folder_full = os.path.join(circfirm.UF2_ARCHIVE, board_folder)
-        versions = {ver[len(leading) : -4] for ver in os.listdir(board_folder_full)}
+        board_folder_full = pathlib.Path(circfirm.UF2_ARCHIVE) / board_folder
+        versions = []
+        for item in os.listdir(board_folder_full):
+            versions.append(circfirm.backend.get_firmware_info(item))
         boards[board_folder] = versions
 
     for rec_boardname, rec_boardvers in boards.items():
         click.echo(f"{rec_boardname}")
-        for rec_boardver in rec_boardvers:
-            click.echo(f"  * {rec_boardver}")
+        for rec_boardver, rec_boardlang in rec_boardvers:
+            click.echo(f"  * {rec_boardver} ({rec_boardlang})")
 
 
-@cache.command(name="install")
+@cache.command(name="save")
 @click.argument("board")
 @click.argument("version")
-def cache_install(board: str, version: str) -> None:
+@click.option("-l", "--language", default="en_US")
+def cache_save(board: str, version: str, language: str) -> None:
     """Install a version of CircuitPython to cache."""
-    circfirm.backend.download_uf2(board, version)
+    circfirm.backend.download_uf2(board, version, language)
 
 
 if __name__ == "__main__":

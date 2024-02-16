@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
+coverage~=7.4
 pre-commit~=2.20
+pytest~=8.0
 sphinx~=5.1
 sphinx-rtd-theme~=1.0

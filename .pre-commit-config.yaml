@@ -4,25 +4,35 @@
 
 repos:
   - repo: https://github.com/Yelp/detect-secrets
+    name: Detect secrets
     rev: v1.4.0
     hooks:
       - id: detect-secrets
   - repo: https://github.com/fsfe/reuse-tool
-    rev: v1.0.0
+    name: Check REUSE compatibility
+    rev: v3.0.1
     hooks:
       - id: reuse
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.3.0
+    rev: v4.5.0
     hooks:
       - id: check-yaml
+        name: Check YAML
       - id: check-toml
+        name: Check TOML
       - id: check-json
+        name: Check JSON
       - id: mixed-line-ending
+        name: Fix mixed line endings
       - id: requirements-txt-fixer
+        name: Fix requirements.txt
       - id: end-of-file-fixer
+        name: Fix end of files
       - id: trailing-whitespace
+        name: Trim trailing whitespace
   - repo: https://github.com/PyCQA/isort
-    rev: 5.10.1
+    name: Sort imports via isort
+    rev: 5.13.2
     hooks:
       - id: isort
         args:
@@ -30,21 +40,25 @@ repos:
           - VERTICAL_HANGING_INDENT
           - --tc
   - repo: https://github.com/psf/black
-    rev: 22.10.0
+    name: Format via black
+    rev: 24.2.0
     hooks:
       - id: black
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.2.0
+    name: Upgrade to Python 3.8+ syntax
+    rev: v3.15.0
     hooks:
       - id: pyupgrade
         args:
           - --py38-plus
   - repo: https://github.com/PyCQA/pydocstyle
-    rev: 6.1.1
+    name: Check docstyle
+    rev: 6.3.0
     hooks:
       - id: pydocstyle
   - repo: https://github.com/PyCQA/pylint
-    rev: v2.15.5
+    name: Lint via pylint
+    rev: v3.0.3
     hooks:
       - id: pylint
         name: pylint
