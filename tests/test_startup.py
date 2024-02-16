@@ -32,7 +32,7 @@ def test_ensure_file() -> None:
     mount_location = tests.helpers.find_circuitpy()
     test_file = os.path.join(mount_location, "testfile")
     try:
-        circfirm.startup._ensure_file(test_file)
+        circfirm.startup._ensure_file(test_file)  # pylint: disable=protected-access
         assert os.path.exists(test_file)
     finally:
         os.remove(test_file)
