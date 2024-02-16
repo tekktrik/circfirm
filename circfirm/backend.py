@@ -46,19 +46,11 @@ class Languages(enum.Enum):
     MANDARIN_LATIN_PINYIN = "zh_Latn_pinyin"
 
 
-def _find_device(device_name: str) -> Optional[str]:
+def _find_device(filename: str) -> Optional[str]:
     """Find a specific connected device."""
     for partition in psutil.disk_partitions():
-        if device_name in partition.mountpoint:
-            return partition.mountpoint
-    return None
-
-
-def find_circuitpy() -> Optional[str]:
-    """Find CircuitPython device in non-bootloader mode."""
-    for partition in psutil.disk_partitions():
         try:
-            bootout_file = pathlib.Path(partition.mountpoint) / "boot_out.txt"
+            bootout_file = pathlib.Path(partition.mountpoint) / filename
             if bootout_file.exists():
                 return partition.mountpoint
         except PermissionError:
@@ -66,16 +58,14 @@ def find_circuitpy() -> Optional[str]:
     return None
 
 
+def find_circuitpy() -> Optional[str]:
+    """Find CircuitPython device in non-bootloader mode."""
+    return _find_device(circfirm.BOOTOUT_FILE)
+
+
 def find_bootloader() -> Optional[str]:
     """Find CircuitPython device in bootloader mode."""
-    for partition in psutil.disk_partitions():
-        try:
-            uf2info_file = pathlib.Path(partition.mountpoint) / circfirm.UF2INFO_FILE
-            if uf2info_file.exists():
-                return partition.mountpoint
-        except PermissionError:
-            pass
-    return None
+    return _find_device(circfirm.UF2INFO_FILE)
 
 
 def get_board_name(device_path: str) -> str:

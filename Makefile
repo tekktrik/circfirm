@@ -23,7 +23,7 @@ test:
 		mkfs.vfat -F12 -S512 testfs;											\
 		mkdir testmount;														\
 		sudo mount -o loop,user,umask=000 testfs testmount/;					\
-		touch testmount/boot_out.txt;											\
+		cp tests/assets/info_uf2.txt testmount/;								\
 	elif [[ "$(OSTYPE)" == "win32" ]]; then										\
 		mkdir testmount;														\
 		subst T: testmount;														\

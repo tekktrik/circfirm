@@ -17,7 +17,7 @@ import tests.helpers
 
 def test_ensure_dir() -> None:
     """Tests the ensure_dir() function."""
-    mount_location = tests.helpers.find_circuitpy()
+    mount_location = tests.helpers.get_mount()
     test_dir = os.path.join(mount_location, "testdir")
 
     try:
@@ -29,7 +29,7 @@ def test_ensure_dir() -> None:
 
 def test_ensure_file() -> None:
     """Tests the _ensure_file() function."""
-    mount_location = tests.helpers.find_circuitpy()
+    mount_location = tests.helpers.get_mount()
     test_file = os.path.join(mount_location, "testfile")
     try:
         circfirm.startup._ensure_file(test_file)  # pylint: disable=protected-access
@@ -40,7 +40,7 @@ def test_ensure_file() -> None:
 
 def test_ensure_app_setup() -> None:
     """Tests the ensure_app_setup() function."""
-    mount_location = tests.helpers.find_circuitpy()
+    mount_location = tests.helpers.get_mount()
     testfolder = os.path.join(mount_location, "testfolder")
     testfile = os.path.join(testfolder, "testfile")
     circfirm.startup.FOLDER_LIST.append(testfolder)
