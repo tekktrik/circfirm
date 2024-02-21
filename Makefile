@@ -34,8 +34,6 @@ test-linux:
 .PHONY: test-windows
 test-windows:
 	mkdir testmount
-	takeown /F testmount
-	icacls testmount /grant administrators:F
 	xcopy tests\assets\info_uf2.txt testmount
 	subst T: testmount
 	coverage run -m pytest
