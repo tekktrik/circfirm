@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""
-Basic startup functionality for the tools.
+"""Basic startup functionality for the tools.
 
 Author(s): Alec Delaney
 """

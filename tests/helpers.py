@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""
-Helpers for tests.
+"""Helpers for tests.
 
 Author(s): Alec Delaney
 """

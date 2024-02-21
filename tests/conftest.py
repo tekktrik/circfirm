@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""
-Pytest configuration file.
+"""Pytest configuration file.
 
 Author(s): Alec Delaney
 """
@@ -21,7 +20,6 @@ APP_DIR = pathlib.Path(click.get_app_dir("circfirm")).resolve()
 CONFIG_EXISTS = APP_DIR.exists()
 
 
-# pylint: disable=unused-argument
 def pytest_sessionstart(session: pytest.Session) -> None:
     """Save the current cron table before testing."""
     BACKUP_FOLDER.mkdir(exist_ok=True)
@@ -29,7 +27,6 @@ def pytest_sessionstart(session: pytest.Session) -> None:
         shutil.move(APP_DIR, "tests/backup")
 
 
-# pylint: disable=unused-argument
 def pytest_sessionfinish(
     session: pytest.Session, exitstatus: Union[int, pytest.ExitCode]
 ) -> None:

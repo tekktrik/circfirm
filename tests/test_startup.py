@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""
-Tests startup functionality.
+"""Tests startup functionality.
 
 Author(s): Alec Delaney
 """
@@ -32,7 +31,7 @@ def test_ensure_file() -> None:
     mount_location = tests.helpers.get_mount()
     test_file = os.path.join(mount_location, "testfile")
     try:
-        circfirm.startup._ensure_file(test_file)  # pylint: disable=protected-access
+        circfirm.startup._ensure_file(test_file)
         assert os.path.exists(test_file)
     finally:
         os.remove(test_file)

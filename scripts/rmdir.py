@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""
-Cross-platform script for deleting folders in the CI/Makefile.
+"""Cross-platform script for deleting folders in the CI/Makefile.
 
 Author(s): Alec Delaney
 """

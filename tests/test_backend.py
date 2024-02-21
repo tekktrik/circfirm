@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""
-Tests the backend functionality.
+"""Tests the backend functionality.
 
 Author(s): Alec Delaney
 """

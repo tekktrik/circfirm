@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""
-Backend, shared functionality for the CLI.
+"""Backend, shared functionality for the CLI.
 
 Author(s): Alec Delaney
 """
@@ -85,7 +84,8 @@ def download_uf2(board: str, version: str, language: str = "en_US") -> None:
     url = f"https://downloads.circuitpython.org/bin/{board_name}/{language}/{file}"
     response = requests.get(url)
 
-    if response.status_code != 200:
+    SUCCESS = 200
+    if response.status_code != SUCCESS:
         if not list(uf2_file.parent.glob("*")):
             uf2_file.parent.rmdir()
         raise ConnectionError(f"Could not download spectified UF2 file:\n{url}")

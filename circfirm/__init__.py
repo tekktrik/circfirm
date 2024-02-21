@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""
-Shared functionality for the tool.
+"""Shared functionality for the tool.
 
 Author(s): Alec Delaney
 """
