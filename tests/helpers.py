@@ -10,8 +10,8 @@ Author(s): Alec Delaney
 
 import os
 import pathlib
-import shutil
 import platform
+import shutil
 
 import circfirm
 import circfirm.backend
