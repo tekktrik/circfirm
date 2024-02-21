@@ -1,0 +1,47 @@
+# SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
+#
+# SPDX-License-Identifier: MIT
+
+name: Build CI
+
+on: ["push", "pull_request"]
+
+jobs:
+  build:
+    name: Run build CI
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        py-version: [
+          "3.8",
+          "3.9",
+          "3.10",
+          "3.11",
+          "3.12",
+        ]
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: Setup Python 3.x
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.py-version }}
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+      - name: Install requirements
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+      - name: Run pre-commit via make
+        run: |
+          make check
+      - name: Run pytest via coverage.py (linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          make test-linux
+      - name: Run pytest via coverage.py (windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          make test-windows
+      - name: Test packaging
+        run: |
+          python -m build

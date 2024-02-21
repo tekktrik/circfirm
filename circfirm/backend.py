@@ -53,7 +53,7 @@ def _find_device(filename: str) -> Optional[str]:
             bootout_file = pathlib.Path(partition.mountpoint) / filename
             if bootout_file.exists():
                 return partition.mountpoint
-        except PermissionError:
+        except PermissionError:  # pragma: no cover
             pass
     return None
 
