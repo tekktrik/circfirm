@@ -19,6 +19,7 @@ import circfirm.backend
 
 def get_mount() -> str:
     """Get the mounted drive."""
+    print(platform.system())
     if platform.system() == "Windows":  # pragma: no cover
         mount_location = "T:\\"
     else:
