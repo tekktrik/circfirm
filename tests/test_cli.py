@@ -102,14 +102,18 @@ def test_cache_save() -> None:
     runner = CliRunner()
 
     # Save a specific firmware (successful)
-    result = runner.invoke(cli, ["cache", "save", board, version, "--language", langauge])
+    result = runner.invoke(
+        cli, ["cache", "save", board, version, "--language", langauge]
+    )
     assert result.exit_code == 0
     expected_path = circfirm.backend.get_uf2_filepath(board, version, language=langauge)
     assert expected_path.exists()
     shutil.rmtree(expected_path.parent.resolve())
 
     # Save a specifici firmware (unsuccessful)
-    result = runner.invoke(cli, ["cache", "save", board, version, "--language", "nolanguage"])
+    result = runner.invoke(
+        cli, ["cache", "save", board, version, "--language", "nolanguage"]
+    )
     assert result.exit_code == 1
     assert result.output == (
         "Error: Could not download spectified UF2 file:\n"
@@ -130,9 +134,24 @@ def test_cache_clear() -> None:
     tests.helpers.copy_firmwares()
 
     # Remove a specific firmware from the cache
-    result = runner.invoke(cli, ["cache", "clear", "--board", board, "--version", version, "--language", langauge])
+    result = runner.invoke(
+        cli,
+        [
+            "cache",
+            "clear",
+            "--board",
+            board,
+            "--version",
+            version,
+            "--language",
+            langauge,
+        ],
+    )
     board_folder = pathlib.Path(circfirm.UF2_ARCHIVE) / board.replace(" ", "_").lower()
-    uf2_file = board_folder / "adafruit-circuitpython-feather_m4_express-zh_Latn_pinyin-7.1.0.uf2"
+    uf2_file = (
+        board_folder
+        / "adafruit-circuitpython-feather_m4_express-zh_Latn_pinyin-7.1.0.uf2"
+    )
     assert result.exit_code == 0
     assert result.output == "Cache cleared of specified entries!\n"
     assert not uf2_file.exists()
