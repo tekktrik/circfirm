@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
+#
+# SPDX-License-Identifier: MIT
+
+name: Build CI
+
+on: ["push", "pull_request"]
+
+jobs:
+  build:
+    name: Run build CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python 3.X
+        uses: actions/setup-python@v5
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+      - name: Install the package w/ dev requirements
+        run: |
+          pip install .[dev]
+      - name: Run pre-commit
+        run: |
+          pre-commit run --all-files
+      - name: Run pytest via coverage.py
+        run: |
+          coverage run -m pytest
+      - name: Print coverage report
+        run: |
+          coverage report
+      - name: Test packaging
+        run: |
+          python -m build
