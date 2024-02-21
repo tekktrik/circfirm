@@ -19,14 +19,13 @@ import circfirm.backend
 
 def get_mount() -> str:
     """Get the mounted drive."""
-    print(platform.system())
     if platform.system() == "Windows":  # pragma: no cover
         mount_location = "T:\\"
     else:
         mount_location = os.path.join(os.path.curdir, "testmount")
     assert os.path.exists(mount_location)
     assert os.path.isdir(mount_location)
-    return os.path.realpath(mount_location)
+    return mount_location if platform.system() == "Windows" else os.path.realpath(mount_location)
 
 
 def get_mount_node(path: str, must_exist: bool = False) -> str:
