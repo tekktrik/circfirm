@@ -35,6 +35,7 @@ test-linux:
 test-windows:
 	mkdir testmount
 	subst T: testmount
+	copy tests\assets\info_uf2.txt T:\
 	coverage run -m pytest
 	coverage report
 	coverage html
