@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: MIT
 
-OSTYPE := $(shell echo $$OSTYPE)
 
 .PHONY: lint
 lint:
@@ -16,28 +15,41 @@ format:
 check:
 	pre-commit run --all-files
 
-.PHONY: test-linux
-test-linux:
+.PHONY: test
+test:
+# Test setup
+ifeq "$(OS)" "Windows_NT"
+	@mkdir testmount
+	@xcopy tests\assets\info_uf2.txt testmount
+	@subst T: testmount
+else ifeq "$(shell uname -s)" "Linux"
 	@truncate testfs -s 1M
 	@mkfs.vfat -F12 -S512 testfs
 	@mkdir testmount
 	@sudo mount -o loop,user,umask=000 testfs testmount/
 	@cp tests/assets/info_uf2.txt testmount/
+else ifeq "$(shell uname -s)" "Darwin"
+	hdiutil create -size 512m -volname TESTMOUNT -fs FAT32 testfs.dmg
+	hdiutil attach testfs.dmg
+	cp tests/assets/info_uf2.txt /Volumes/TESTMOUNT
+else
+	@echo "Current OS not supported"
+	@exit 1
+endif
+
+# Run tests
 	@coverage run -m pytest
 	@coverage report
 	@coverage html
+
+# Test cleanup
+ifeq "$(OS)" "Windows_NT"
+	@subst T: /d
+	@python scripts/rmdir.py testmount
+else ifeq "$(shell uname -s)" "Linux"
 	@sudo umount testmount
 	@sudo rm -rf testmount
 	@rm testfs
-
-
-.PHONY: test-windows
-test-windows:
-	@mkdir testmount
-	@xcopy tests\assets\info_uf2.txt testmount
-	@subst T: testmount
-	@coverage run -m pytest
-	@coverage report
-	@coverage html
-	@subst T: /d
-	@python scripts/rmdir.py testmount
+else
+	hdiutil detach /Volumes/TESTMOUNT
+endif

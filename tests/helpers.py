@@ -21,6 +21,8 @@ def get_mount() -> str:
     """Get the mounted drive."""
     if platform.system() == "Windows":  # pragma: no cover
         mount_location = "T:\\"
+    elif platform.system() == "Darwin":
+        mount_location = "/Volumes/TESTMOUNT"
     else:  # pragma: no cover
         mount_location = os.path.join(os.path.curdir, "testmount")
     assert os.path.exists(mount_location)
@@ -51,7 +53,7 @@ def touch_mount_node(path: str, exist_ok: bool = False) -> str:
 def copy_uf2_info() -> None:
     """Copy a bootloader file to the mounted test drive."""
     template_bootloader = os.path.join("tests", "assets", "info_uf2.txt")
-    bootloader_dest = os.path.join("testmount", "info_uf2.txt")
+    bootloader_dest = os.path.join(get_mount(), "info_uf2.txt")
     shutil.copyfile(template_bootloader, bootloader_dest)
 
 
