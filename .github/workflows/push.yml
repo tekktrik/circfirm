@@ -10,6 +10,9 @@ jobs:
   build:
     name: Run build CI
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Setup Python 3.X
         uses: actions/setup-python@v5
