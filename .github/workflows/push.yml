@@ -19,15 +19,12 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
-      - name: Run pre-commit
+      - name: Run pre-commit via make
         run: |
-          pre-commit run --all-files
+          make check
       - name: Run pytest via coverage.py
         run: |
-          coverage run -m pytest
-      - name: Print coverage report
-        run: |
-          coverage report
+          make test
       - name: Test packaging
         run: |
           python -m build
