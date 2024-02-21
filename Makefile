@@ -40,4 +40,4 @@ test-windows:
 	coverage report
 	coverage html
 	subst T: /d
-	rmdir testmount /s /q
+	python scripts/rmdir.py testmount
