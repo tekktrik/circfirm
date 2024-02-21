@@ -10,15 +10,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        py-version: [
-          "3.8",
-          "3.9",
-          "3.10",
-          "3.11",
-          "3.12",
-        ]
     permissions:
       id-token: write
     steps:

@@ -9,13 +9,22 @@ on: ["push", "pull_request"]
 jobs:
   build:
     name: Run build CI
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        py-version: [
+          "3.8",
+          "3.9",
+          "3.10",
+          "3.11",
+          "3.12",
+        ]
+        os: [ubuntu-latest, windows-latest]
     steps:
-      - name: Setup Python 3.X
+      - name: Setup Python 3.x
         uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.py-version }}
       - name: Checkout the repository
         uses: actions/checkout@v4
       - name: Install requirements
