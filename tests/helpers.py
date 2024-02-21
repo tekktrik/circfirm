@@ -11,6 +11,7 @@ Author(s): Alec Delaney
 import os
 import pathlib
 import shutil
+import platform
 
 import circfirm
 import circfirm.backend
@@ -18,7 +19,10 @@ import circfirm.backend
 
 def get_mount() -> str:
     """Get the mounted drive."""
-    mount_location = os.path.join(os.path.curdir, "testmount")
+    if platform.system() == "Windows":  # pragma: no cover
+        mount_location = "T:\\"
+    else:
+        mount_location = os.path.join(os.path.curdir, "testmount")
     assert os.path.exists(mount_location)
     assert os.path.isdir(mount_location)
     return os.path.realpath(mount_location)
