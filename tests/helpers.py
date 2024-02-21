@@ -12,6 +12,9 @@ import os
 import pathlib
 import shutil
 
+import circfirm
+import circfirm.backend
+
 
 def get_mount() -> str:
     """Get the mounted drive."""
@@ -29,6 +32,7 @@ def get_mount_node(path: str, must_exist: bool = False) -> str:
         assert os.path.exists(node_location)
     return node_location
 
+
 def touch_mount_node(path: str, exist_ok: bool = False) -> str:
     """Touch a file on the mounted drive."""
     node_location = get_mount_node(path)
@@ -41,3 +45,12 @@ def copy_uf2_info() -> None:
     template_bootloader = os.path.join("tests", "assets", "info_uf2.txt")
     bootloader_dest = os.path.join("testmount", "info_uf2.txt")
     shutil.copyfile(template_bootloader, bootloader_dest)
+
+
+def copy_firmwares() -> None:
+    """Copy firmware files to the app directory."""
+    firmware_folder = pathlib.Path("tests/assets/firmwares")
+    for board_folder in firmware_folder.glob("*"):
+        shutil.copytree(
+            board_folder, os.path.join(circfirm.UF2_ARCHIVE, board_folder.name)
+        )

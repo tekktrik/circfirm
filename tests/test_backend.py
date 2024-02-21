@@ -8,14 +8,14 @@ Tests the backend functionality.
 Author(s): Alec Delaney
 """
 
-import circfirm.backend
-
-import tests.helpers
-
 import os
 import pathlib
 import shutil
+
 import pytest
+
+import circfirm.backend
+import tests.helpers
 
 
 def test_find_circuitpy() -> None:
@@ -32,6 +32,7 @@ def test_find_circuitpy() -> None:
     os.remove(boot_out)
     circuitpy = circfirm.backend.find_circuitpy()
     assert circuitpy is None
+
 
 def test_find_bootloader() -> None:
     """Tests finding a CircuitPython device in bootloader mode."""
@@ -70,8 +71,14 @@ def test_get_uf2_filepath() -> None:
     language = "en_US"
     version = "7.0.0"
 
-    created_path = circfirm.backend.get_uf2_filepath("Feather M4 Express", "7.0.0", "en_US", ensure=True)
-    expected_path = pathlib.Path(circfirm.UF2_ARCHIVE) / board_name / f"adafruit-circuitpython-{board_name}-{language}-{version}.uf2"
+    created_path = circfirm.backend.get_uf2_filepath(
+        "Feather M4 Express", "7.0.0", "en_US", ensure=True
+    )
+    expected_path = (
+        pathlib.Path(circfirm.UF2_ARCHIVE)
+        / board_name
+        / f"adafruit-circuitpython-{board_name}-{language}-{version}.uf2"
+    )
     assert created_path.resolve() == expected_path.resolve()
 
 
@@ -84,7 +91,10 @@ def test_download_uf2() -> None:
     formatted_board_name = board_name.replace(" ", "_").lower()
 
     # Test bad download candidate
-    expected_path = circfirm.backend.get_board_folder(board_name) / f"adafruit-circuitpython-{formatted_board_name}-{language}-{version}.uf2"
+    expected_path = (
+        circfirm.backend.get_board_folder(board_name)
+        / f"adafruit-circuitpython-{formatted_board_name}-{language}-{version}.uf2"
+    )
     with pytest.raises(ConnectionError):
         circfirm.backend.download_uf2(board_name, version, language)
     assert not expected_path.exists()
@@ -94,7 +104,10 @@ def test_download_uf2() -> None:
     assert not circfirm.backend.is_downloaded(board_name, version)
     version = "7.0.0"
     circfirm.backend.download_uf2(board_name, version, language)
-    expected_path = circfirm.backend.get_board_folder(board_name) / f"adafruit-circuitpython-{formatted_board_name}-{language}-{version}.uf2"
+    expected_path = (
+        circfirm.backend.get_board_folder(board_name)
+        / f"adafruit-circuitpython-{formatted_board_name}-{language}-{version}.uf2"
+    )
     assert expected_path.exists()
     assert circfirm.backend.is_downloaded(board_name, version)
 
@@ -108,13 +121,16 @@ def test_get_firmware_info() -> None:
     language = "en_US"
     version = "7.0.0"
 
-    board_folder = circfirm.backend.get_board_folder(board_name)
-    circfirm.backend.download_uf2(board_name, version, language)
-    downloaded_filename = [file.name for file in board_folder.glob("*")][0]
+    try:
+        board_folder = circfirm.backend.get_board_folder(board_name)
+        circfirm.backend.download_uf2(board_name, version, language)
+        downloaded_filename = [file.name for file in board_folder.glob("*")][0]
 
-    parsed_version, parsed_language = circfirm.backend.get_firmware_info(downloaded_filename)
-    assert parsed_version == version
-    assert parsed_language == language
-
-    # Clean up post tests
-    shutil.rmtree(board_folder)
+        parsed_version, parsed_language = circfirm.backend.get_firmware_info(
+            downloaded_filename
+        )
+        assert parsed_version == version
+        assert parsed_language == language
+    finally:
+        # Clean up post tests
+        shutil.rmtree(board_folder)

@@ -12,7 +12,7 @@ import os
 import pathlib
 import shutil
 import sys
-from typing import Dict, Optional, Set, Tuple
+from typing import Optional
 
 import click
 
@@ -20,11 +20,9 @@ import circfirm
 import circfirm.backend
 import circfirm.startup
 
-__version__ = "0.0.0+auto.0"
-
 
 @click.group()
-@click.version_option(__version__)
+@click.version_option(circfirm.__version__)
 def cli() -> None:
     """Install CircuitPython firmware from the command line."""
     circfirm.startup.ensure_app_setup()
@@ -48,7 +46,8 @@ def install(version: str, language: str) -> None:
         circfirm.backend.download_uf2(board, version, language)
 
     uf2file = circfirm.backend.get_uf2_filepath(board, version, language)
-    shutil.copy(uf2file, mount_path)
+    uf2filename = os.path.basename(uf2file)
+    shutil.copyfile(uf2file, os.path.join(mount_path, uf2filename))
     click.echo("UF2 file copied to device!")
     click.echo("Device should reboot momentarily.")
 
@@ -69,6 +68,7 @@ def clear(
     if board is None and version is None and language is None:
         shutil.rmtree(circfirm.UF2_ARCHIVE)
         circfirm.startup.ensure_app_setup()
+        click.echo("Cache cleared!")
         return
 
     board = board.replace(" ", "_").lower()
@@ -87,8 +87,7 @@ def clear(
         if len(os.listdir(board_folder)) == 0:
             shutil.rmtree(board_folder)
 
-    click.echo("Cache cleared!")
-    sys.exit(0)
+    click.echo("Cache cleared of specified entries!")
 
 
 @cache.command(name="list")
@@ -107,20 +106,14 @@ def cache_list(board: Optional[str]) -> None:
         click.echo(f"No versions for board '{board_name}' are not cached.")
         sys.exit(0)
 
-    boards: Dict[str, Set[Tuple[str, str]]] = {}
-    for board_folder in os.listdir(circfirm.UF2_ARCHIVE):
-        if board is not None and board_name != board_folder:
-            continue
-        board_folder_full = pathlib.Path(circfirm.UF2_ARCHIVE) / board_folder
-        versions = []
-        for item in os.listdir(board_folder_full):
-            versions.append(circfirm.backend.get_firmware_info(item))
-        boards[board_folder] = versions
+    specified_board = board_name if board is not None else None
+    boards = circfirm.backend.get_sorted_boards(specified_board)
 
     for rec_boardname, rec_boardvers in boards.items():
         click.echo(f"{rec_boardname}")
-        for rec_boardver, rec_boardlang in rec_boardvers:
-            click.echo(f"  * {rec_boardver} ({rec_boardlang})")
+        for rec_boardver, rec_boardlangs in rec_boardvers.items():
+            for rec_boardlang in rec_boardlangs:
+                click.echo(f"  * {rec_boardver} ({rec_boardlang})")
 
 
 @cache.command(name="save")
@@ -133,7 +126,3 @@ def cache_save(board: str, version: str, language: str) -> None:
         circfirm.backend.download_uf2(board, version, language)
     except ConnectionError as err:
         raise click.exceptions.ClickException(err.args[0])
-
-
-if __name__ == "__main__":
-    cli()

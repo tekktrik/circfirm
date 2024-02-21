@@ -9,11 +9,11 @@ Author(s): Alec Delaney
 """
 
 import enum
+import os
 import pathlib
-import sys
-from typing import Optional, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
-import click
+import packaging.version
 import psutil
 import requests
 
@@ -21,7 +21,7 @@ import circfirm
 import circfirm.startup
 
 
-class Languages(enum.Enum):
+class Language(enum.Enum):
     """Avaiable languages for boards."""
 
     BAHASA_INDONESIAN = "ID"
@@ -79,17 +79,16 @@ def get_board_name(device_path: str) -> str:
 
 def download_uf2(board: str, version: str, language: str = "en_US") -> None:
     """Download a version of CircuitPython for a specific board."""
-    file = get_uf2_filename(board, version)
+    file = get_uf2_filename(board, version, language=language)
     board_name = board.replace(" ", "_").lower()
-    uf2_file = get_uf2_filepath(board, version, ensure=True)
+    uf2_file = get_uf2_filepath(board, version, language=language, ensure=True)
     url = f"https://downloads.circuitpython.org/bin/{board_name}/{language}/{file}"
     response = requests.get(url)
 
     if response.status_code != 200:
-        if not len(list(uf2_file.parent.glob("*"))):
+        if not list(uf2_file.parent.glob("*")):
             uf2_file.parent.rmdir()
-        raise ConnectionError("Could not download spectified UF2 file")
-        
+        raise ConnectionError(f"Could not download spectified UF2 file:\n{url}")
 
     with open(uf2_file, mode="wb") as uf2file:
         uf2file.write(response.content)
@@ -131,3 +130,28 @@ def get_firmware_info(uf2_filename: str) -> Tuple[str, str]:
     language = filename_parts[-2]
     version = filename_parts[-1][:-4]
     return version, language
+
+
+def get_sorted_boards(board: Optional[str]) -> Dict[str, Dict[str, Set[str]]]:
+    """Get a sorted collection of boards, versions, and languages."""
+    boards: Dict[str, Dict[str, Set[str]]] = {}
+    for board_folder in sorted(os.listdir(circfirm.UF2_ARCHIVE)):
+        versions: Dict[str, List[str]] = {}
+        sorted_versions: Dict[str, Set[str]] = {}
+        if board is not None and board != board_folder:
+            continue
+        board_folder_full = pathlib.Path(circfirm.UF2_ARCHIVE) / board_folder
+        for item in os.listdir(board_folder_full):
+            version, language = get_firmware_info(item)
+            try:
+                version_set = set(versions[version])
+                version_set.add(language)
+                versions[version] = sorted(version_set)
+            except KeyError:
+                versions[version] = [language]
+        for sorted_version in sorted(
+            versions, reverse=True, key=packaging.version.Version
+        ):
+            sorted_versions[sorted_version] = versions[sorted_version]
+        boards[board_folder] = sorted_versions
+    return boards
