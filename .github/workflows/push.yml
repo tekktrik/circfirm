@@ -27,7 +27,7 @@ jobs:
           make check
       - name: Run pytest via coverage.py
         run: |
-          make test
+          make test-linux
       - name: Test packaging
         run: |
           python -m build
