@@ -21,7 +21,7 @@ def get_mount() -> str:
     """Get the mounted drive."""
     if platform.system() == "Windows":  # pragma: no cover
         mount_location = "T:\\"
-    else:
+    else:  # pragma: no cover
         mount_location = os.path.join(os.path.curdir, "testmount")
     assert os.path.exists(mount_location)
     assert os.path.isdir(mount_location)

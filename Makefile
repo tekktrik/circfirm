@@ -35,9 +35,9 @@ test-linux:
 test-windows:
 	mkdir testmount
 	subst T: testmount
-	copy tests\assets\info_uf2.txt T:\
+	copy tests\assets\info_uf2.txt T:
 	coverage run -m pytest
 	coverage report
 	coverage html
-	subst testmount /d
-	rmdir testmount /s
+	subst T: /d
+	rmdir testmount /s /q
