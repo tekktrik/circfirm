@@ -1,0 +1,3 @@
+UF2 Bootloader v3.6.0 SFHWR0
+Model: PyGamer
+Board-ID SAMD51J19A-PyGamer-M4

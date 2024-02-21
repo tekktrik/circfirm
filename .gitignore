@@ -131,3 +131,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Project-specific
+testfs
+testmount/
+
+# Test related
+tests/backup/
