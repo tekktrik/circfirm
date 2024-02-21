@@ -22,7 +22,7 @@ import circfirm.startup
 
 
 @click.group()
-@click.version_option(circfirm.__version__)
+@click.version_option(package_name="circfirm")
 def cli() -> None:
     """Install CircuitPython firmware from the command line."""
     circfirm.startup.ensure_app_setup()
@@ -30,14 +30,20 @@ def cli() -> None:
 
 @cli.command()
 @click.argument("version")
-@click.option("-l", "--language", default="en_US")
+@click.option("-l", "--language", default="en_US", help="CircuitPython language/locale")
 def install(version: str, language: str) -> None:
     """Install the specified version of CircuitPython."""
     mount_path = circfirm.backend.find_bootloader()
     if not mount_path:
-        click.echo("CircuitPython device not found!")
-        click.echo("Check that the device is connected and mounted.")
-        sys.exit(1)
+        circuitpy = circfirm.backend.find_circuitpy()
+        if circuitpy:
+            click.echo("CircuitPython device found, but is not in bootloader mode!")
+            click.echo("Please put the device in bootloader mode.")
+            sys.exit(2)
+        else:
+            click.echo("CircuitPython device not found!")
+            click.echo("Check that the device is connected and mounted.")
+            sys.exit(1)
 
     board = circfirm.backend.get_board_name(mount_path)
 
@@ -58,9 +64,9 @@ def cache():
 
 
 @cache.command()
-@click.option("-b", "--board", default=None)
-@click.option("-v", "--version", default=None)
-@click.option("-l", "--language", default=None)
+@click.option("-b", "--board", default=None, help="CircuitPythonoard name")
+@click.option("-v", "--version", default=None, help="CircuitPython version")
+@click.option("-l", "--language", default=None, help="CircuitPython language/locale")
 def clear(
     board: Optional[str], version: Optional[str], language: Optional[str]
 ) -> None:
@@ -91,7 +97,7 @@ def clear(
 
 
 @cache.command(name="list")
-@click.option("-b", "--board", default=None)
+@click.option("-b", "--board", default=None, help="CircuitPython board name")
 def cache_list(board: Optional[str]) -> None:
     """List all the boards/versions cached."""
     if board is not None:
@@ -119,7 +125,7 @@ def cache_list(board: Optional[str]) -> None:
 @cache.command(name="save")
 @click.argument("board")
 @click.argument("version")
-@click.option("-l", "--language", default="en_US")
+@click.option("-l", "--language", default="en_US", help="CircuitPython language/locale")
 def cache_save(board: str, version: str, language: str) -> None:
     """Install a version of CircuitPython to cache."""
     try:

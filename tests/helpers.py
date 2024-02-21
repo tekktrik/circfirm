@@ -21,7 +21,7 @@ def get_mount() -> str:
     """Get the mounted drive."""
     if platform.system() == "Windows":  # pragma: no cover
         mount_location = "T:\\"
-    elif platform.system() == "Darwin":
+    elif platform.system() == "Darwin":  # pragma: no cover
         mount_location = "/Volumes/TESTMOUNT"
     else:  # pragma: no cover
         mount_location = os.path.join(os.path.curdir, "testmount")
@@ -50,11 +50,21 @@ def touch_mount_node(path: str, exist_ok: bool = False) -> str:
     return node_location
 
 
+def _copy_text_file(filename: str) -> None:
+    """Copy a text file to the mounted test drive."""
+    template_bootloader = os.path.join("tests", "assets", filename)
+    bootloader_dest = os.path.join(get_mount(), filename)
+    shutil.copyfile(template_bootloader, bootloader_dest)
+
+
 def copy_uf2_info() -> None:
     """Copy a bootloader file to the mounted test drive."""
-    template_bootloader = os.path.join("tests", "assets", "info_uf2.txt")
-    bootloader_dest = os.path.join(get_mount(), "info_uf2.txt")
-    shutil.copyfile(template_bootloader, bootloader_dest)
+    _copy_text_file("info_uf2.txt")
+
+
+def copy_boot_out() -> None:
+    """Copy a bootout file to the mounted test drive."""
+    _copy_text_file("boot_out.txt")
 
 
 def copy_firmwares() -> None:
