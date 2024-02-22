@@ -118,18 +118,18 @@ def test_get_firmware_info() -> None:
     """Tests the ability to get firmware information."""
     board_name = "Feather M4 Express"
     language = "en_US"
-    version = "7.0.0"
 
-    try:
-        board_folder = circfirm.backend.get_board_folder(board_name)
-        circfirm.backend.download_uf2(board_name, version, language)
-        downloaded_filename = [file.name for file in board_folder.glob("*")][0]
+    for version in ("8.0.0", "9.0.0-beta.2"):
+        try:
+            board_folder = circfirm.backend.get_board_folder(board_name)
+            circfirm.backend.download_uf2(board_name, version, language)
+            downloaded_filename = [file.name for file in board_folder.glob("*")][0]
 
-        parsed_version, parsed_language = circfirm.backend.get_firmware_info(
-            downloaded_filename
-        )
-        assert parsed_version == version
-        assert parsed_language == language
-    finally:
-        # Clean up post tests
-        shutil.rmtree(board_folder)
+            parsed_version, parsed_language = circfirm.backend.get_firmware_info(
+                downloaded_filename
+            )
+            assert parsed_version == version
+            assert parsed_language == language
+        finally:
+            # Clean up post tests
+            shutil.rmtree(board_folder)
