@@ -50,7 +50,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
-          file: coverage_${{ matrix.py-version }}.xml
+          file: coverage_${{ matrix.os }}_${{ matrix.py-version }}.xml
           flags: "${{ matrix.os }}-py-${{ matrix.py-version }}"
       - name: Test packaging
         run: |
