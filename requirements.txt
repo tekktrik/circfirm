@@ -2,8 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
-click~=8.1  # TODO: should match circup
+click~=8.0
 packaging~=23.2
 psutil~=5.9
-pyyaml  # TODO: Pin version
-requests  # Pin version
+pyyaml~=6.0
+requests~=2.31
