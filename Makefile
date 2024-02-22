@@ -31,6 +31,7 @@ else ifeq "$(shell uname -s)" "Linux"
 else ifeq "$(shell uname -s)" "Darwin"
 	hdiutil create -size 512m -volname TESTMOUNT -fs FAT32 testfs.dmg
 	hdiutil attach testfs.dmg
+	cp tests/assets/info_uf2.txt /Volumes/TESTMOUNT
 else
 	@echo "Current OS not supported"
 	@exit 1
