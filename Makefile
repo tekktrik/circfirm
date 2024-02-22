@@ -5,15 +5,15 @@
 
 .PHONY: lint
 lint:
-	pre-commit run ruff --all-files
+	@pre-commit run ruff --all-files
 
 .PHONY: format
 format:
-	pre-commit run ruff-format --all-files
+	@pre-commit run ruff-format --all-files
 
 .PHONY: check
 check:
-	pre-commit run --all-files
+	@pre-commit run --all-files
 
 .PHONY: test
 test:
@@ -29,9 +29,9 @@ else ifeq "$(shell uname -s)" "Linux"
 	@sudo mount -o loop,user,umask=000 testfs testmount/
 	@cp tests/assets/info_uf2.txt testmount/
 else ifeq "$(shell uname -s)" "Darwin"
-	hdiutil create -size 512m -volname TESTMOUNT -fs FAT32 testfs.dmg
-	hdiutil attach testfs.dmg
-	cp tests/assets/info_uf2.txt /Volumes/TESTMOUNT
+	@hdiutil create -size 512m -volname TESTMOUNT -fs FAT32 testfs.dmg
+	@hdiutil attach testfs.dmg
+	@cp tests/assets/info_uf2.txt /Volumes/TESTMOUNT
 else
 	@echo "Current OS not supported"
 	@exit 1
@@ -51,5 +51,5 @@ else ifeq "$(shell uname -s)" "Linux"
 	@sudo rm -rf testmount
 	@rm testfs
 else
-	hdiutil detach /Volumes/TESTMOUNT
+	@hdiutil detach /Volumes/TESTMOUNT
 endif
