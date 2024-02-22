@@ -26,7 +26,7 @@ A CLI tool for updating the firmware for CircuitPython boards
 Installation
 ============
 
-The best way to install ``circfirm`` is by using [``pipx``](https://github.com/pypa/pipx),
+The best way to install ``circfirm`` is by using `pipx <https://github.com/pypa/pipx>`_,
 which creates an isolated virtual environment for the dependencies:
 
 .. code-block:: shell
