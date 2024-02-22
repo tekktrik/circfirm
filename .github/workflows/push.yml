@@ -34,14 +34,9 @@ jobs:
       - name: Run pre-commit via make
         run: |
           make check
-      - name: Run pytest via coverage.py (linux)
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+      - name: Run pytest via coverage.py
         run: |
-          make test-linux
-      - name: Run pytest via coverage.py (windows)
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: |
-          make test-windows
+          make test
       - name: Test packaging
         run: |
           python -m build
