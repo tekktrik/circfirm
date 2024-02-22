@@ -36,9 +36,14 @@ def test_install() -> None:
     try:
         uf2_info = tests.helpers.get_mount_node(circfirm.UF2INFO_FILE)
         os.remove(uf2_info)
-
         result = runner.invoke(cli, ["install", version])
         assert result.exit_code == 1
+
+        tests.helpers.copy_boot_out()
+        result = runner.invoke(cli, ["install", version])
+        assert result.exit_code == 2
+        bootout = tests.helpers.get_mount_node(circfirm.BOOTOUT_FILE)
+        os.remove(bootout)
     finally:
         tests.helpers.copy_uf2_info()
 

@@ -35,9 +35,15 @@ def install(version: str, language: str) -> None:
     """Install the specified version of CircuitPython."""
     mount_path = circfirm.backend.find_bootloader()
     if not mount_path:
-        click.echo("CircuitPython device not found!")
-        click.echo("Check that the device is connected and mounted.")
-        sys.exit(1)
+        circuitpy = circfirm.backend.find_circuitpy()
+        if circuitpy:
+            click.echo("CircuitPython device found, but is not in bootloader mode!")
+            click.echo("Please put the device in bootloader mode.")
+            sys.exit(2)
+        else:
+            click.echo("CircuitPython device not found!")
+            click.echo("Check that the device is connected and mounted.")
+            sys.exit(1)
 
     board = circfirm.backend.get_board_name(mount_path)
 
