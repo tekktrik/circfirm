@@ -11,8 +11,6 @@ Author(s): Alec Delaney
 
 from circfirm.startup import setup_app_dir, setup_file, setup_folder
 
-__version__ = "0.0.0+auto.0"
-
 # Folders
 
 APP_DIR = setup_app_dir("circfirm")
