@@ -128,7 +128,7 @@ def get_firmware_info(uf2_filename: str) -> Tuple[str, str]:
     """Get firmware info."""
     filename_parts = uf2_filename.split("-")
     language = filename_parts[3]
-    version_extension = "".join(filename_parts[4:])
+    version_extension = "-".join(filename_parts[4:])
     version = version_extension[:-4]
     return version, language
 
