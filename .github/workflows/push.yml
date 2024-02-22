@@ -44,14 +44,14 @@ jobs:
           make test
       - name: Create coverage.py XML report
         run: |
-          coverage xml -o coverage_${{ matrix.py-version }}.xml
+          coverage xml -o coverage_${{ matrix.os }}_${{ matrix.py-version }}.xml
       - name: Upload coverage report to Codecov
         uses: codecov/codecov-action@v4.0.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
           file: coverage_${{ matrix.py-version }}.xml
-          flags: "py-${{ matrix.py-version }}"
+          flags: "${{ matrix.os }}-py-${{ matrix.py-version }}"
       - name: Test packaging
         run: |
           python -m build
