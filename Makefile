@@ -30,7 +30,6 @@ else ifeq "$(shell uname -s)" "Linux"
 	@cp tests/assets/info_uf2.txt testmount/
 else ifeq "$(shell uname -s)" "Darwin"
 	hdiutil create -size 512m -volname TESTMOUNT -fs FAT32 testfs.dmg
-	open testfs.dmg
 	hdiutil attach testfs.dmg
 else
 	@echo "Current OS not supported"
