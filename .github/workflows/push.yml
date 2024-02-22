@@ -11,6 +11,7 @@ jobs:
     name: Run build CI
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         py-version: [
           "3.8",
