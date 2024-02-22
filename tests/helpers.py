@@ -21,7 +21,7 @@ def get_mount() -> str:
     """Get the mounted drive."""
     if platform.system() == "Windows":  # pragma: no cover
         mount_location = "T:\\"
-    elif platform.system() == "Darwin":
+    elif platform.system() == "Darwin":  # pragma: no cover
         mount_location = "/Volumes/TESTMOUNT"
     else:  # pragma: no cover
         mount_location = os.path.join(os.path.curdir, "testmount")
