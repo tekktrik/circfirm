@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: circfirm
 Upstream-Contact: Alec Delaney <tekktrik@gmail.com>
-Source: https://github.com/tekktrik/cronberry
+Source: https://github.com/tekktrik/circfirm
 
 Files: tests/assets/info_uf2.txt
 Copyright: 2024 Scott Shawcroft, for Adafruit Industries

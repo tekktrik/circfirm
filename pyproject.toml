@@ -17,7 +17,6 @@ readme = "README.rst"
 authors = [
     {name = "Alec Delaney", email = "tekktrik@gmail.com"}
 ]
-urls = {Homepage = "https://github.com/tekktrik/circlink.git"}
 keywords = [
     "adafruit",
     "circuitpython",
@@ -42,6 +41,10 @@ classifiers = [
     "Operating System :: MacOS",
 ]
 dynamic = ["version", "dependencies", "optional-dependencies"]
+
+[project.urls]
+Homepage = "https://github.com/tekktrik/circlink"
+Repository = "https://github.com/tekktrik/circlink.git"
 
 [project.scripts]
 circfirm = "circfirm.cli:cli"

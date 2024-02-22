@@ -52,4 +52,5 @@ else ifeq "$(shell uname -s)" "Linux"
 	@rm testfs
 else
 	@hdiutil detach /Volumes/TESTMOUNT
+	@rm testfs.dmg
 endif
