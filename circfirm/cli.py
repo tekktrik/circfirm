@@ -30,7 +30,7 @@ def cli() -> None:
 
 @cli.command()
 @click.argument("version")
-@click.option("-l", "--language", default="en_US")
+@click.option("-l", "--language", default="en_US", help="CircuitPython language/locale")
 def install(version: str, language: str) -> None:
     """Install the specified version of CircuitPython."""
     mount_path = circfirm.backend.find_bootloader()
@@ -64,9 +64,9 @@ def cache():
 
 
 @cache.command()
-@click.option("-b", "--board", default=None)
-@click.option("-v", "--version", default=None)
-@click.option("-l", "--language", default=None)
+@click.option("-b", "--board", default=None, help="CircuitPythonoard name")
+@click.option("-v", "--version", default=None, help="CircuitPython version")
+@click.option("-l", "--language", default=None, help="CircuitPython language/locale")
 def clear(
     board: Optional[str], version: Optional[str], language: Optional[str]
 ) -> None:
@@ -97,7 +97,7 @@ def clear(
 
 
 @cache.command(name="list")
-@click.option("-b", "--board", default=None)
+@click.option("-b", "--board", default=None, help="CircuitPython board name")
 def cache_list(board: Optional[str]) -> None:
     """List all the boards/versions cached."""
     if board is not None:
@@ -125,7 +125,7 @@ def cache_list(board: Optional[str]) -> None:
 @cache.command(name="save")
 @click.argument("board")
 @click.argument("version")
-@click.option("-l", "--language", default="en_US")
+@click.option("-l", "--language", default="en_US", help="CircuitPython language/locale")
 def cache_save(board: str, version: str, language: str) -> None:
     """Install a version of CircuitPython to cache."""
     try:
