@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""
-Tests the CLI functionality.
+"""Tests the CLI functionality.
 
 Author(s): Alec Delaney
 """
@@ -32,16 +31,19 @@ def test_install() -> None:
     assert os.path.exists(expected_uf2_filepath)
     os.remove(expected_uf2_filepath)
 
-    # Test not finding the mounted drive
+    ERR_NOT_FOUND = 1
+    ERR_FOUND_CIRCUITPY = 2
     try:
+        # Test not finding the mounted drive
         uf2_info = tests.helpers.get_mount_node(circfirm.UF2INFO_FILE)
         os.remove(uf2_info)
         result = runner.invoke(cli, ["install", version])
-        assert result.exit_code == 1
+        assert result.exit_code == ERR_NOT_FOUND
 
+        # Test finding the mounted drive as CIRCUITPY
         tests.helpers.copy_boot_out()
         result = runner.invoke(cli, ["install", version])
-        assert result.exit_code == 2
+        assert result.exit_code == ERR_FOUND_CIRCUITPY
         bootout = tests.helpers.get_mount_node(circfirm.BOOTOUT_FILE)
         os.remove(bootout)
     finally:

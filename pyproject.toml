@@ -65,3 +65,7 @@ source = [
     "circfirm/",
     "tests/",
 ]
+
+[tool.ruff.lint]
+select = ["D", "PL", "UP", "I"]
+ignore = ["D213", "D203"]

@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""
-Main CLI functionality for the tool.
+"""Main CLI functionality for the tool.
 
 Author(s): Alec Delaney
 """
