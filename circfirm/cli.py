@@ -77,13 +77,18 @@ def install(version: str, language: str, board: Optional[str]) -> None:
             sys.exit(2)
 
     if not circfirm.backend.is_downloaded(board, version, language):
-        announce_and_await(
-            "Downloading UF2",
-            circfirm.backend.download_uf2,
-            args=(board, version, language),
-        )
+        try:
+            announce_and_await(
+                "Downloading UF2",
+                circfirm.backend.download_uf2,
+                args=(board, version, language),
+            )
+        except ConnectionError as err:
+            click.echo(" failed")  # Mark as failed
+            click.echo(f"Error: {err.args[0]}")
+            sys.exit(4)
     else:
-        click.echo(f"Using cached firmware file")
+        click.echo("Using cached firmware file")
 
     uf2file = circfirm.backend.get_uf2_filepath(board, version, language)
     uf2filename = os.path.basename(uf2file)

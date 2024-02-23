@@ -45,26 +45,34 @@ def test_install() -> None:
     assert os.path.exists(expected_uf2_filepath)
     os.remove(expected_uf2_filepath)
 
+    # Test using cached version of firmware
+    result = runner.invoke(cli, ["install", version, "--board", "feather_m4_express"])
+    assert result.exit_code == 0
+    assert "Using cached firmware file" in result.output
+    os.remove(expected_uf2_filepath)
+
     ERR_NOT_FOUND = 1
     ERR_FOUND_CIRCUITPY = 2
     ERR_IN_BOOTLOADER = 3
-    try:
-        # Test not finding the mounted drive
-        tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE)
-        result = runner.invoke(
-            cli, ["install", version, "--board", "feather_m4_express"]
-        )
-        assert result.exit_code == ERR_NOT_FOUND
+    ERR_UF2_DOWNLOAD = 4
 
-        # Test finding the mounted drive as CIRCUITPY
-        tests.helpers.copy_boot_out()
-        result = runner.invoke(
-            cli, ["install", version, "--board", "feather_m4_express"]
-        )
-        assert result.exit_code == ERR_FOUND_CIRCUITPY
-        tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE)
-    finally:
-        tests.helpers.copy_uf2_info()
+    # Test not finding the mounted drive
+    tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE)
+    result = runner.invoke(cli, ["install", version, "--board", "feather_m4_express"])
+    assert result.exit_code == ERR_NOT_FOUND
+
+    # Test finding the mounted drive as CIRCUITPY
+    tests.helpers.copy_boot_out()
+    result = runner.invoke(cli, ["install", version, "--board", "feather_m4_express"])
+    assert result.exit_code == ERR_FOUND_CIRCUITPY
+
+    # Test using bad board version
+    tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE)
+    tests.helpers.copy_uf2_info()
+    result = runner.invoke(
+        cli, ["install", "doesnotexist", "--board", "feather_m4_express"]
+    )
+    assert result.exit_code == ERR_UF2_DOWNLOAD
 
     # Test using install when in bootloader mode
     result = runner.invoke(cli, ["install", version])
