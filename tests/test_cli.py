@@ -133,7 +133,7 @@ def test_cache_save() -> None:
     assert expected_path.exists()
     shutil.rmtree(expected_path.parent.resolve())
 
-    # Save a specifici firmware (unsuccessful)
+    # Save a specific firmware (unsuccessful)
     result = runner.invoke(
         cli, ["cache", "save", board, version, "--language", "nolanguage"]
     )
