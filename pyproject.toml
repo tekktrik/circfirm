@@ -43,8 +43,8 @@ classifiers = [
 dynamic = ["version", "dependencies", "optional-dependencies"]
 
 [project.urls]
-Homepage = "https://github.com/tekktrik/circlink"
-Repository = "https://github.com/tekktrik/circlink.git"
+Homepage = "https://github.com/tekktrik/circfirm"
+Repository = "https://github.com/tekktrik/circfirm.git"
 
 [project.scripts]
 circfirm = "circfirm.cli:cli"
