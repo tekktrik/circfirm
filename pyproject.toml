@@ -50,6 +50,7 @@ dynamic = ["version", "dependencies", "optional-dependencies"]
 [project.urls]
 Homepage = "https://github.com/tekktrik/circfirm"
 Repository = "https://github.com/tekktrik/circfirm.git"
+Issues = "https://github.com/tekktrik/circfirm/issues"
 
 [project.scripts]
 circfirm = "circfirm.cli:cli"
