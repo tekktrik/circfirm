@@ -34,9 +34,15 @@ def cli() -> None:
 @click.option("-b", "--board", default=None, help="Assume the given board name")
 def install(version: str, language: str, board: Optional[str]) -> None:
     """Install the specified version of CircuitPython."""
+    circuitpy = circfirm.backend.find_circuitpy()
+    bootloader = circfirm.backend.find_bootloader()
+    if not circuitpy and not bootloader:
+        click.echo("CircuitPython device not found!")
+        click.echo("Check that the device is connected and mounted.")
+        sys.exit(1)
+
     if not board:
-        circuitpy = circfirm.backend.find_circuitpy()
-        if not circuitpy and circfirm.backend.find_bootloader():
+        if not circuitpy and bootloader:
             click.echo("CircuitPython device found, but it is in bootloader mode!")
             click.echo(
                 "Please put the device out of bootloader mode, or use the --board option."
@@ -45,20 +51,14 @@ def install(version: str, language: str, board: Optional[str]) -> None:
         board = circfirm.backend.get_board_name(circuitpy)
 
         click.echo("Board name detected, please switch the device to bootloader mode.")
-        while not circfirm.backend.find_bootloader():
+        while not (bootloader := circfirm.backend.find_bootloader()):
             time.sleep(1)
 
-    mount_path = circfirm.backend.find_bootloader()
-    if not mount_path:
-        circuitpy = circfirm.backend.find_circuitpy()
-        if circuitpy:
+    if not bootloader:
+        if circfirm.backend.find_circuitpy():
             click.echo("CircuitPython device found, but is not in bootloader mode!")
             click.echo("Please put the device in bootloader mode.")
             sys.exit(2)
-        else:
-            click.echo("CircuitPython device not found!")
-            click.echo("Check that the device is connected and mounted.")
-            sys.exit(1)
 
     if not circfirm.backend.is_downloaded(board, version, language):
         click.echo("Downloading UF2...")
@@ -66,7 +66,7 @@ def install(version: str, language: str, board: Optional[str]) -> None:
 
     uf2file = circfirm.backend.get_uf2_filepath(board, version, language)
     uf2filename = os.path.basename(uf2file)
-    shutil.copyfile(uf2file, os.path.join(mount_path, uf2filename))
+    shutil.copyfile(uf2file, os.path.join(bootloader, uf2filename))
     click.echo("UF2 file copied to device!")
     click.echo("Device should reboot momentarily.")
 
