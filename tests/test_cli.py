@@ -139,6 +139,7 @@ def test_cache_save() -> None:
     )
     assert result.exit_code == 1
     assert result.output == (
+        "Caching firmware version 7.3.0 for feather_m4_express... failed\n"
         "Error: Could not download spectified UF2 file:\n"
         "https://downloads.circuitpython.org/bin/feather_m4_express/"
         "nolanguage/"
