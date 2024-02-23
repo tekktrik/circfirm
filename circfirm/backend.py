@@ -10,6 +10,7 @@ Author(s): Alec Delaney
 import enum
 import os
 import pathlib
+import re
 from typing import Dict, List, Optional, Set, Tuple
 
 import packaging.version
@@ -45,6 +46,18 @@ class Language(enum.Enum):
     MANDARIN_LATIN_PINYIN = "zh_Latn_pinyin"
 
 
+_ALL_LANGAGES = [language.value for language in Language]
+_ALL_LANGUAGES_REGEX = "|".join(_ALL_LANGAGES)
+FIRMWARE_REGEX = "-".join(
+    [
+        r"adafruit-circuitpython-(.*)",
+        f"({_ALL_LANGUAGES_REGEX})",
+        r"(\d+\.\d+\.\d+(?:-(?:\balpha\b|\bbeta\b)\.\d+)*)\.uf2",
+    ]
+)
+BOARD_ID_REGEX = r"Board ID:\s*(.*)"
+
+
 def _find_device(filename: str) -> Optional[str]:
     """Find a specific connected device."""
     for partition in psutil.disk_partitions():
@@ -69,11 +82,13 @@ def find_bootloader() -> Optional[str]:
 
 def get_board_name(device_path: str) -> str:
     """Get the attached CircuitPython board's name."""
-    uf2info_file = pathlib.Path(device_path) / circfirm.UF2INFO_FILE
-    with open(uf2info_file, encoding="utf-8") as infofile:
+    bootout_file = pathlib.Path(device_path) / circfirm.BOOTOUT_FILE
+    with open(bootout_file, encoding="utf-8") as infofile:
         contents = infofile.read()
-    model_line = [line.strip() for line in contents.split("\n")][1]
-    return [comp.strip() for comp in model_line.split(":")][1]
+    board_match = re.search(BOARD_ID_REGEX, contents)
+    if not board_match:
+        raise ValueError("Could not parse the board name from the boot out file")
+    return board_match[1]
 
 
 def download_uf2(board: str, version: str, language: str = "en_US") -> None:
@@ -122,10 +137,13 @@ def get_board_folder(board: str) -> pathlib.Path:
 
 def get_firmware_info(uf2_filename: str) -> Tuple[str, str]:
     """Get firmware info."""
-    filename_parts = uf2_filename.split("-")
-    language = filename_parts[3]
-    version_extension = "-".join(filename_parts[4:])
-    version = version_extension[:-4]
+    regex_match = re.match(FIRMWARE_REGEX, uf2_filename)
+    if regex_match is None:
+        raise ValueError(
+            "Firmware information could not be determined from the filename"
+        )
+    version = regex_match[3]
+    language = regex_match[2]
     return version, language
 
 

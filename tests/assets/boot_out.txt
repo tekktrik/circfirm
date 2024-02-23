@@ -1,3 +1,3 @@
-Adafruit CircuitPython 8.2.9 on 2023-12-06; Adafruit Feather STM32F405 Express with STM32F405RG
-Board ID:feather_stm32f405_express
-UID:250026001050304235343220
+Adafruit CircuitPython 8.0.0-beta.6 on 2022-12-21; Adafruit Feather M4 Express with samd51j19
+Board ID:feather_m4_express
+UID:C4391B2B0D942955

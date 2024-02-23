@@ -10,6 +10,8 @@ Author(s): Alec Delaney
 import os
 import pathlib
 import shutil
+import threading
+import time
 
 from click.testing import CliRunner
 
@@ -20,36 +22,55 @@ from circfirm.cli import cli
 
 def test_install() -> None:
     """Tests the install command."""
-    version = "7.0.0"
+
+    def wait_and_add() -> None:
+        """Wait then add the boot_out.txt file."""
+        time.sleep(2)
+        tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE)
+        tests.helpers.copy_uf2_info()
+
+    version = "8.0.0-beta.6"
     runner = CliRunner()
 
     # Test successfully installing the firmware
+    tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE)
+    tests.helpers.copy_boot_out()
+    threading.Thread(target=wait_and_add).start()
     result = runner.invoke(cli, ["install", version])
     assert result.exit_code == 0
-    expected_uf2_filename = circfirm.backend.get_uf2_filename("PyGamer", version)
+    expected_uf2_filename = circfirm.backend.get_uf2_filename(
+        "feather_m4_express", version
+    )
     expected_uf2_filepath = tests.helpers.get_mount_node(expected_uf2_filename)
     assert os.path.exists(expected_uf2_filepath)
     os.remove(expected_uf2_filepath)
 
     ERR_NOT_FOUND = 1
     ERR_FOUND_CIRCUITPY = 2
+    ERR_IN_BOOTLOADER = 3
     try:
         # Test not finding the mounted drive
-        uf2_info = tests.helpers.get_mount_node(circfirm.UF2INFO_FILE)
-        os.remove(uf2_info)
-        result = runner.invoke(cli, ["install", version])
+        tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE)
+        result = runner.invoke(
+            cli, ["install", version, "--board", "feather_m4_express"]
+        )
         assert result.exit_code == ERR_NOT_FOUND
 
         # Test finding the mounted drive as CIRCUITPY
         tests.helpers.copy_boot_out()
-        result = runner.invoke(cli, ["install", version])
+        result = runner.invoke(
+            cli, ["install", version, "--board", "feather_m4_express"]
+        )
         assert result.exit_code == ERR_FOUND_CIRCUITPY
-        bootout = tests.helpers.get_mount_node(circfirm.BOOTOUT_FILE)
-        os.remove(bootout)
+        tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE)
     finally:
         tests.helpers.copy_uf2_info()
 
-    board_folder = circfirm.backend.get_board_folder("pygamer")
+    # Test using install when in bootloader mode
+    result = runner.invoke(cli, ["install", version])
+    assert result.exit_code == ERR_IN_BOOTLOADER
+
+    board_folder = circfirm.backend.get_board_folder("feather_m4_express")
     shutil.rmtree(board_folder)
 
 
@@ -77,8 +98,7 @@ def test_cache_list() -> None:
         "tests/assets/responses/specific_board.txt", encoding="utf-8"
     ) as respfile:
         expected_response = respfile.read()
-    result = runner.invoke(cli, ["cache", "list", "--board", "Feather M4 Express"])
-    print(result.output)
+    result = runner.invoke(cli, ["cache", "list", "--board", "feather_m4_express"])
     assert result.exit_code == 0
     assert result.output == expected_response
 
@@ -89,7 +109,6 @@ def test_cache_list() -> None:
     ) as respfile:
         expected_response = respfile.read()
     result = runner.invoke(cli, ["cache", "list", "--board", fake_board])
-    print(result.output)
     assert result.exit_code == 0
     assert result.output == f"No versions for board '{fake_board}' are not cached.\n"
 
@@ -100,7 +119,7 @@ def test_cache_list() -> None:
 
 def test_cache_save() -> None:
     """Tests the cache save command."""
-    board = "Feather M4 Express"
+    board = "feather_m4_express"
     version = "7.3.0"
     langauge = "fr"
     runner = CliRunner()
@@ -129,7 +148,7 @@ def test_cache_save() -> None:
 
 def test_cache_clear() -> None:
     """Tests the cache clear command."""
-    board = "Feather M4 Express"
+    board = "feather_m4_express"
     version = "7.1.0"
     langauge = "zh_Latn_pinyin"
     runner = CliRunner()

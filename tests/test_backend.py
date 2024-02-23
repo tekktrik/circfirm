@@ -50,9 +50,26 @@ def test_find_bootloader() -> None:
 
 def test_get_board_name() -> None:
     """Tests getting the board name from the UF2 info file."""
+    # Setup
+    tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE)
+    tests.helpers.copy_boot_out()
+
+    # Test successful parsing
     mount_location = tests.helpers.get_mount()
     board_name = circfirm.backend.get_board_name(mount_location)
-    assert board_name == "PyGamer"
+    assert board_name == "feather_m4_express"
+
+    # Test unsuccessful parsing
+    with open(
+        tests.helpers.get_mount_node(circfirm.BOOTOUT_FILE), mode="w", encoding="utf-8"
+    ) as bootfile:
+        bootfile.write("junktext")
+    with pytest.raises(ValueError):
+        circfirm.backend.get_board_name(mount_location)
+
+    # Clean up
+    tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE)
+    tests.helpers.copy_uf2_info()
 
 
 def test_get_board_folder() -> None:
@@ -70,7 +87,7 @@ def test_get_uf2_filepath() -> None:
     version = "7.0.0"
 
     created_path = circfirm.backend.get_uf2_filepath(
-        "Feather M4 Express", "7.0.0", "en_US", ensure=True
+        "feather_m4_express", "7.0.0", "en_US", ensure=True
     )
     expected_path = (
         pathlib.Path(circfirm.UF2_ARCHIVE)
@@ -113,9 +130,10 @@ def test_download_uf2() -> None:
 
 def test_get_firmware_info() -> None:
     """Tests the ability to get firmware information."""
-    board_name = "Feather M4 Express"
+    board_name = "feather_m4_express"
     language = "en_US"
 
+    # Test successful parsing
     for version in ("8.0.0", "9.0.0-beta.2"):
         try:
             board_folder = circfirm.backend.get_board_folder(board_name)
@@ -130,3 +148,7 @@ def test_get_firmware_info() -> None:
         finally:
             # Clean up post tests
             shutil.rmtree(board_folder)
+
+    # Test failed parsing
+    with pytest.raises(ValueError):
+        circfirm.backend.get_firmware_info("cannotparse")
