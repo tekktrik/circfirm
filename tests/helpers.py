@@ -42,6 +42,12 @@ def get_mount_node(path: str, must_exist: bool = False) -> str:
     return node_location
 
 
+def delete_mount_node(path: str, missing_okay: bool = False) -> None:
+    """Delete a file on the mounted druve."""
+    node_file = get_mount_node(path)
+    pathlib.Path(node_file).unlink(missing_ok=missing_okay)
+
+
 def touch_mount_node(path: str, exist_ok: bool = False) -> str:
     """Touch a file on the mounted drive."""
     node_location = get_mount_node(path)
