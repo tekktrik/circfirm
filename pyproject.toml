@@ -44,6 +44,7 @@ classifiers = [
     "Operating System :: Unix",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: MacOS",
+    "Typing :: Typed",
 ]
 dynamic = ["version", "dependencies", "optional-dependencies"]
 
@@ -58,9 +59,6 @@ circfirm = "circfirm.cli:cli"
 [tool.setuptools]
 packages = ["circfirm"]
 include-package-data = true
-
-[tool.setuptools.package-data]
-templates = ["*.yaml"]
 
 [tool.setuptools.dynamic.version]
 file = "VERSION"
