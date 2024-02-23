@@ -79,9 +79,8 @@ def get_board_name(device_path: str) -> str:
 def download_uf2(board: str, version: str, language: str = "en_US") -> None:
     """Download a version of CircuitPython for a specific board."""
     file = get_uf2_filename(board, version, language=language)
-    board_name = board.replace(" ", "_").lower()
     uf2_file = get_uf2_filepath(board, version, language=language, ensure=True)
-    url = f"https://downloads.circuitpython.org/bin/{board_name}/{language}/{file}"
+    url = f"https://downloads.circuitpython.org/bin/{board}/{language}/{file}"
     response = requests.get(url)
 
     SUCCESS = 200
@@ -105,8 +104,7 @@ def get_uf2_filepath(
 ) -> pathlib.Path:
     """Get the path to a downloaded UF2 file."""
     file = get_uf2_filename(board, version, language)
-    board_name = board.replace(" ", "_").lower()
-    uf2_folder = pathlib.Path(circfirm.UF2_ARCHIVE) / board_name
+    uf2_folder = pathlib.Path(circfirm.UF2_ARCHIVE) / board
     if ensure:
         circfirm.startup.ensure_dir(uf2_folder)
     return pathlib.Path(uf2_folder) / file
@@ -114,14 +112,12 @@ def get_uf2_filepath(
 
 def get_uf2_filename(board: str, version: str, language: str = "en_US") -> str:
     """Get the structured name for a specific board/version CircuitPython."""
-    board_name = board.replace(" ", "_").lower()
-    return f"adafruit-circuitpython-{board_name}-{language}-{version}.uf2"
+    return f"adafruit-circuitpython-{board}-{language}-{version}.uf2"
 
 
 def get_board_folder(board: str) -> pathlib.Path:
     """Get the board folder path."""
-    board_name = board.replace(" ", "_").lower()
-    return pathlib.Path(circfirm.UF2_ARCHIVE) / board_name
+    return pathlib.Path(circfirm.UF2_ARCHIVE) / board
 
 
 def get_firmware_info(uf2_filename: str) -> Tuple[str, str]:

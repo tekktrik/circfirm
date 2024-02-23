@@ -76,8 +76,6 @@ def clear(
         click.echo("Cache cleared!")
         return
 
-    board = board.replace(" ", "_").lower()
-
     glob_pattern = "*-*" if board is None else f"*-{board}"
     language_pattern = "-*" if language is None else f"-{language}"
     glob_pattern += language_pattern
@@ -99,19 +97,17 @@ def clear(
 @click.option("-b", "--board", default=None, help="CircuitPython board name")
 def cache_list(board: Optional[str]) -> None:
     """List all the boards/versions cached."""
-    if board is not None:
-        board_name = board.replace(" ", "_").lower()
     board_list = os.listdir(circfirm.UF2_ARCHIVE)
 
     if not board_list:
         click.echo("Versions have not been cached yet for any boards.")
         sys.exit(0)
 
-    if board is not None and board_name not in board_list:
-        click.echo(f"No versions for board '{board_name}' are not cached.")
+    if board is not None and board not in board_list:
+        click.echo(f"No versions for board '{board}' are not cached.")
         sys.exit(0)
 
-    specified_board = board_name if board is not None else None
+    specified_board = board if board is not None else None
     boards = circfirm.backend.get_sorted_boards(specified_board)
 
     for rec_boardname, rec_boardvers in boards.items():

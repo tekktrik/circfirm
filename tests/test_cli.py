@@ -83,8 +83,7 @@ def test_cache_list() -> None:
     assert result.output == expected_response
 
     # Test specific board, version, and language response
-    fake_board = "Does Not Exist"
-    fake_board_name = fake_board.replace(" ", "_").lower()
+    fake_board = "does_not_exist"
     with open(
         "tests/assets/responses/specific_board.txt", encoding="utf-8"
     ) as respfile:
@@ -92,9 +91,7 @@ def test_cache_list() -> None:
     result = runner.invoke(cli, ["cache", "list", "--board", fake_board])
     print(result.output)
     assert result.exit_code == 0
-    assert (
-        result.output == f"No versions for board '{fake_board_name}' are not cached.\n"
-    )
+    assert result.output == f"No versions for board '{fake_board}' are not cached.\n"
 
     # Clean Up after test
     shutil.rmtree(circfirm.UF2_ARCHIVE)
@@ -154,7 +151,7 @@ def test_cache_clear() -> None:
             langauge,
         ],
     )
-    board_folder = pathlib.Path(circfirm.UF2_ARCHIVE) / board.replace(" ", "_").lower()
+    board_folder = pathlib.Path(circfirm.UF2_ARCHIVE) / board
     uf2_file = (
         board_folder
         / "adafruit-circuitpython-feather_m4_express-zh_Latn_pinyin-7.1.0.uf2"
