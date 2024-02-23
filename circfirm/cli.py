@@ -12,7 +12,7 @@ import pathlib
 import shutil
 import sys
 import time
-from typing import Optional
+from typing import Any, Callable, Dict, Iterable, Optional
 
 import click
 
@@ -26,6 +26,22 @@ import circfirm.startup
 def cli() -> None:
     """Install CircuitPython firmware from the command line."""
     circfirm.startup.ensure_app_setup()
+
+
+def announce_and_await(
+    msg: str,
+    func: Callable,
+    args: Iterable = (),
+    kwargs: Optional[Dict[str, Any]] = None,
+) -> Any:
+    """Announce an action to be performed, do it, then announce its completion."""
+    if kwargs is None:
+        kwargs = {}
+    fmt_msg = f"{msg}..."
+    click.echo(fmt_msg, nl=False)
+    resp = func(*args, **kwargs)
+    click.echo(" done")
+    return resp
 
 
 @cli.command()
@@ -61,13 +77,20 @@ def install(version: str, language: str, board: Optional[str]) -> None:
             sys.exit(2)
 
     if not circfirm.backend.is_downloaded(board, version, language):
-        click.echo("Downloading UF2...")
-        circfirm.backend.download_uf2(board, version, language)
+        announce_and_await(
+            "Downloading UF2",
+            circfirm.backend.download_uf2,
+            args=(board, version, language),
+        )
+    else:
+        click.echo(f"Using cached firmware file")
 
     uf2file = circfirm.backend.get_uf2_filepath(board, version, language)
     uf2filename = os.path.basename(uf2file)
-    shutil.copyfile(uf2file, os.path.join(bootloader, uf2filename))
-    click.echo("UF2 file copied to device!")
+    uf2_path = os.path.join(bootloader, uf2filename)
+    announce_and_await(
+        f"Copying UF2 to {board}", shutil.copyfile, args=(uf2file, uf2_path)
+    )
     click.echo("Device should reboot momentarily.")
 
 
@@ -138,6 +161,10 @@ def cache_list(board: Optional[str]) -> None:
 def cache_save(board: str, version: str, language: str) -> None:
     """Install a version of CircuitPython to cache."""
     try:
-        circfirm.backend.download_uf2(board, version, language)
+        announce_and_await(
+            f"Caching firmware version {version} for {board}",
+            circfirm.backend.download_uf2,
+            args=(board, version, language),
+        )
     except ConnectionError as err:
         raise click.exceptions.ClickException(err.args[0])
