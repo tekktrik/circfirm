@@ -39,9 +39,15 @@ jobs:
       - name: Run pre-commit via make
         run: |
           make check
-      - name: Run pytest via coverage.py
+      - name: Prepare tests
+        run : |
+          make test-prep
+      - name: Run tests
         run: |
-          make test
+          make test-run
+      - name: Clean up after tests
+        run: |
+          make test-clean
       - name: Create coverage.py XML report
         run: |
           coverage xml -o coverage_${{ matrix.os }}_${{ matrix.py-version }}.xml
