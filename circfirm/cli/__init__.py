@@ -16,6 +16,7 @@ import time
 from typing import Any, Callable, Dict, Iterable, Optional
 
 import click
+import click_spinner
 
 import circfirm
 import circfirm.backend
@@ -34,13 +35,22 @@ def announce_and_await(
     func: Callable,
     args: Iterable = (),
     kwargs: Optional[Dict[str, Any]] = None,
+    *,
+    use_spinner: bool = True,
 ) -> Any:
     """Announce an action to be performed, do it, then announce its completion."""
     if kwargs is None:
         kwargs = {}
     fmt_msg = f"{msg}..."
+    spinner = click_spinner.spinner()
     click.echo(fmt_msg, nl=False)
-    resp = func(*args, **kwargs)
+    if use_spinner:
+        spinner.start()
+    try:
+        resp = func(*args, **kwargs)
+    finally:
+        if use_spinner:
+            spinner.stop()
     click.echo(" done")
     return resp
 
