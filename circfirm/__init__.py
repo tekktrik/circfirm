@@ -8,7 +8,8 @@ Author(s): Alec Delaney
 """
 
 import click
-from circfirm.startup import setup_folder, setup_file
+
+from circfirm.startup import setup_file, setup_folder
 
 # Folders
 APP_DIR = click.get_app_dir("circfirm")

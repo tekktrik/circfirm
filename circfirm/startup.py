@@ -25,11 +25,7 @@ def setup_app_dir(app_name: str) -> str:
 
 def setup_folder(*path_parts: str) -> str:
     """Add a folder to the global record list."""
-    folder_path = (
-        click.get_app_dir("circfirm")
-        if len(path_parts) == 1
-        else os.path.join(path_parts[0], *path_parts[1:])
-    )
+    folder_path = os.path.join(*path_parts)
     FOLDER_LIST.append(folder_path)
     return folder_path
 
