@@ -57,7 +57,7 @@ Issues = "https://github.com/tekktrik/circfirm/issues"
 circfirm = "circfirm.cli:cli"
 
 [tool.setuptools]
-packages = ["circfirm"]
+packages = ["circfirm", "circfirm.cli"]
 include-package-data = true
 
 [tool.setuptools.dynamic.version]
@@ -66,6 +66,8 @@ file = "VERSION"
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
 optional-dependencies = {dev = {file = ["requirements-dev.txt"]}}
+
+[tool.setuptools_scm]
 
 [tool.coverage.run]
 source = [

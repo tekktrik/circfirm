@@ -19,17 +19,13 @@ FILE_LIST = []
 def setup_app_dir(app_name: str) -> str:
     """Set up the application directory."""
     app_path = click.get_app_dir(app_name)
-    FOLDER_LIST.append(app_name)
+    FOLDER_LIST.append(app_path)
     return app_path
 
 
 def setup_folder(*path_parts: str) -> str:
     """Add a folder to the global record list."""
-    folder_path = (
-        click.get_app_dir("circfirm")
-        if len(path_parts) == 1
-        else os.path.join(path_parts[0], *path_parts[1:])
-    )
+    folder_path = os.path.join(*path_parts)
     FOLDER_LIST.append(folder_path)
     return folder_path
 
