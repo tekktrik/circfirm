@@ -25,7 +25,7 @@ import circfirm.startup
 @click.group()
 @click.version_option(package_name="circfirm")
 def cli() -> None:
-    """Install CircuitPython firmware from the command line."""
+    """Manage CircuitPython firmware from the command line."""
     circfirm.startup.ensure_app_setup()
 
 
