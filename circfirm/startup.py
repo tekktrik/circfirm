@@ -19,7 +19,7 @@ FILE_LIST = []
 def setup_app_dir(app_name: str) -> str:
     """Set up the application directory."""
     app_path = click.get_app_dir(app_name)
-    FOLDER_LIST.append(app_name)
+    FOLDER_LIST.append(app_path)
     return app_path
 
 

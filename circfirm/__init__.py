@@ -7,12 +7,11 @@
 Author(s): Alec Delaney
 """
 
-
-from circfirm.startup import setup_app_dir, setup_file, setup_folder
+import click
+from circfirm.startup import setup_folder, setup_file
 
 # Folders
-
-APP_DIR = setup_app_dir("circfirm")
+APP_DIR = click.get_app_dir("circfirm")
 UF2_ARCHIVE = setup_folder(APP_DIR, "archive")
 
 # Files
