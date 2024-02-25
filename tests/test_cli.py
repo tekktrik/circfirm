@@ -200,3 +200,12 @@ def test_cache_clear() -> None:
     assert result.exit_code == 0
     assert result.output == "Cache cleared!\n"
     assert len(list(board_folder.parent.glob("*"))) == 0
+
+
+def test_about() -> None:
+    """Tests the about command."""
+    runner = CliRunner()
+
+    result = runner.invoke(cli, ["about"])
+    assert result.exit_code == 0
+    assert result.output == "Written by Alec Delaney, licensed under MIT License.\n"
