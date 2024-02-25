@@ -7,7 +7,7 @@
 Author(s): Alec Delaney
 """
 
-import importlib
+import importlib.util
 import os
 import pkgutil
 import shutil
@@ -43,6 +43,31 @@ def announce_and_await(
     resp = func(*args, **kwargs)
     click.echo(" done")
     return resp
+
+
+def load_subcmd_folder(path: str, super_import_name: str) -> None:
+    """Load subcommands dynamically from a folder of modules and packages."""
+    subcmd_names = [
+        (modname, ispkg) for _, modname, ispkg in pkgutil.iter_modules((path,))
+    ]
+    subcmd_paths = [
+        os.path.abspath(os.path.join(path, subcmd_name[0]))
+        for subcmd_name in subcmd_names
+    ]
+
+    for (subcmd_name, ispkg), subcmd_path in zip(subcmd_names, subcmd_paths):
+        import_name = ".".join([super_import_name, subcmd_name])
+        import_path = subcmd_path if ispkg else subcmd_path + ".py"
+        module_spec = importlib.util.spec_from_file_location(import_name, import_path)
+        module = importlib.util.module_from_spec(module_spec)
+        module_spec.loader.exec_module(module)
+        source_cli: click.MultiCommand = getattr(module, "cli")
+        if isinstance(source_cli, click.Group):
+            subcmd = click.CommandCollection(sources=(source_cli,))
+            subcmd.help = source_cli.__doc__
+        else:
+            subcmd = source_cli
+        cli.add_command(subcmd, subcmd_name)
 
 
 @cli.command()
@@ -100,13 +125,7 @@ def install(version: str, language: str, board: Optional[str]) -> None:
     click.echo("Device should reboot momentarily.")
 
 
-cli_pkg_path = os.path.join("circfirm", "cli")
-plugin_names = [modname for _, modname, _ in pkgutil.iter_modules((cli_pkg_path,))]
-
-for plugin_name in plugin_names:
-    import_name = ".".join(["circfirm", "cli", plugin_name])
-    module = importlib.import_module(import_name)
-    source_cli: click.MultiCommand = getattr(module, "cli")
-    plugin = click.CommandCollection(sources=(source_cli,))
-    plugin.help = source_cli.__doc__
-    cli.add_command(plugin, plugin_name)
+# Load extra commands from the rest of the circfirm.cli subpackage
+cli_pkg_path = os.path.dirname(os.path.abspath(__file__))
+cli_pkg_name = "circfirm.cli"
+load_subcmd_folder(cli_pkg_path, cli_pkg_name)
