@@ -47,12 +47,16 @@ def announce_and_await(
     if use_spinner:
         spinner.start()
     try:
-        resp = func(*args, **kwargs)
-    finally:
-        if use_spinner:
-            spinner.stop()
-    click.echo(" done")
-    return resp
+        try:
+            resp = func(*args, **kwargs)
+        finally:
+            if use_spinner:
+                spinner.stop()
+        click.echo(" done")
+        return resp
+    except BaseException as err:  # pragma: no cover
+        click.echo(" failed")
+        raise err
 
 
 def load_subcmd_folder(path: str, super_import_name: str) -> None:
@@ -120,7 +124,6 @@ def install(version: str, language: str, board: Optional[str]) -> None:
                 args=(board, version, language),
             )
         except ConnectionError as err:
-            click.echo(" failed")  # Mark as failed
             click.echo(f"Error: {err.args[0]}")
             sys.exit(4)
     else:

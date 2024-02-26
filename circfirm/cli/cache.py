@@ -94,5 +94,4 @@ def cache_save(board: str, version: str, language: str) -> None:
             args=(board, version, language),
         )
     except ConnectionError as err:
-        click.echo(" failed")  # Mark as failed
         raise click.exceptions.ClickException(err.args[0])
