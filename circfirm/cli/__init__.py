@@ -54,7 +54,7 @@ def announce_and_await(
                 spinner.stop()
         click.echo(" done")
         return resp
-    except BaseException as err:  # pragma: no cover
+    except BaseException as err:
         click.echo(" failed")
         raise err
 
