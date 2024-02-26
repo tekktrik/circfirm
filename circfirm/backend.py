@@ -102,7 +102,7 @@ def download_uf2(board: str, version: str, language: str = "en_US") -> None:
     if response.status_code != SUCCESS:
         if not list(uf2_file.parent.glob("*")):
             uf2_file.parent.rmdir()
-        raise ConnectionError(f"Could not download spectified UF2 file:\n{url}")
+        raise ConnectionError(f"Could not download the specified UF2 file:\n{url}")
 
     with open(uf2_file, mode="wb") as uf2file:
         uf2file.write(response.content)
