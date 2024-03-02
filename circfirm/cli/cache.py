@@ -43,7 +43,7 @@ def clear(
     glob_pattern = "*-*" if board is None else f"*-{board}"
     language_pattern = "-*" if language is None else f"-{language}"
     glob_pattern += language_pattern
-    version_pattern = "-*" if version is None else f"-{version}*"
+    version_pattern = "-*" if version is None else f"-{version}.uf2"
     glob_pattern += version_pattern
     matching_files = pathlib.Path(circfirm.UF2_ARCHIVE).rglob(glob_pattern)
     for matching_file in matching_files:
