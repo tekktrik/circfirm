@@ -2,7 +2,6 @@
 #
 # SPDX-License-Identifier: MIT
 
-
 .PHONY: lint
 lint:
 	@pre-commit run ruff --all-files
@@ -35,6 +34,7 @@ else
 	@echo "Current OS not supported"
 	@exit 1
 endif
+	-@git clone https://github.com/adafruit/circuitpython tests/sandbox/circuitpython --depth 1
 
 .PHONY: test
 test:
@@ -53,11 +53,14 @@ test-clean:
 ifeq "$(OS)" "Windows_NT"
 	-@subst T: /d
 	-@python scripts/rmdir.py testmount
+	-@python scripts/rmdir.py tests/sandbox/circuitpython
 else ifeq "$(shell uname -s)" "Linux"
 	-@sudo umount testmount
 	-@sudo rm -rf testmount
 	-@rm testfs -f
+	-@rm -rf tests/sandbox/circuitpython
 else
 	-@hdiutil detach /Volumes/TESTMOUNT
 	-@rm testfs.dmg -f
+	-@rm -rf tests/sandbox/circuitpython
 endif

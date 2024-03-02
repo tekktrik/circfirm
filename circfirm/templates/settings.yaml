@@ -1,0 +1,5 @@
+token:
+    github: ""
+output:
+    supporting:
+        silence: false

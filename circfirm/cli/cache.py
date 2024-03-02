@@ -43,7 +43,7 @@ def clear(
     glob_pattern = "*-*" if board is None else f"*-{board}"
     language_pattern = "-*" if language is None else f"-{language}"
     glob_pattern += language_pattern
-    version_pattern = "-*" if version is None else f"-{version}*"
+    version_pattern = "-*" if version is None else f"-{version}.uf2"
     glob_pattern += version_pattern
     matching_files = pathlib.Path(circfirm.UF2_ARCHIVE).rglob(glob_pattern)
     for matching_file in matching_files:
@@ -64,11 +64,11 @@ def cache_list(board: Optional[str]) -> None:
     board_list = os.listdir(circfirm.UF2_ARCHIVE)
 
     if not board_list:
-        click.echo("Versions have not been cached yet for any boards.")
+        circfirm.cli.maybe_support("Versions have not been cached yet for any boards.")
         sys.exit(0)
 
     if board is not None and board not in board_list:
-        click.echo(f"No versions for board '{board}' are not cached.")
+        circfirm.cli.maybe_support(f"No versions for board '{board}' are not cached.")
         sys.exit(0)
 
     specified_board = board if board is not None else None
@@ -94,5 +94,4 @@ def cache_save(board: str, version: str, language: str) -> None:
             args=(board, version, language),
         )
     except ConnectionError as err:
-        click.echo(" failed")  # Mark as failed
         raise click.exceptions.ClickException(err.args[0])

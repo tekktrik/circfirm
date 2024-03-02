@@ -13,13 +13,17 @@ import pkgutil
 import shutil
 import sys
 import time
-from typing import Any, Callable, Dict, Iterable, Optional
+from typing import Any, Callable, Dict, Iterable, Optional, TypeVar
 
 import click
+import click_spinner
+import yaml
 
 import circfirm
 import circfirm.backend
 import circfirm.startup
+
+_T = TypeVar("_T")
 
 
 @click.group()
@@ -29,20 +33,47 @@ def cli() -> None:
     circfirm.startup.ensure_app_setup()
 
 
+def maybe_support(msg: str) -> None:
+    """Output supporting text based on the configurable settings."""
+    settings = get_settings()
+    do_output: bool = not settings["output"]["supporting"]["silence"]
+    if do_output:
+        click.echo(msg)
+
+
 def announce_and_await(
     msg: str,
-    func: Callable,
+    func: Callable[..., _T],
     args: Iterable = (),
     kwargs: Optional[Dict[str, Any]] = None,
-) -> Any:
+    *,
+    use_spinner: bool = True,
+) -> _T:
     """Announce an action to be performed, do it, then announce its completion."""
     if kwargs is None:
         kwargs = {}
     fmt_msg = f"{msg}..."
+    spinner = click_spinner.spinner()
     click.echo(fmt_msg, nl=False)
-    resp = func(*args, **kwargs)
-    click.echo(" done")
-    return resp
+    if use_spinner:
+        spinner.start()
+    try:
+        try:
+            resp = func(*args, **kwargs)
+        finally:
+            if use_spinner:
+                spinner.stop()
+        click.echo(" done")
+        return resp
+    except BaseException as err:
+        click.echo(" failed")
+        raise err
+
+
+def get_settings() -> Dict[str, Any]:
+    """Get the contents of the settings file."""
+    with open(circfirm.SETTINGS_FILE, encoding="utf-8") as yamlfile:
+        return yaml.safe_load(yamlfile)
 
 
 def load_subcmd_folder(path: str, super_import_name: str) -> None:
@@ -110,7 +141,6 @@ def install(version: str, language: str, board: Optional[str]) -> None:
                 args=(board, version, language),
             )
         except ConnectionError as err:
-            click.echo(" failed")  # Mark as failed
             click.echo(f"Error: {err.args[0]}")
             sys.exit(4)
     else:

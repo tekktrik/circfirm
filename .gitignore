@@ -141,3 +141,4 @@ testmount/
 
 # Test related
 tests/backup/
+tests/sandbox/

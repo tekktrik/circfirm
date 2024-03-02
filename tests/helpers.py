@@ -11,6 +11,7 @@ import os
 import pathlib
 import platform
 import shutil
+from typing import List
 
 import circfirm
 import circfirm.backend
@@ -79,3 +80,10 @@ def copy_firmwares() -> None:
         shutil.copytree(
             board_folder, os.path.join(circfirm.UF2_ARCHIVE, board_folder.name)
         )
+
+
+def get_boards_from_git() -> List[str]:
+    """Get a list of board names from the sandbox git repository."""
+    ports_path = pathlib.Path("tests/sandbox/circuitpython")
+    board_paths = ports_path.glob("ports/*/boards/*")
+    return sorted([board.name for board in board_paths if board.is_dir()])
