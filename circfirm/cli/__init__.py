@@ -13,7 +13,7 @@ import pkgutil
 import shutil
 import sys
 import time
-from typing import Any, Callable, Dict, Iterable, Optional
+from typing import Any, Callable, Dict, Iterable, Optional, TypeVar
 
 import click
 import click_spinner
@@ -22,6 +22,8 @@ import yaml
 import circfirm
 import circfirm.backend
 import circfirm.startup
+
+_T = TypeVar("_T")
 
 
 @click.group()
