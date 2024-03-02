@@ -2,9 +2,6 @@
 #
 # SPDX-License-Identifier: MIT
 
-include .env
-export
-
 .PHONY: lint
 lint:
 	@pre-commit run ruff --all-files
