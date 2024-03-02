@@ -33,6 +33,14 @@ def cli() -> None:
     circfirm.startup.ensure_app_setup()
 
 
+def maybe_support(msg: str) -> None:
+    """Output supporting text based on the configurable settings."""
+    settings = get_settings()
+    do_output: bool = not settings["output"]["supporting"]["silence"]
+    if do_output:
+        click.echo(msg)
+
+
 def announce_and_await(
     msg: str,
     func: Callable[..., _T],

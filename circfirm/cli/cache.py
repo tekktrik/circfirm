@@ -64,11 +64,11 @@ def cache_list(board: Optional[str]) -> None:
     board_list = os.listdir(circfirm.UF2_ARCHIVE)
 
     if not board_list:
-        click.echo("Versions have not been cached yet for any boards.")
+        circfirm.cli.maybe_support("Versions have not been cached yet for any boards.")
         sys.exit(0)
 
     if board is not None and board not in board_list:
-        click.echo(f"No versions for board '{board}' are not cached.")
+        circfirm.cli.maybe_support(f"No versions for board '{board}' are not cached.")
         sys.exit(0)
 
     specified_board = board if board is not None else None
