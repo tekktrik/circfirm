@@ -152,3 +152,41 @@ def test_get_firmware_info() -> None:
     # Test failed parsing
     with pytest.raises(ValueError):
         circfirm.backend.get_firmware_info("cannotparse")
+
+
+def test_get_board_list() -> None:
+    """Tests the ability of the backend to get the board list."""
+    # Test successful retrieval
+    token = os.environ["GH_TOKEN"]
+    board_list = circfirm.backend.get_board_list(token)
+    expected_board_list = tests.helpers.get_boards_from_git()
+    assert board_list == expected_board_list
+
+    # Test unsuccessful retrieval
+    with pytest.raises(ValueError):
+        circfirm.backend.get_board_list("badtoken")
+
+
+def test_get_rate_limit() -> None:
+    """Tests getting the rate limit for an authenticated GitHub request."""
+    available, total, reset_time = circfirm.backend.get_rate_limit()
+    total_rate_limit = 60
+    assert available <= total
+    assert total == total_rate_limit
+    assert reset_time
+
+
+def test_get_board_versions() -> None:
+    """Tests getting firmware versions for a given board."""
+    board = "adafruit_feather_rp2040"
+    language = "cs"
+    expected_versions = [
+        "6.2.0-beta.2",
+        "6.2.0-beta.1",
+        "6.2.0-beta.0",
+    ]
+    versions = circfirm.backend.get_board_versions(board, language)
+    assert versions == expected_versions
+
+    # Chck that invalid versions are skipped for code coverage
+    _ = circfirm.backend.get_board_versions(board, regex=r".*")

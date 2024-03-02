@@ -78,3 +78,9 @@ source = [
 [tool.ruff.lint]
 select = ["D", "PL", "UP", "I"]
 ignore = ["D213", "D203"]
+
+[tool.pytest.ini_options]
+filterwarnings = ["ignore:datetime.datetime.utcfromtimestamp():DeprecationWarning"]
+addopts = [
+    "--ignore=tests/sandbox/circuitpython"
+]
