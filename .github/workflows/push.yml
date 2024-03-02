@@ -6,6 +6,8 @@ name: Build CI
 
 on: ["push", "pull_request"]
 
+permissions: read-all
+
 jobs:
   build:
     name: Run build CI
@@ -45,6 +47,8 @@ jobs:
       - name: Run tests
         run: |
           make test-run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Clean up after tests
         run: |
           make test-clean
