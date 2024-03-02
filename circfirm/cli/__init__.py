@@ -32,12 +32,12 @@ def cli() -> None:
 
 def announce_and_await(
     msg: str,
-    func: Callable,
+    func: Callable[..., _T],
     args: Iterable = (),
     kwargs: Optional[Dict[str, Any]] = None,
     *,
     use_spinner: bool = True,
-) -> Any:
+) -> _T:
     """Announce an action to be performed, do it, then announce its completion."""
     if kwargs is None:
         kwargs = {}
