@@ -91,4 +91,5 @@ def query_latest(board: str, language: str, pre_release: bool) -> None:
             for version in versions
             if not packaging.version.Version(version).is_prerelease
         ]
-    click.echo(versions[0])
+    if versions:
+        click.echo(versions[0])
