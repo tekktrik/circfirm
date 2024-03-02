@@ -7,15 +7,20 @@
 Author(s): Alec Delaney
 """
 
+import datetime
 import enum
 import os
 import pathlib
 import re
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple, TypedDict
 
+import boto3
+import botocore
+import botocore.client
 import packaging.version
 import psutil
 import requests
+from mypy_boto3_s3 import S3ServiceResource
 
 import circfirm
 import circfirm.startup
@@ -48,14 +53,56 @@ class Language(enum.Enum):
 
 _ALL_LANGAGES = [language.value for language in Language]
 _ALL_LANGUAGES_REGEX = "|".join(_ALL_LANGAGES)
-FIRMWARE_REGEX = "-".join(
+_VALID_VERSIONS_CAPTURE = r"(\d+\.\d+\.\d+(?:-(?:\balpha\b|\bbeta\b)\.\d+)*)"
+FIRMWARE_REGEX_PATTERN = "-".join(
     [
-        r"adafruit-circuitpython-(.*)",
-        f"({_ALL_LANGUAGES_REGEX})",
-        r"(\d+\.\d+\.\d+(?:-(?:\balpha\b|\bbeta\b)\.\d+)*)\.uf2",
+        r"adafruit-circuitpython",
+        r"[board]",
+        r"[language]",
+        r"[version]\.uf2",
     ]
 )
+FIRMWARE_REGEX = (
+    FIRMWARE_REGEX_PATTERN.replace(r"[board]", r"(.*)")
+    .replace(r"[language]", f"({_ALL_LANGUAGES_REGEX})")
+    .replace(r"[version]", _VALID_VERSIONS_CAPTURE)
+)
+
 BOARD_ID_REGEX = r"Board ID:\s*(.*)"
+
+S3_CONFIG = botocore.client.Config(signature_version=botocore.UNSIGNED)
+S3_RESOURCE: S3ServiceResource = boto3.resource("s3", config=S3_CONFIG)
+BUCKET_NAME = "adafruit-circuit-python"
+BUCKET = S3_RESOURCE.Bucket(BUCKET_NAME)
+
+BOARDS_REGEX = r"ports/.+/boards/([^/]+)"
+BOARDS_REGEX_PATTERN2 = r"bin/([board_pattern])/en_US/.*\.uf2"
+
+_BASE_REQUESTS_HEADERS = {
+    "Accept": "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+}
+
+
+class RateLimit(TypedDict):
+    """Format of a rate limit dictionary."""
+
+    limit: int
+    remaining: int
+    reset: int
+    used: int
+    resource: str
+
+
+class GitTreeItem(TypedDict):
+    """Format of a git tree item dictionary."""
+
+    path: str
+    mode: str
+    type: str
+    size: int
+    sha: str
+    url: str
 
 
 def _find_device(filename: str) -> Optional[str]:
@@ -170,3 +217,65 @@ def get_sorted_boards(board: Optional[str]) -> Dict[str, Dict[str, Set[str]]]:
             sorted_versions[sorted_version] = versions[sorted_version]
         boards[board_folder] = sorted_versions
     return boards
+
+
+def get_rate_limit() -> Tuple[int, int, datetime.datetime]:
+    """Get the rate limit for the GitHub REST endpoint."""
+    response = requests.get(
+        url="https://api.github.com/rate_limit",
+        headers=_BASE_REQUESTS_HEADERS,
+    )
+    limit_info: RateLimit = response.json()["rate"]
+    available: int = limit_info["remaining"]
+    total: int = limit_info["limit"]
+    reset_time = datetime.datetime.fromtimestamp(limit_info["reset"])
+    return available, total, reset_time
+
+
+def get_board_list(token: str) -> List[str]:
+    """Get a list of CircuitPython boards."""
+    boards = set()
+    headers = _BASE_REQUESTS_HEADERS.copy()
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    response = requests.get(
+        url="https://api.github.com/repos/adafruit/circuitpython/git/trees/main",
+        params={
+            "recursive": True,
+        },
+        headers=headers,
+    )
+    try:
+        tree_items: List[GitTreeItem] = response.json()["tree"]
+    except KeyError as err:
+        raise ValueError("Could not parse JSON response, check token") from err
+    for tree_item in tree_items:
+        if tree_item["type"] != "tree":
+            continue
+        result = re.match(BOARDS_REGEX, tree_item["path"])
+        if result:
+            boards.add(result[1])
+    return sorted(boards)
+
+
+def get_board_versions(
+    board: str, language: str = "en_US", *, regex: Optional[str] = None
+) -> List[str]:
+    """Get a list of CircuitPython versions for a given board."""
+    prefix = f"bin/{board}/{language}"
+    firmware_regex = FIRMWARE_REGEX_PATTERN.replace(r"[board]", board).replace(
+        r"[language]", language
+    )
+    version_regex = f"({regex})" if regex else _VALID_VERSIONS_CAPTURE
+    firmware_regex = firmware_regex.replace(r"[version]", version_regex)
+    s3_objects = BUCKET.objects.filter(Prefix=prefix)
+    versions = set()
+    for s3_object in s3_objects:
+        result = re.match(f"{prefix}/{firmware_regex}", s3_object.key)
+        if result:
+            try:
+                _ = packaging.version.Version(result[1])
+                versions.add(result[1])
+            except packaging.version.InvalidVersion:
+                pass
+    return sorted(versions, key=packaging.version.Version, reverse=True)
