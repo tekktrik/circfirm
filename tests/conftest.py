@@ -24,7 +24,7 @@ CONFIG_EXISTS = APP_DIR.exists()
 def pytest_sessionstart(session: pytest.Session) -> None:
     """Save the current cron table before testing."""
     # Load environment variables if not in GitHub Actions
-    if "GH_TOKEN" not in os.environ:
+    if "GH_TOKEN" not in os.environ:  # pragma: no cover
         with open(".env", encoding="utf-8") as envfile:
             env_contents = envfile.read()
             for envline in env_contents.split("\n"):
