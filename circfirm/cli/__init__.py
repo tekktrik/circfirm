@@ -17,6 +17,7 @@ from typing import Any, Callable, Dict, Iterable, Optional
 
 import click
 import click_spinner
+import yaml
 
 import circfirm
 import circfirm.backend
@@ -57,6 +58,12 @@ def announce_and_await(
     except BaseException as err:
         click.echo(" failed")
         raise err
+
+
+def get_settings() -> Dict[str, Any]:
+    """Get the contents of the settings file."""
+    with open(circfirm.SETTINGS_FILE, encoding="utf-8") as yamlfile:
+        return yaml.safe_load(yamlfile)
 
 
 def load_subcmd_folder(path: str, super_import_name: str) -> None:
