@@ -57,5 +57,8 @@ def test_update() -> None:
     os.remove(expected_uf2_filepath)
 
     # Reset state after tests
+    tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
+    tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
+    tests.helpers.copy_uf2_info()
     board_folder = circfirm.backend.get_board_folder("feather_m4_express")
     shutil.rmtree(board_folder)
