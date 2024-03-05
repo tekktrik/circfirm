@@ -20,7 +20,6 @@ from circfirm.cli import cli
 
 def test_install() -> None:
     """Tests the install command."""
-
     version = "8.0.0-beta.6"
     runner = CliRunner()
 

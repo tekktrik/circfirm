@@ -29,7 +29,7 @@ def set_firmware_version(version: str) -> None:
     """Artificially set the recorded firmware version."""
     bootloader_path = os.path.join(get_mount(), circfirm.BOOTOUT_FILE)
 
-    with open(bootloader_path, mode="r", encoding="utf-8") as bootfile:
+    with open(bootloader_path, encoding="utf-8") as bootfile:
         contents = bootfile.read()
 
     new_contents = contents.replace("8.0.0-beta.6", version)
