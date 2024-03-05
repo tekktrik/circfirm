@@ -67,6 +67,14 @@ def test_get_board_info() -> None:
     with pytest.raises(ValueError):
         circfirm.backend.get_board_info(mount_location)
 
+    # Test unsuccessful parsing of firmware version
+    with open(
+        tests.helpers.get_mount_node(circfirm.BOOTOUT_FILE), mode="w", encoding="utf-8"
+    ) as bootfile:
+        bootfile.write("junktext\nBoard ID:feather_m4_express")
+    with pytest.raises(ValueError):
+        circfirm.backend.get_board_info(mount_location)
+
     # Clean up
     tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE)
     tests.helpers.copy_uf2_info()
