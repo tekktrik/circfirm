@@ -49,7 +49,7 @@ def test_find_bootloader() -> None:
 
 
 def test_get_board_info() -> None:
-    """Tests getting the board name from the UF2 info file."""
+    """Tests getting the board name and firmware version from the UF2 info file."""
     # Setup
     tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE)
     tests.helpers.copy_boot_out()
@@ -59,7 +59,7 @@ def test_get_board_info() -> None:
     board_name = circfirm.backend.get_board_info(mount_location)[0]
     assert board_name == "feather_m4_express"
 
-    # Test unsuccessful parsing
+    # Test unsuccessful parsing of board name
     with open(
         tests.helpers.get_mount_node(circfirm.BOOTOUT_FILE), mode="w", encoding="utf-8"
     ) as bootfile:
