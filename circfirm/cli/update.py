@@ -33,9 +33,15 @@ import circfirm.cli.install
 def cli(board: Optional[str], language: str, pre_release: bool) -> None:
     """Update a connected board to the latest CircuitPython version."""
     circuitpy, bootloader = circfirm.cli.get_connection_status()
-    if not board and circuitpy:
+    if circuitpy:
         _, current_version = circfirm.backend.get_board_info(circuitpy)
     else:
+        click.echo(
+            "Bootloader mode detected - cannot check the currently installed version"
+        )
+        click.echo(
+            "The latest version will be installed regardless of the currently installed version."
+        )
         current_version = "0.0.0"
     bootloader, board = circfirm.cli.get_board_name(circuitpy, bootloader, board)
 
