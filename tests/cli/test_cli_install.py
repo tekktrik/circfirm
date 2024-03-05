@@ -8,7 +8,6 @@ Author(s): Alec Delaney
 """
 
 import os
-import pathlib
 import shutil
 import threading
 import time
