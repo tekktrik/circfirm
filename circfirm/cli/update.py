@@ -35,6 +35,8 @@ def cli(board: Optional[str], language: str, pre_release: bool) -> None:
     circuitpy, bootloader = circfirm.cli.get_connection_status()
     if not board and circuitpy:
         _, current_version = circfirm.backend.get_board_info(circuitpy)
+    else:
+        current_version = "0.0.0"
     bootloader, board = circfirm.cli.get_board_name(circuitpy, bootloader, board)
 
     new_version = circfirm.backend.get_latest_board_version(
