@@ -25,6 +25,19 @@ def wait_and_set_bootloader() -> None:
     copy_uf2_info()
 
 
+def set_firmware_version(version: str) -> None:
+    """Artificially set the recorded firmware version."""
+    bootloader_path = os.path.join(get_mount(), circfirm.BOOTOUT_FILE)
+
+    with open(bootloader_path, mode="r", encoding="utf-8") as bootfile:
+        contents = bootfile.read()
+
+    new_contents = contents.replace("8.0.0-beta.6", version)
+
+    with open(bootloader_path, mode="w", encoding="utf-8") as bootfile:
+        bootfile.write(new_contents)
+
+
 def get_mount() -> str:
     """Get the mounted drive."""
     if platform.system() == "Windows":  # pragma: no cover
@@ -51,10 +64,10 @@ def get_mount_node(path: str, must_exist: bool = False) -> str:
     return node_location
 
 
-def delete_mount_node(path: str, missing_okay: bool = False) -> None:
+def delete_mount_node(path: str, missing_ok: bool = False) -> None:
     """Delete a file on the mounted druve."""
     node_file = get_mount_node(path)
-    pathlib.Path(node_file).unlink(missing_ok=missing_okay)
+    pathlib.Path(node_file).unlink(missing_ok=missing_ok)
 
 
 def touch_mount_node(path: str, exist_ok: bool = False) -> str:
