@@ -10,7 +10,6 @@ Author(s): Alec Delaney
 import os
 import shutil
 import threading
-import time
 
 from click.testing import CliRunner
 
@@ -22,19 +21,13 @@ from circfirm.cli import cli
 def test_install() -> None:
     """Tests the install command."""
 
-    def wait_and_add() -> None:
-        """Wait then add the boot_out.txt file."""
-        time.sleep(2)
-        tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE)
-        tests.helpers.copy_uf2_info()
-
     version = "8.0.0-beta.6"
     runner = CliRunner()
 
     # Test successfully installing the firmware
     tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE)
     tests.helpers.copy_boot_out()
-    threading.Thread(target=wait_and_add).start()
+    threading.Thread(target=tests.helpers.wait_and_set_bootloader).start()
     result = runner.invoke(cli, ["install", version])
     assert result.exit_code == 0
     expected_uf2_filename = circfirm.backend.get_uf2_filename(

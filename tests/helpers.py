@@ -11,10 +11,18 @@ import os
 import pathlib
 import platform
 import shutil
+import time
 from typing import List
 
 import circfirm
 import circfirm.backend
+
+
+def wait_and_set_bootloader() -> None:
+    """Wait then add the boot_out.txt file."""
+    time.sleep(2)
+    delete_mount_node(circfirm.BOOTOUT_FILE)
+    copy_uf2_info()
 
 
 def get_mount() -> str:
