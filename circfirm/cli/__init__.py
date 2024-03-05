@@ -52,7 +52,7 @@ def get_board_name(
                 "Please put the device out of bootloader mode, or use the --board option."
             )
             sys.exit(3)
-        board = circfirm.backend.get_board_name(circuitpy)
+        board = circfirm.backend.get_board_info(circuitpy)[0]
 
         click.echo("Board name detected, please switch the device to bootloader mode.")
         while not (bootloader := circfirm.backend.find_bootloader()):

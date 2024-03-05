@@ -10,6 +10,7 @@ Author(s): Alec Delaney
 from typing import Optional
 
 import click
+import packaging.version
 
 import circfirm.backend
 import circfirm.cli.install
@@ -32,8 +33,21 @@ import circfirm.cli.install
 def cli(board: Optional[str], language: str, pre_release: bool) -> None:
     """Update a connected board to the latest CircuitPython version."""
     circuitpy, bootloader = circfirm.cli.get_connection_status()
+    if not board and circuitpy:
+        _, current_version = circfirm.backend.get_board_info(circuitpy)
     bootloader, board = circfirm.cli.get_board_name(circuitpy, bootloader, board)
-    version = circfirm.backend.get_latest_board_version(board, language, pre_release)
+
+    new_version = circfirm.backend.get_latest_board_version(
+        board, language, pre_release
+    )
+    if packaging.version.Version(current_version) >= packaging.version.Version(
+        new_version
+    ):
+        click.echo(
+            f"Current version ({current_version}) is at or higher than proposed new update ({new_version})"
+        )
+        return
+
     circfirm.cli.ensure_bootloader_mode(bootloader)
-    circfirm.cli.download_if_needed(board, version, language)
-    circfirm.cli.copy_cache_firmware(board, version, language, bootloader)
+    circfirm.cli.download_if_needed(board, new_version, language)
+    circfirm.cli.copy_cache_firmware(board, new_version, language, bootloader)

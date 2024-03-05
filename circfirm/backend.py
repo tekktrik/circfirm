@@ -69,6 +69,9 @@ FIRMWARE_REGEX = (
 )
 
 BOARD_ID_REGEX = r"Board ID:\s*(.*)"
+BOARD_VER_REGEX = (
+    r"Adafruit CircuitPython (\d+\.\d+\.\d+(?:-(?:\balpha\b|\bbeta\b)\.\d+)*)"
+)
 
 S3_CONFIG = botocore.client.Config(signature_version=botocore.UNSIGNED)
 S3_RESOURCE: S3ServiceResource = boto3.resource("s3", config=S3_CONFIG)
@@ -127,15 +130,18 @@ def find_bootloader() -> Optional[str]:
     return _find_device(circfirm.UF2INFO_FILE)
 
 
-def get_board_name(device_path: str) -> str:
-    """Get the attached CircuitPython board's name."""
+def get_board_info(device_path: str) -> Tuple[str, str]:
+    """Get the attached CircuitPytho board's name and version."""
     bootout_file = pathlib.Path(device_path) / circfirm.BOOTOUT_FILE
     with open(bootout_file, encoding="utf-8") as infofile:
         contents = infofile.read()
     board_match = re.search(BOARD_ID_REGEX, contents)
     if not board_match:
         raise ValueError("Could not parse the board name from the boot out file")
-    return board_match[1]
+    version_match = re.search(BOARD_VER_REGEX, contents)
+    if not version_match:
+        raise ValueError("Could not parse the firmware version from the boot out file")
+    return board_match[1], version_match[1]
 
 
 def download_uf2(board: str, version: str, language: str = "en_US") -> None:
