@@ -7,28 +7,36 @@
 Author(s): Alec Delaney
 """
 
+from typing import Tuple
+
 import click
 
 import circfirm.backend
 import circfirm.cli
 
 
-@click.command()
-@click.option("-n", "--name", is_flag=True, default=False, help="Print the board name")
-@click.option(
-    "-v", "--version", is_flag=True, default=False, help="Print the firmware version"
-)
-def cli(name: bool, version: bool) -> None:
-    """Check the information about the currently connected board."""
+def get_board_info() -> Tuple[str, str]:
+    """Get board info via the CLI."""
     circuitpy, _ = circfirm.cli.get_connection_status()
     if not circuitpy:
         raise click.ClickException(
             "Board must be in CIRCUITPY mode in order to detect board information"
         )
-    board_name, firmware_version = circfirm.backend.get_board_info(circuitpy)
-    if not any(name, version):
-        name = version = True
-    if name:
-        click.echo(f"Board Name: {board_name}")
-    if version:
-        click.echo(f"CircuitPython: {firmware_version}")
+    return circfirm.backend.get_board_info(circuitpy)
+
+
+@click.group()
+def cli() -> None:
+    """Check the information about the currently connected board."""
+
+
+@cli.command(name="name")
+def current_name() -> None:
+    """Get the board name of the currently connected board."""
+    click.echo(get_board_info()[0])
+
+
+@cli.command(name="version")
+def current_version() -> None:
+    """Get the CircuitPython version of the currently connected board."""
+    click.echo(get_board_info()[1])
