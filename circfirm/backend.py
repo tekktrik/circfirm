@@ -279,3 +279,19 @@ def get_board_versions(
             except packaging.version.InvalidVersion:
                 pass
     return sorted(versions, key=packaging.version.Version, reverse=True)
+
+
+def get_latest_board_version(
+    board: str, language: str, pre_release: bool
+) -> Optional[str]:
+    """Get the latest version for a board in a given language."""
+    versions = get_board_versions(board, language)
+    if not pre_release:
+        versions = [
+            version
+            for version in versions
+            if not packaging.version.Version(version).is_prerelease
+        ]
+    if versions:
+        return versions[0]
+    return None
