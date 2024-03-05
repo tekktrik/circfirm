@@ -16,6 +16,7 @@ import circfirm.backend
 import circfirm.cli.install
 
 
+@click.command()
 @click.option(
     "-b",
     "--board",
