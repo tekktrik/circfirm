@@ -11,11 +11,11 @@ from click.testing import CliRunner
 
 from circfirm.cli import cli
 
+RUNNER = CliRunner()
+
 
 def test_about() -> None:
     """Tests the about command."""
-    runner = CliRunner()
-
-    result = runner.invoke(cli, ["about"])
+    result = RUNNER.invoke(cli, ["about"])
     assert result.exit_code == 0
     assert result.output == "Written by Alec Delaney, licensed under MIT License.\n"

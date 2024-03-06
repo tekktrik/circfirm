@@ -13,25 +13,24 @@ import circfirm
 import tests.helpers
 from circfirm.cli import cli
 
+RUNNER = CliRunner()
 
+
+@tests.helpers.as_circuitpy
 def test_current() -> None:
-    """Tests the current name command."""
-    runner = CliRunner()
-    tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE)
-    tests.helpers.copy_boot_out()
-
+    """Tests the current name and version commands."""
     # Test when connected in CIRCUITPY mode
-    result = runner.invoke(cli, ["current", "name"])
+    result = RUNNER.invoke(cli, ["current", "name"])
     assert result.exit_code == 0
     assert result.output == "feather_m4_express\n"
 
-    result = runner.invoke(cli, ["current", "version"])
+    result = RUNNER.invoke(cli, ["current", "version"])
     assert result.exit_code == 0
     assert result.output == "8.0.0-beta.6\n"
 
-    tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE)
-    tests.helpers.copy_uf2_info()
 
-    # Test when connected in bootloader mode
-    result = runner.invoke(cli, ["current", "name"])
+@tests.helpers.as_bootloader
+def test_current_in_bootloader() -> None:
+    """Tests the current command whenn connected in bootloader mode."""
+    result = RUNNER.invoke(cli, ["current", "name"])
     assert result.exit_code != 0

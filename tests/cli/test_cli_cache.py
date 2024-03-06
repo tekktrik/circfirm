@@ -17,13 +17,13 @@ import circfirm
 import tests.helpers
 from circfirm.cli import cli
 
+RUNNER = CliRunner()
+
 
 def test_cache_list() -> None:
     """Tests the cache list command."""
-    runner = CliRunner()
-
     # Test empty cache
-    result = runner.invoke(cli, ["cache", "list"])
+    result = RUNNER.invoke(cli, ["cache", "list"])
     assert result.exit_code == 0
     assert result.output == "Versions have not been cached yet for any boards.\n"
 
@@ -33,7 +33,7 @@ def test_cache_list() -> None:
     # Get full list expected response
     with open("tests/assets/responses/full_list.txt", encoding="utf-8") as respfile:
         expected_response = respfile.read()
-    result = runner.invoke(cli, ["cache", "list"])
+    result = RUNNER.invoke(cli, ["cache", "list"])
     assert result.exit_code == 0
     assert result.output == expected_response
 
@@ -42,7 +42,7 @@ def test_cache_list() -> None:
         "tests/assets/responses/specific_board.txt", encoding="utf-8"
     ) as respfile:
         expected_response = respfile.read()
-    result = runner.invoke(cli, ["cache", "list", "--board", "feather_m4_express"])
+    result = RUNNER.invoke(cli, ["cache", "list", "--board", "feather_m4_express"])
     assert result.exit_code == 0
     assert result.output == expected_response
 
@@ -52,7 +52,7 @@ def test_cache_list() -> None:
         "tests/assets/responses/specific_board.txt", encoding="utf-8"
     ) as respfile:
         expected_response = respfile.read()
-    result = runner.invoke(cli, ["cache", "list", "--board", fake_board])
+    result = RUNNER.invoke(cli, ["cache", "list", "--board", fake_board])
     assert result.exit_code == 0
     assert result.output == f"No versions for board '{fake_board}' are not cached.\n"
 
@@ -66,10 +66,9 @@ def test_cache_save() -> None:
     board = "feather_m4_express"
     version = "7.3.0"
     langauge = "fr"
-    runner = CliRunner()
 
     # Save a specific firmware (successful)
-    result = runner.invoke(
+    result = RUNNER.invoke(
         cli, ["cache", "save", board, version, "--language", langauge]
     )
     assert result.exit_code == 0
@@ -78,7 +77,7 @@ def test_cache_save() -> None:
     shutil.rmtree(expected_path.parent.resolve())
 
     # Save a specific firmware (unsuccessful)
-    result = runner.invoke(
+    result = RUNNER.invoke(
         cli, ["cache", "save", board, version, "--language", "nolanguage"]
     )
     assert result.exit_code == 1
@@ -96,13 +95,12 @@ def test_cache_clear() -> None:
     board = "feather_m4_express"
     version = "7.1.0"
     langauge = "zh_Latn_pinyin"
-    runner = CliRunner()
 
     # Move firmware files to app directory
     tests.helpers.copy_firmwares()
 
     # Remove a specific firmware from the cache
-    result = runner.invoke(
+    result = RUNNER.invoke(
         cli,
         [
             "cache",
@@ -126,13 +124,13 @@ def test_cache_clear() -> None:
     assert board_folder.exists()
 
     # Remove a specific board firmware from the cache
-    result = runner.invoke(cli, ["cache", "clear", "--board", board])
+    result = RUNNER.invoke(cli, ["cache", "clear", "--board", board])
     assert result.exit_code == 0
     assert result.output == "Cache cleared of specified entries!\n"
     assert not board_folder.exists()
 
     # Remove entire cache
-    result = runner.invoke(cli, ["cache", "clear"])
+    result = RUNNER.invoke(cli, ["cache", "clear"])
     assert result.exit_code == 0
     assert result.output == "Cache cleared!\n"
     assert len(list(board_folder.parent.glob("*"))) == 0

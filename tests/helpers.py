@@ -12,10 +12,51 @@ import pathlib
 import platform
 import shutil
 import time
-from typing import List
+from typing import Callable, List, TypeVar
 
 import circfirm
 import circfirm.backend
+
+_T = TypeVar("_T")
+
+
+def as_circuitpy(func: Callable[..., _T]) -> Callable[..., _T]:
+    """Decorator for running a function with a device connected in CIRCUITPY mode."""  # noqa: D401
+
+    def as_circuitpy_wrapper(*args, **kwargs) -> _T:
+        delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
+        delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
+        copy_boot_out()
+        result = func(*args, **kwargs)
+        delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
+        return result
+
+    return as_circuitpy_wrapper
+
+
+def as_bootloader(func: Callable[..., _T]) -> Callable[..., _T]:
+    """Decorator for running a function with a device connected in bootloader mode."""  # noqa: D401
+
+    def as_bootloader_wrapper(*args, **kwargs) -> _T:
+        delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
+        delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
+        copy_uf2_info()
+        result = func(*args, **kwargs)
+        delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
+        return result
+
+    return as_bootloader_wrapper
+
+
+def as_not_present(func: Callable[..., _T]) -> Callable[..., _T]:
+    """Decorator for running a function without a device connected in either CIRCUITPY or bootloader mode."""  # noqa: D401
+
+    def as_not_present_wrapper(*args, **kwargs) -> _T:
+        delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
+        delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
+        return func(*args, **kwargs)
+
+    return as_not_present_wrapper
 
 
 def wait_and_set_bootloader() -> None:
