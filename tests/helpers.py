@@ -111,13 +111,6 @@ def delete_mount_node(path: str, missing_ok: bool = False) -> None:
     pathlib.Path(node_file).unlink(missing_ok=missing_ok)
 
 
-def touch_mount_node(path: str, exist_ok: bool = False) -> str:
-    """Touch a file on the mounted drive."""
-    node_location = get_mount_node(path)
-    pathlib.Path(node_location).touch(exist_ok=exist_ok)
-    return node_location
-
-
 def _copy_text_file(filename: str) -> None:
     """Copy a text file to the mounted test drive."""
     template_bootloader = os.path.join("tests", "assets", filename)
