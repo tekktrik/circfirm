@@ -18,6 +18,8 @@ import circfirm.backend
 import tests.helpers
 from circfirm.cli import cli
 
+RUNNER = CliRunner()
+
 
 def simulate_no_connection(arg: str) -> NoReturn:
     """Simulate a network error by raising requests.ConnectionError."""
@@ -26,8 +28,6 @@ def simulate_no_connection(arg: str) -> NoReturn:
 
 def test_query_boards(monkeypatch: pytest.MonkeyPatch) -> None:
     """Tests the ability to query the boards using the CLI."""
-    runner = CliRunner()
-
     # Test an unauthenticated request with supporting text
     boards = tests.helpers.get_boards_from_git()
     pre_expected_output = "".join([f"{board}\n" for board in boards])
@@ -40,33 +40,33 @@ def test_query_boards(monkeypatch: pytest.MonkeyPatch) -> None:
         ]
     )
 
-    result = runner.invoke(cli, ["query", "boards"])
+    result = RUNNER.invoke(cli, ["query", "boards"])
     assert result.exit_code == 0
     assert result.output == expected_output
 
     # Test an authenticated request without supporting text
-    result = runner.invoke(
+    result = RUNNER.invoke(
         cli, ["config", "edit", "token.github", os.environ["GH_TOKEN"]]
     )
     assert result.exit_code == 0
-    result = runner.invoke(cli, ["config", "edit", "output.supporting.silence", "true"])
+    result = RUNNER.invoke(cli, ["config", "edit", "output.supporting.silence", "true"])
     assert result.exit_code == 0
-    result = runner.invoke(cli, ["query", "boards"])
+    result = RUNNER.invoke(cli, ["query", "boards"])
     assert result.exit_code == 0
     assert result.output == pre_expected_output
 
     # Test a request with a faulty token
-    result = runner.invoke(cli, ["config", "edit", "token.github", "badtoken"])
+    result = RUNNER.invoke(cli, ["config", "edit", "token.github", "badtoken"])
     assert result.exit_code == 0
-    result = runner.invoke(cli, ["query", "boards"])
+    result = RUNNER.invoke(cli, ["query", "boards"])
     assert result.exit_code != 0
 
-    result = runner.invoke(cli, ["config", "reset"])
+    result = RUNNER.invoke(cli, ["config", "reset"])
     assert result.exit_code == 0
 
     # Tests failure when cannot fetch results due to no network connection
     monkeypatch.setattr(circfirm.backend, "get_board_list", simulate_no_connection)
-    result = runner.invoke(cli, ["query", "boards"])
+    result = RUNNER.invoke(cli, ["query", "boards"])
     assert result.exit_code != 0
     assert (
         result.output.split("\n")[-2]
@@ -85,8 +85,7 @@ def test_query_versions() -> None:
     ]
     expected_output = "".join([f"{version}\n" for version in expected_versions])
 
-    runner = CliRunner()
-    result = runner.invoke(
+    result = RUNNER.invoke(
         cli,
         [
             "query",
@@ -107,8 +106,7 @@ def test_query_latest() -> None:
     expected_output = "6.2.0-beta.2\n"
 
     # Test without pre-releases included
-    runner = CliRunner()
-    result = runner.invoke(
+    result = RUNNER.invoke(
         cli,
         [
             "query",
@@ -122,7 +120,7 @@ def test_query_latest() -> None:
     assert result.output == ""
 
     # Test with pre-releases included
-    result = runner.invoke(
+    result = RUNNER.invoke(
         cli,
         ["query", "latest", board, "--language", language, "--pre-release"],
     )

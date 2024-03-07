@@ -17,59 +17,60 @@ import circfirm.backend
 import tests.helpers
 
 
+@tests.helpers.as_circuitpy
 def test_find_circuitpy() -> None:
-    """Tests finding a CircuitPython device."""
-    # Test when boot_out.txt is preset
-    boot_out = tests.helpers.get_mount_node(circfirm.BOOTOUT_FILE)
-    tests.helpers.touch_mount_node(boot_out)
-
+    """Tests finding a CircuitPython device when boot_out.txt is present."""
     mount_location = tests.helpers.get_mount()
     circuitpy = circfirm.backend.find_circuitpy()
     assert circuitpy == mount_location
 
-    # Test when boot_out.txt is absent
-    os.remove(boot_out)
+
+@tests.helpers.as_not_present
+def test_find_circuitpy_absent() -> None:
+    """Tests finding a CircuitPython device when boot_out.txt is absent."""
     circuitpy = circfirm.backend.find_circuitpy()
     assert circuitpy is None
 
 
+@tests.helpers.as_bootloader
 def test_find_bootloader() -> None:
-    """Tests finding a CircuitPython device in bootloader mode."""
-    # Test when info_uf2.txt is preset
+    """Tests finding a CircuitPython device in bootloader mode when info_uf2.txt is present."""
     mount_location = tests.helpers.get_mount()
     bootloader = circfirm.backend.find_bootloader()
     assert bootloader == mount_location
 
-    # Test when info_uf2.txt is absent
-    uf2_info = tests.helpers.get_mount_node(circfirm.UF2INFO_FILE, True)
-    os.remove(uf2_info)
+
+@tests.helpers.as_not_present
+def test_find_bootloader_absent() -> None:
+    """Tests finding a CircuitPython device in bootloader mode when info_uf2.txt is absent."""
     bootloader = circfirm.backend.find_bootloader()
     assert bootloader is None
     tests.helpers.copy_uf2_info()
 
 
-def test_get_board_name() -> None:
-    """Tests getting the board name from the UF2 info file."""
-    # Setup
-    tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE)
-    tests.helpers.copy_boot_out()
-
+@tests.helpers.as_circuitpy
+def test_get_board_info() -> None:
+    """Tests getting the board name and firmware version from the UF2 info file."""
     # Test successful parsing
     mount_location = tests.helpers.get_mount()
-    board_name = circfirm.backend.get_board_name(mount_location)
+    board_name = circfirm.backend.get_board_info(mount_location)[0]
     assert board_name == "feather_m4_express"
 
-    # Test unsuccessful parsing
+    # Test unsuccessful parsing of board name
     with open(
         tests.helpers.get_mount_node(circfirm.BOOTOUT_FILE), mode="w", encoding="utf-8"
     ) as bootfile:
         bootfile.write("junktext")
     with pytest.raises(ValueError):
-        circfirm.backend.get_board_name(mount_location)
+        circfirm.backend.get_board_info(mount_location)
 
-    # Clean up
-    tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE)
-    tests.helpers.copy_uf2_info()
+    # Test unsuccessful parsing of firmware version
+    with open(
+        tests.helpers.get_mount_node(circfirm.BOOTOUT_FILE), mode="w", encoding="utf-8"
+    ) as bootfile:
+        bootfile.write("junktext\nBoard ID:feather_m4_express")
+    with pytest.raises(ValueError):
+        circfirm.backend.get_board_info(mount_location)
 
 
 def test_get_board_folder() -> None:

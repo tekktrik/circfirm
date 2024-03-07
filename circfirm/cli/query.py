@@ -84,12 +84,6 @@ def query_versions(board: str, language: str, regex: str) -> None:
 )
 def query_latest(board: str, language: str, pre_release: bool) -> None:
     """Query the latest CircuitPython versions available."""
-    versions = circfirm.backend.get_board_versions(board, language)
-    if not pre_release:
-        versions = [
-            version
-            for version in versions
-            if not packaging.version.Version(version).is_prerelease
-        ]
-    if versions:
-        click.echo(versions[0])
+    version = circfirm.backend.get_latest_board_version(board, language, pre_release)
+    if version:
+        click.echo(version)

@@ -11,10 +11,72 @@ import os
 import pathlib
 import platform
 import shutil
-from typing import List
+import time
+from typing import Callable, List, TypeVar
 
 import circfirm
 import circfirm.backend
+
+_T = TypeVar("_T")
+
+
+def as_circuitpy(func: Callable[..., _T]) -> Callable[..., _T]:
+    """Decorator for running a function with a device connected in CIRCUITPY mode."""  # noqa: D401
+
+    def as_circuitpy_wrapper(*args, **kwargs) -> _T:
+        delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
+        delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
+        copy_boot_out()
+        result = func(*args, **kwargs)
+        delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
+        return result
+
+    return as_circuitpy_wrapper
+
+
+def as_bootloader(func: Callable[..., _T]) -> Callable[..., _T]:
+    """Decorator for running a function with a device connected in bootloader mode."""  # noqa: D401
+
+    def as_bootloader_wrapper(*args, **kwargs) -> _T:
+        delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
+        delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
+        copy_uf2_info()
+        result = func(*args, **kwargs)
+        delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
+        return result
+
+    return as_bootloader_wrapper
+
+
+def as_not_present(func: Callable[..., _T]) -> Callable[..., _T]:
+    """Decorator for running a function without a device connected in either CIRCUITPY or bootloader mode."""  # noqa: D401
+
+    def as_not_present_wrapper(*args, **kwargs) -> _T:
+        delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
+        delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
+        return func(*args, **kwargs)
+
+    return as_not_present_wrapper
+
+
+def wait_and_set_bootloader() -> None:
+    """Wait then add the boot_out.txt file."""
+    time.sleep(2)
+    delete_mount_node(circfirm.BOOTOUT_FILE)
+    copy_uf2_info()
+
+
+def set_firmware_version(version: str) -> None:
+    """Artificially set the recorded firmware version."""
+    bootloader_path = os.path.join(get_mount(), circfirm.BOOTOUT_FILE)
+
+    with open(bootloader_path, encoding="utf-8") as bootfile:
+        contents = bootfile.read()
+
+    new_contents = contents.replace("8.0.0-beta.6", version)
+
+    with open(bootloader_path, mode="w", encoding="utf-8") as bootfile:
+        bootfile.write(new_contents)
 
 
 def get_mount() -> str:
@@ -34,26 +96,16 @@ def get_mount() -> str:
     )
 
 
-def get_mount_node(path: str, must_exist: bool = False) -> str:
+def get_mount_node(path: str) -> str:
     """Get a file or folder on the mounted drive."""
     mount_location = get_mount()
-    node_location = os.path.join(mount_location, path)
-    if must_exist:
-        assert os.path.exists(node_location)
-    return node_location
+    return os.path.join(mount_location, path)
 
 
-def delete_mount_node(path: str, missing_okay: bool = False) -> None:
+def delete_mount_node(path: str, missing_ok: bool = False) -> None:
     """Delete a file on the mounted druve."""
     node_file = get_mount_node(path)
-    pathlib.Path(node_file).unlink(missing_ok=missing_okay)
-
-
-def touch_mount_node(path: str, exist_ok: bool = False) -> str:
-    """Touch a file on the mounted drive."""
-    node_location = get_mount_node(path)
-    pathlib.Path(node_location).touch(exist_ok=exist_ok)
-    return node_location
+    pathlib.Path(node_file).unlink(missing_ok=missing_ok)
 
 
 def _copy_text_file(filename: str) -> None:
