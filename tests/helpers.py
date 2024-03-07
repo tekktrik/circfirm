@@ -96,13 +96,10 @@ def get_mount() -> str:
     )
 
 
-def get_mount_node(path: str, must_exist: bool = False) -> str:
+def get_mount_node(path: str) -> str:
     """Get a file or folder on the mounted drive."""
     mount_location = get_mount()
-    node_location = os.path.join(mount_location, path)
-    if must_exist:
-        assert os.path.exists(node_location)
-    return node_location
+    return os.path.join(mount_location, path)
 
 
 def delete_mount_node(path: str, missing_ok: bool = False) -> None:
