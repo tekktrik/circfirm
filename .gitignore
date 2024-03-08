@@ -142,3 +142,6 @@ testmount/
 # Test related
 tests/backup/
 tests/sandbox/
+
+# Sphinx specific
+_build/

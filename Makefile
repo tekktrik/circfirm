@@ -14,6 +14,13 @@ format:
 check:
 	@pre-commit run --all-files
 
+.PHONY: docs
+docs:
+	@sphinx-build -E -W -b html docs docs/_build
+
+.PHONY: prepare
+prepare: check test docs
+
 .PHONY: test-prep
 test-prep:
 ifeq "$(OS)" "Windows_NT"

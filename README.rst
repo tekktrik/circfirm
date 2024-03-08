@@ -5,6 +5,10 @@ circfirm
    :target: https://pypi.org/project/circfirm/
    :alt: PyPI - Python Version
 
+.. image:: https://readthedocs.org/projects/circfirm/badge/?version=latest
+    :target: https://circfirm.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
 .. image:: https://img.shields.io/github/actions/workflow/status/tekktrik/circfirm/push.yml
    :target: https://github.com/tekktrik/circfirm/actions
    :alt: GitHub Actions Workflow Status
@@ -39,8 +43,8 @@ You can also just use ``pip`` to install it, if the dependencies won't cause iss
 
     pip install circfirm
 
-Usage
-=====
+Example Usage
+=============
 
 The follow commands show some of the functionality of ``circfirm``:
 
@@ -74,3 +78,8 @@ The follow commands show some of the functionality of ``circfirm``:
     circfirm --help
     circfirm install --help
     circfirm cache save --help
+
+License
+=======
+
+This software is provided under an MIT license.
