@@ -41,6 +41,9 @@ jobs:
       - name: Run pre-commit via make
         run: |
           make check
+      - name: Test packaging
+        run: |
+          python -m build
       - name: Prepare tests
         run : |
           make test-prep
@@ -62,6 +65,3 @@ jobs:
           fail_ci_if_error: true
           file: coverage_${{ matrix.os }}_${{ matrix.py-version }}.xml
           flags: "${{ matrix.os }}-py-${{ matrix.py-version }}"
-      - name: Test packaging
-        run: |
-          python -m build
