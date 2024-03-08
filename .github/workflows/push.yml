@@ -44,6 +44,9 @@ jobs:
       - name: Test packaging
         run: |
           python -m build
+      - name: Test documentation
+        run: |
+          make docs
       - name: Prepare tests
         run : |
           make test-prep
