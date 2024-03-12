@@ -26,6 +26,14 @@
 
 .. toctree::
    :maxdepth: 2
+   :caption: Examples
+   :hidden:
+
+   examples/update_many
+   examples/weekly_cache
+
+.. toctree::
+   :maxdepth: 2
    :caption: Infrastructure
    :hidden:
 
@@ -33,3 +41,4 @@
    infrastructure/tests
    infrastructure/docs
    infrastructure/ci
+   infrastructure/license
