@@ -11,7 +11,7 @@ from typing import Tuple
 
 import click
 
-import circfirm.backend
+import circfirm.backend.device
 import circfirm.cli
 
 
@@ -22,7 +22,7 @@ def get_board_info() -> Tuple[str, str]:
         raise click.ClickException(
             "Board must be in CIRCUITPY mode in order to detect board information"
         )
-    return circfirm.backend.get_board_info(circuitpy)
+    return circfirm.backend.device.get_board_info(circuitpy)
 
 
 @click.group()

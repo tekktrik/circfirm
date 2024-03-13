@@ -16,7 +16,7 @@ from typing import Optional
 import click
 
 import circfirm
-import circfirm.backend
+import circfirm.backend.cache
 import circfirm.cli
 import circfirm.startup
 
@@ -74,7 +74,7 @@ def cache_list(board_id: Optional[str]) -> None:
         sys.exit(0)
 
     specified_board = board_id if board_id is not None else None
-    boards = circfirm.backend.get_sorted_boards(specified_board)
+    boards = circfirm.backend.cache.get_sorted_boards(specified_board)
 
     for rec_boardid, rec_boardvers in boards.items():
         click.echo(f"{rec_boardid}")
@@ -92,7 +92,7 @@ def cache_save(board_id: str, version: str, language: str) -> None:
     try:
         circfirm.cli.announce_and_await(
             f"Caching firmware version {version} for {board_id}",
-            circfirm.backend.download_uf2,
+            circfirm.backend.cache.download_uf2,
             args=(board_id, version, language),
         )
     except ConnectionError as err:

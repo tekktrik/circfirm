@@ -11,7 +11,6 @@ from typing import Optional
 
 import click
 
-import circfirm.backend
 import circfirm.cli
 
 

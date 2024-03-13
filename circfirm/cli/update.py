@@ -12,7 +12,8 @@ from typing import Optional
 import click
 import packaging.version
 
-import circfirm.backend
+import circfirm.backend.device
+import circfirm.backend.s3
 import circfirm.cli.install
 
 
@@ -35,7 +36,7 @@ def cli(board_id: Optional[str], language: str, pre_release: bool) -> None:
     """Update a connected board to the latest CircuitPython version."""
     circuitpy, bootloader = circfirm.cli.get_connection_status()
     if circuitpy:
-        _, current_version = circfirm.backend.get_board_info(circuitpy)
+        _, current_version = circfirm.backend.device.get_board_info(circuitpy)
     else:
         click.echo(
             "Bootloader mode detected - cannot check the currently installed version"
@@ -46,7 +47,7 @@ def cli(board_id: Optional[str], language: str, pre_release: bool) -> None:
         current_version = "0.0.0"
     bootloader, board_id = circfirm.cli.get_board_id(circuitpy, bootloader, board_id)
 
-    new_version = circfirm.backend.get_latest_board_version(
+    new_version = circfirm.backend.s3.get_latest_board_version(
         board_id, language, pre_release
     )
     if packaging.version.Version(current_version) >= packaging.version.Version(
