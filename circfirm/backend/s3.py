@@ -2,6 +2,11 @@
 #
 # SPDX-License-Identifier: MIT
 
+"""Backend functionality for the working with the CircuitPython firmware S3 bucket.
+
+Author(s): Alec Delaney
+"""
+
 import re
 from typing import List, Optional
 

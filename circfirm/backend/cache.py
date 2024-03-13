@@ -2,6 +2,11 @@
 #
 # SPDX-License-Identifier: MIT
 
+"""Backend functionality for the working with the cache.
+
+Author(s): Alec Delaney
+"""
+
 import os
 import pathlib
 import re

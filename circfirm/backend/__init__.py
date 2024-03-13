@@ -2,25 +2,14 @@
 #
 # SPDX-License-Identifier: MIT
 
-"""Backend, shared functionality for the CLI.
+"""Shared backend functionality.
 
 Author(s): Alec Delaney
 """
 
 import enum
-import os
-import pathlib
-import re
-from typing import Dict, List, Optional, Set, Tuple, TypedDict
-
-import packaging.version
-import psutil
-
-import circfirm
-import circfirm.startup
 
 
-# GOOD
 class Language(enum.Enum):
     """Avaiable languages for boards."""
 
@@ -46,7 +35,6 @@ class Language(enum.Enum):
     MANDARIN_LATIN_PINYIN = "zh_Latn_pinyin"
 
 
-# START GOOD
 _ALL_LANGAGES = [language.value for language in Language]
 _ALL_LANGUAGES_REGEX = "|".join(_ALL_LANGAGES)
 _VALID_VERSIONS_CAPTURE = r"(\d+\.\d+\.\d+(?:-(?:\balpha\b|\bbeta\b)\.\d+)*)"
@@ -63,4 +51,3 @@ FIRMWARE_REGEX = (
     .replace(r"[language]", f"({_ALL_LANGUAGES_REGEX})")
     .replace(r"[version]", _VALID_VERSIONS_CAPTURE)
 )
-# STOP GOOD

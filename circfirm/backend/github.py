@@ -2,9 +2,14 @@
 #
 # SPDX-License-Identifier: MIT
 
+"""Backend functionality for the working with CircuitPython GitHub repository.
+
+Author(s): Alec Delaney
+"""
+
 import datetime
 import re
-from typing import Dict, List, Optional, Set, Tuple, TypedDict
+from typing import List, Tuple, TypedDict
 
 import requests
 

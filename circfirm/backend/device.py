@@ -2,6 +2,11 @@
 #
 # SPDX-License-Identifier: MIT
 
+"""Backend functionality for the working with the connected devices.
+
+Author(s): Alec Delaney
+"""
+
 import pathlib
 import re
 from typing import Optional, Tuple
