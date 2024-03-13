@@ -42,7 +42,7 @@ def test_cache_list() -> None:
         "tests/assets/responses/specific_board.txt", encoding="utf-8"
     ) as respfile:
         expected_response = respfile.read()
-    result = RUNNER.invoke(cli, ["cache", "list", "--board", "feather_m4_express"])
+    result = RUNNER.invoke(cli, ["cache", "list", "--board-id", "feather_m4_express"])
     assert result.exit_code == 0
     assert result.output == expected_response
 
@@ -52,7 +52,7 @@ def test_cache_list() -> None:
         "tests/assets/responses/specific_board.txt", encoding="utf-8"
     ) as respfile:
         expected_response = respfile.read()
-    result = RUNNER.invoke(cli, ["cache", "list", "--board", fake_board])
+    result = RUNNER.invoke(cli, ["cache", "list", "--board-id", fake_board])
     assert result.exit_code == 0
     assert result.output == f"No versions for board '{fake_board}' are not cached.\n"
 
@@ -105,7 +105,7 @@ def test_cache_clear() -> None:
         [
             "cache",
             "clear",
-            "--board",
+            "--board-id",
             board,
             "--version",
             version,
@@ -124,7 +124,7 @@ def test_cache_clear() -> None:
     assert board_folder.exists()
 
     # Remove a specific board firmware from the cache
-    result = RUNNER.invoke(cli, ["cache", "clear", "--board", board])
+    result = RUNNER.invoke(cli, ["cache", "clear", "--board-id", board])
     assert result.exit_code == 0
     assert result.output == "Cache cleared of specified entries!\n"
     assert not board_folder.exists()

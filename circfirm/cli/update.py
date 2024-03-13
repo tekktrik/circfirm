@@ -19,9 +19,9 @@ import circfirm.cli.install
 @click.command()
 @click.option(
     "-b",
-    "--board",
+    "--board-id",
     default=None,
-    help="Assume the given board name (and connect in bootloader mode)",
+    help="Assume the given board ID (and connect in bootloader mode)",
 )
 @click.option("-l", "--language", default="en_US", help="CircuitPython langauge/locale")
 @click.option(
@@ -31,7 +31,7 @@ import circfirm.cli.install
     default=False,
     help="Whether pre-release versions should be considered",
 )
-def cli(board: Optional[str], language: str, pre_release: bool) -> None:
+def cli(board_id: Optional[str], language: str, pre_release: bool) -> None:
     """Update a connected board to the latest CircuitPython version."""
     circuitpy, bootloader = circfirm.cli.get_connection_status()
     if circuitpy:
@@ -44,10 +44,10 @@ def cli(board: Optional[str], language: str, pre_release: bool) -> None:
             "The latest version will be installed regardless of the currently installed version."
         )
         current_version = "0.0.0"
-    bootloader, board = circfirm.cli.get_board_name(circuitpy, bootloader, board)
+    bootloader, board_id = circfirm.cli.get_board_id(circuitpy, bootloader, board_id)
 
     new_version = circfirm.backend.get_latest_board_version(
-        board, language, pre_release
+        board_id, language, pre_release
     )
     if packaging.version.Version(current_version) >= packaging.version.Version(
         new_version
@@ -58,5 +58,5 @@ def cli(board: Optional[str], language: str, pre_release: bool) -> None:
         return
 
     circfirm.cli.ensure_bootloader_mode(bootloader)
-    circfirm.cli.download_if_needed(board, new_version, language)
-    circfirm.cli.copy_cache_firmware(board, new_version, language, bootloader)
+    circfirm.cli.download_if_needed(board_id, new_version, language)
+    circfirm.cli.copy_cache_firmware(board_id, new_version, language, bootloader)

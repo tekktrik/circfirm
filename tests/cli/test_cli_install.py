@@ -44,7 +44,7 @@ def test_install_successful() -> None:
 
         # Test using cached version of firmware
         result = RUNNER.invoke(
-            cli, ["install", VERSION, "--board", "feather_m4_express"]
+            cli, ["install", VERSION, "--board-id", "feather_m4_express"]
         )
         assert result.exit_code == 0
         assert "Using cached firmware file" in result.output
@@ -59,14 +59,18 @@ def test_install_successful() -> None:
 @tests.helpers.as_not_present
 def test_install_no_mount() -> None:
     """Tests the install command when a mounted drive is not found."""
-    result = RUNNER.invoke(cli, ["install", VERSION, "--board", "feather_m4_express"])
+    result = RUNNER.invoke(
+        cli, ["install", VERSION, "--board-id", "feather_m4_express"]
+    )
     assert result.exit_code == ERR_NOT_FOUND
 
 
 @tests.helpers.as_circuitpy
 def test_install_as_circuitpy() -> None:
     """Tests the install command when a mounted CIRCUITPY drive is found."""
-    result = RUNNER.invoke(cli, ["install", VERSION, "--board", "feather_m4_express"])
+    result = RUNNER.invoke(
+        cli, ["install", VERSION, "--board-id", "feather_m4_express"]
+    )
     assert result.exit_code == ERR_FOUND_CIRCUITPY
 
 
@@ -74,7 +78,7 @@ def test_install_as_circuitpy() -> None:
 def test_install_bad_version() -> None:
     """Tests the install command using a bad board version."""
     result = RUNNER.invoke(
-        cli, ["install", "doesnotexist", "--board", "feather_m4_express"]
+        cli, ["install", "doesnotexist", "--board-id", "feather_m4_express"]
     )
     assert result.exit_code == ERR_UF2_DOWNLOAD
 

@@ -41,20 +41,20 @@ def maybe_support(msg: str) -> None:
         click.echo(msg)
 
 
-def get_board_name(
+def get_board_id(
     circuitpy: Optional[str], bootloader: Optional[str], board: Optional[str]
 ) -> Tuple[str, str]:
-    """Get the board name of a device via CLI."""
+    """Get the board ID of a device via CLI."""
     if not board:
         if not circuitpy and bootloader:
             click.echo("CircuitPython device found, but it is in bootloader mode!")
             click.echo(
-                "Please put the device out of bootloader mode, or use the --board option."
+                "Please put the device out of bootloader mode, or use the --board-id option."
             )
             sys.exit(3)
         board = circfirm.backend.get_board_info(circuitpy)[0]
 
-        click.echo("Board name detected, please switch the device to bootloader mode.")
+        click.echo("Board ID detected, please switch the device to bootloader mode.")
         while not (bootloader := circfirm.backend.find_bootloader()):
             time.sleep(1)
     return bootloader, board

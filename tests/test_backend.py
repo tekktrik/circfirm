@@ -50,13 +50,13 @@ def test_find_bootloader_absent() -> None:
 
 @tests.helpers.as_circuitpy
 def test_get_board_info() -> None:
-    """Tests getting the board name and firmware version from the UF2 info file."""
+    """Tests getting the board ID and firmware version from the UF2 info file."""
     # Test successful parsing
     mount_location = tests.helpers.get_mount()
-    board_name = circfirm.backend.get_board_info(mount_location)[0]
-    assert board_name == "feather_m4_express"
+    board_id = circfirm.backend.get_board_info(mount_location)[0]
+    assert board_id == "feather_m4_express"
 
-    # Test unsuccessful parsing of board name
+    # Test unsuccessful parsing of board ID
     with open(
         tests.helpers.get_mount_node(circfirm.BOOTOUT_FILE), mode="w", encoding="utf-8"
     ) as bootfile:
@@ -75,15 +75,15 @@ def test_get_board_info() -> None:
 
 def test_get_board_folder() -> None:
     """Tests getting UF2 information."""
-    board_name = "feather_m4_express"
-    board_path = circfirm.backend.get_board_folder(board_name)
-    expected_path = pathlib.Path(circfirm.UF2_ARCHIVE) / board_name
+    board_id = "feather_m4_express"
+    board_path = circfirm.backend.get_board_folder(board_id)
+    expected_path = pathlib.Path(circfirm.UF2_ARCHIVE) / board_id
     assert board_path.resolve() == expected_path.resolve()
 
 
 def test_get_uf2_filepath() -> None:
     """Tests getting the UF2 filepath."""
-    board_name = "feather_m4_express"
+    board_id = "feather_m4_express"
     language = "en_US"
     version = "7.0.0"
 
@@ -92,38 +92,38 @@ def test_get_uf2_filepath() -> None:
     )
     expected_path = (
         pathlib.Path(circfirm.UF2_ARCHIVE)
-        / board_name
-        / f"adafruit-circuitpython-{board_name}-{language}-{version}.uf2"
+        / board_id
+        / f"adafruit-circuitpython-{board_id}-{language}-{version}.uf2"
     )
     assert created_path.resolve() == expected_path.resolve()
 
 
 def test_download_uf2() -> None:
     """Tests the UF2 download functionality."""
-    board_name = "feather_m4_express"
+    board_id = "feather_m4_express"
     language = "en_US"
     version = "junktext"
 
     # Test bad download candidate
     expected_path = (
-        circfirm.backend.get_board_folder(board_name)
-        / f"adafruit-circuitpython-{board_name}-{language}-{version}.uf2"
+        circfirm.backend.get_board_folder(board_id)
+        / f"adafruit-circuitpython-{board_id}-{language}-{version}.uf2"
     )
     with pytest.raises(ConnectionError):
-        circfirm.backend.download_uf2(board_name, version, language)
+        circfirm.backend.download_uf2(board_id, version, language)
     assert not expected_path.exists()
     assert not expected_path.parent.exists()
 
     # Test good download candidate
-    assert not circfirm.backend.is_downloaded(board_name, version)
+    assert not circfirm.backend.is_downloaded(board_id, version)
     version = "7.0.0"
-    circfirm.backend.download_uf2(board_name, version, language)
+    circfirm.backend.download_uf2(board_id, version, language)
     expected_path = (
-        circfirm.backend.get_board_folder(board_name)
-        / f"adafruit-circuitpython-{board_name}-{language}-{version}.uf2"
+        circfirm.backend.get_board_folder(board_id)
+        / f"adafruit-circuitpython-{board_id}-{language}-{version}.uf2"
     )
     assert expected_path.exists()
-    assert circfirm.backend.is_downloaded(board_name, version)
+    assert circfirm.backend.is_downloaded(board_id, version)
 
     # Clean up post tests
     shutil.rmtree(expected_path.parent)
@@ -131,14 +131,14 @@ def test_download_uf2() -> None:
 
 def test_get_firmware_info() -> None:
     """Tests the ability to get firmware information."""
-    board_name = "feather_m4_express"
+    board_id = "feather_m4_express"
     language = "en_US"
 
     # Test successful parsing
     for version in ("8.0.0", "9.0.0-beta.2"):
         try:
-            board_folder = circfirm.backend.get_board_folder(board_name)
-            circfirm.backend.download_uf2(board_name, version, language)
+            board_folder = circfirm.backend.get_board_folder(board_id)
+            circfirm.backend.download_uf2(board_id, version, language)
             downloaded_filename = [file.name for file in board_folder.glob("*")][0]
 
             parsed_version, parsed_language = circfirm.backend.get_firmware_info(

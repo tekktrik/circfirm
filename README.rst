@@ -64,7 +64,7 @@ The follow commands show some of the functionality of ``circfirm``:
     circfirm cache list
 
     # List all the cached CircuitPython versions for a speciic board
-    circfirm cache list --board feather_m4_express
+    circfirm cache list --board-id feather_m4_express
 
     # Save a version of CircuitPython to the cache
     # (You can also use the --language option here)
@@ -73,7 +73,7 @@ The follow commands show some of the functionality of ``circfirm``:
     # Clear the cached CircuitPython versions
     circfirm cache clear
 
-    # You can use --board, --version, and --language options to further specify
+    # You can use --board-id, --version, and --language options to further specify
     # what firmwares should be cleared - this clears version 7.0.0 firmwares for
     # all boards and in all languages
     circfirm cache clear --version 7.0.0

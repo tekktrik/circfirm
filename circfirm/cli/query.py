@@ -24,9 +24,7 @@ def cli():
 
 
 @cli.command(name="boards")
-@click.option(
-    "-r", "--regex", default=".*", help="Regex pattern to use for board names"
-)
+@click.option("-r", "--regex", default=".*", help="Regex pattern to use for board IDs")
 def query_boards(regex: str) -> None:
     """Query the local CircuitPython board list."""
     settings = circfirm.cli.get_settings()
@@ -55,25 +53,25 @@ def query_boards(regex: str) -> None:
             "Issue with requesting information from git repository, check network connection"
         )
     for board in boards:
-        board_name = board.strip()
-        result = re.match(regex, board_name)
+        board_id = board.strip()
+        result = re.match(regex, board_id)
         if result:
-            click.echo(board_name)
+            click.echo(board_id)
 
 
 @cli.command(name="versions")
-@click.argument("board")
+@click.argument("board-id")
 @click.option("-l", "--language", default="en_US", help="CircuitPython language/locale")
 @click.option("-r", "--regex", default=".*", help="Regex pattern to use for versions")
-def query_versions(board: str, language: str, regex: str) -> None:
+def query_versions(board_id: str, language: str, regex: str) -> None:
     """Query the CircuitPython versions available for a board."""
-    versions = circfirm.backend.get_board_versions(board, language, regex=regex)
+    versions = circfirm.backend.get_board_versions(board_id, language, regex=regex)
     for version in reversed(versions):
         click.echo(version)
 
 
 @cli.command(name="latest")
-@click.argument("board", default="raspberry_pi_pico")
+@click.argument("board-id", default="raspberry_pi_pico")
 @click.option("-l", "--language", default="en_US", help="CircuitPython language/locale")
 @click.option(
     "-p",
@@ -82,8 +80,8 @@ def query_versions(board: str, language: str, regex: str) -> None:
     default=False,
     help="Consider pre-release versions",
 )
-def query_latest(board: str, language: str, pre_release: bool) -> None:
+def query_latest(board_id: str, language: str, pre_release: bool) -> None:
     """Query the latest CircuitPython versions available."""
-    version = circfirm.backend.get_latest_board_version(board, language, pre_release)
+    version = circfirm.backend.get_latest_board_version(board_id, language, pre_release)
     if version:
         click.echo(version)

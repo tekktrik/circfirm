@@ -75,12 +75,12 @@ def test_update_bootloader_mode() -> None:
     """Tests the update command when in bootloader mode."""
     try:
         expected_version = "6.1.0"
-        board_name = "feather_m4_express"
+        board_id = "feather_m4_express"
         result = RUNNER.invoke(
-            cli, ["update", "--board", board_name, "--language", "cs"]
+            cli, ["update", "--board-id", board_id, "--language", "cs"]
         )
         expected_uf2_filename = circfirm.backend.get_uf2_filename(
-            board_name, expected_version, language="cs"
+            board_id, expected_version, language="cs"
         )
         expected_uf2_filepath = tests.helpers.get_mount_node(expected_uf2_filename)
         assert result.exit_code == 0

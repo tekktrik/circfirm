@@ -2,20 +2,20 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-# Store the board names in an array
-BOARD_NAMES=(
+# Store the board IDs in an array
+BOARD_IDS=(
     "feather_m4_express"
     "feather_m0_express"
     "circuitplayground_express"
 )
 
-# Iterate for each board name
-for BOARD_NAME in ${BOARD_NAMES[*]}; do
+# Iterate for each board ID
+for BOARD_ID in ${BOARD_IDS[*]}; do
     # Get the latest CircuitPython version for the board
-    LATEST_VERSION=$(circfirm query latest $BOARD_NAME)
+    LATEST_VERSION=$(circfirm query latest $BOARD_ID)
 
     # Cache the determined version for the board
-    circfirm cache save $BOARD_NAME $LATEST_VERSION
+    circfirm cache save $BOARD_ID $LATEST_VERSION
 done
 
 # To make this script weekly, you can use crontab.

@@ -2,8 +2,8 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-# Store the board name and quantity in variables for use throughout the script
-$BOARD_NAME='feather_m4_express'
+# Store the board ID and quantity in variables for use throughout the script
+$BOARD_ID='feather_m4_express'
 $BOARD_QUANTITY=10
 
 # Initialize some variables we'll use to handle the programming sequence
@@ -14,7 +14,7 @@ $REPEAT_ASK=$true
 for ($BOARD_NUM=1; $BOARD_NUM -le $BOARD_QUANTITY; $BOARD_NUM++) {
 
     # Update the connected board (which is in bootloader mode)
-    circfirm update --board $BOARD_NAME
+    circfirm update --board-id $BOARD_ID
 
     # If the update command failed, exit out of the script
     if ($LASTEXITCODE -eq 0) {

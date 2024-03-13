@@ -137,18 +137,18 @@ def get_board_info(device_path: str) -> Tuple[str, str]:
         contents = infofile.read()
     board_match = re.search(BOARD_ID_REGEX, contents)
     if not board_match:
-        raise ValueError("Could not parse the board name from the boot out file")
+        raise ValueError("Could not parse the board ID from the boot out file")
     version_match = re.search(BOARD_VER_REGEX, contents)
     if not version_match:
         raise ValueError("Could not parse the firmware version from the boot out file")
     return board_match[1], version_match[1]
 
 
-def download_uf2(board: str, version: str, language: str = "en_US") -> None:
+def download_uf2(board_id: str, version: str, language: str = "en_US") -> None:
     """Download a version of CircuitPython for a specific board."""
-    file = get_uf2_filename(board, version, language=language)
-    uf2_file = get_uf2_filepath(board, version, language=language, ensure=True)
-    url = f"https://downloads.circuitpython.org/bin/{board}/{language}/{file}"
+    file = get_uf2_filename(board_id, version, language=language)
+    uf2_file = get_uf2_filepath(board_id, version, language=language, ensure=True)
+    url = f"https://downloads.circuitpython.org/bin/{board_id}/{language}/{file}"
     response = requests.get(url)
 
     SUCCESS = 200
@@ -161,31 +161,31 @@ def download_uf2(board: str, version: str, language: str = "en_US") -> None:
         uf2file.write(response.content)
 
 
-def is_downloaded(board: str, version: str, language: str = "en_US") -> bool:
+def is_downloaded(board_id: str, version: str, language: str = "en_US") -> bool:
     """Check if a UF2 file is downloaded for a specific board and version."""
-    uf2_file = get_uf2_filepath(board, version, language)
+    uf2_file = get_uf2_filepath(board_id, version, language)
     return uf2_file.exists()
 
 
 def get_uf2_filepath(
-    board: str, version: str, language: str = "en_US", *, ensure: bool = False
+    board_id: str, version: str, language: str = "en_US", *, ensure: bool = False
 ) -> pathlib.Path:
     """Get the path to a downloaded UF2 file."""
-    file = get_uf2_filename(board, version, language)
-    uf2_folder = pathlib.Path(circfirm.UF2_ARCHIVE) / board
+    file = get_uf2_filename(board_id, version, language)
+    uf2_folder = pathlib.Path(circfirm.UF2_ARCHIVE) / board_id
     if ensure:
         circfirm.startup.ensure_dir(uf2_folder)
     return pathlib.Path(uf2_folder) / file
 
 
-def get_uf2_filename(board: str, version: str, language: str = "en_US") -> str:
+def get_uf2_filename(board_id: str, version: str, language: str = "en_US") -> str:
     """Get the structured name for a specific board/version CircuitPython."""
-    return f"adafruit-circuitpython-{board}-{language}-{version}.uf2"
+    return f"adafruit-circuitpython-{board_id}-{language}-{version}.uf2"
 
 
-def get_board_folder(board: str) -> pathlib.Path:
+def get_board_folder(board_id: str) -> pathlib.Path:
     """Get the board folder path."""
-    return pathlib.Path(circfirm.UF2_ARCHIVE) / board
+    return pathlib.Path(circfirm.UF2_ARCHIVE) / board_id
 
 
 def get_firmware_info(uf2_filename: str) -> Tuple[str, str]:
@@ -200,13 +200,13 @@ def get_firmware_info(uf2_filename: str) -> Tuple[str, str]:
     return version, language
 
 
-def get_sorted_boards(board: Optional[str]) -> Dict[str, Dict[str, Set[str]]]:
+def get_sorted_boards(board_id: Optional[str]) -> Dict[str, Dict[str, Set[str]]]:
     """Get a sorted collection of boards, versions, and languages."""
     boards: Dict[str, Dict[str, Set[str]]] = {}
     for board_folder in sorted(os.listdir(circfirm.UF2_ARCHIVE)):
         versions: Dict[str, List[str]] = {}
         sorted_versions: Dict[str, Set[str]] = {}
-        if board is not None and board != board_folder:
+        if board_id is not None and board_id != board_folder:
             continue
         board_folder_full = pathlib.Path(circfirm.UF2_ARCHIVE) / board_folder
         for item in os.listdir(board_folder_full):
@@ -265,11 +265,11 @@ def get_board_list(token: str) -> List[str]:
 
 
 def get_board_versions(
-    board: str, language: str = "en_US", *, regex: Optional[str] = None
+    board_id: str, language: str = "en_US", *, regex: Optional[str] = None
 ) -> List[str]:
     """Get a list of CircuitPython versions for a given board."""
-    prefix = f"bin/{board}/{language}"
-    firmware_regex = FIRMWARE_REGEX_PATTERN.replace(r"[board]", board).replace(
+    prefix = f"bin/{board_id}/{language}"
+    firmware_regex = FIRMWARE_REGEX_PATTERN.replace(r"[board]", board_id).replace(
         r"[language]", language
     )
     version_regex = f"({regex})" if regex else _VALID_VERSIONS_CAPTURE
@@ -288,10 +288,10 @@ def get_board_versions(
 
 
 def get_latest_board_version(
-    board: str, language: str, pre_release: bool
+    board_id: str, language: str, pre_release: bool
 ) -> Optional[str]:
     """Get the latest version for a board in a given language."""
-    versions = get_board_versions(board, language)
+    versions = get_board_versions(board_id, language)
     if not pre_release:
         versions = [
             version
