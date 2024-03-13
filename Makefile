@@ -45,9 +45,9 @@ endif
 
 .PHONY: test
 test:
-	-@${MAKE} test-prep --no-print-directory
-	-@${MAKE} test-run --no-print-directory
-	-@${MAKE} test-clean --no-print-directory
+	-@"${MAKE}" test-prep --no-print-directory
+	-@"${MAKE}" test-run --no-print-directory
+	-@"${MAKE}" test-clean --no-print-directory
 
 .PHONY:
 test-run:
