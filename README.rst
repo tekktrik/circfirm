@@ -1,9 +1,17 @@
+..
+   SPDX-FileCopyrightText: 2022 Alec Delaney, for Adafruit Industries
+   SPDX-License-Identifier: MIT
+
 circfirm
 --------
 
 .. image:: https://img.shields.io/pypi/pyversions/circfirm
    :target: https://pypi.org/project/circfirm/
    :alt: PyPI - Python Version
+
+.. image:: https://readthedocs.org/projects/circfirm/badge/?version=latest
+    :target: https://circfirm.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 .. image:: https://img.shields.io/github/actions/workflow/status/tekktrik/circfirm/push.yml
    :target: https://github.com/tekktrik/circfirm/actions
@@ -39,8 +47,8 @@ You can also just use ``pip`` to install it, if the dependencies won't cause iss
 
     pip install circfirm
 
-Usage
-=====
+Example Usage
+=============
 
 The follow commands show some of the functionality of ``circfirm``:
 
@@ -56,7 +64,7 @@ The follow commands show some of the functionality of ``circfirm``:
     circfirm cache list
 
     # List all the cached CircuitPython versions for a speciic board
-    circfirm cache list --board feather_m4_express
+    circfirm cache list --board-id feather_m4_express
 
     # Save a version of CircuitPython to the cache
     # (You can also use the --language option here)
@@ -65,7 +73,7 @@ The follow commands show some of the functionality of ``circfirm``:
     # Clear the cached CircuitPython versions
     circfirm cache clear
 
-    # You can use --board, --version, and --language options to further specify
+    # You can use --board-id, --version, and --language options to further specify
     # what firmwares should be cleared - this clears version 7.0.0 firmwares for
     # all boards and in all languages
     circfirm cache clear --version 7.0.0
@@ -74,3 +82,8 @@ The follow commands show some of the functionality of ``circfirm``:
     circfirm --help
     circfirm install --help
     circfirm cache save --help
+
+License
+=======
+
+This software is provided under an MIT license.

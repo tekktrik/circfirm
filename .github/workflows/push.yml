@@ -14,6 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
+      max-parallel: 3
       matrix:
         py-version: [
           "3.8",
@@ -41,6 +42,12 @@ jobs:
       - name: Run pre-commit via make
         run: |
           make check
+      - name: Test packaging
+        run: |
+          python -m build
+      - name: Test documentation
+        run: |
+          make docs
       - name: Prepare tests
         run : |
           make test-prep
@@ -62,6 +69,3 @@ jobs:
           fail_ci_if_error: true
           file: coverage_${{ matrix.os }}_${{ matrix.py-version }}.xml
           flags: "${{ matrix.os }}-py-${{ matrix.py-version }}"
-      - name: Test packaging
-        run: |
-          python -m build

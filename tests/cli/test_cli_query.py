@@ -14,7 +14,7 @@ import pytest
 import requests
 from click.testing import CliRunner
 
-import circfirm.backend
+import circfirm.backend.github
 import tests.helpers
 from circfirm.cli import cli
 
@@ -65,7 +65,9 @@ def test_query_boards(monkeypatch: pytest.MonkeyPatch) -> None:
     assert result.exit_code == 0
 
     # Tests failure when cannot fetch results due to no network connection
-    monkeypatch.setattr(circfirm.backend, "get_board_list", simulate_no_connection)
+    monkeypatch.setattr(
+        circfirm.backend.github, "get_board_list", simulate_no_connection
+    )
     result = RUNNER.invoke(cli, ["query", "boards"])
     assert result.exit_code != 0
     assert (

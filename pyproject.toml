@@ -57,7 +57,11 @@ Issues = "https://github.com/tekktrik/circfirm/issues"
 circfirm = "circfirm.cli:cli"
 
 [tool.setuptools]
-packages = ["circfirm", "circfirm.cli"]
+packages = [
+    "circfirm",
+    "circfirm.cli",
+    "circfirm.backend",
+]
 include-package-data = true
 
 [tool.setuptools.dynamic.version]

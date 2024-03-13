@@ -13,7 +13,7 @@ import threading
 
 from click.testing import CliRunner
 
-import circfirm.backend
+import circfirm.backend.cache
 import tests.helpers
 from circfirm.cli import cli
 
@@ -35,7 +35,7 @@ def test_install_successful() -> None:
         threading.Thread(target=tests.helpers.wait_and_set_bootloader).start()
         result = RUNNER.invoke(cli, ["install", VERSION])
         assert result.exit_code == 0
-        expected_uf2_filename = circfirm.backend.get_uf2_filename(
+        expected_uf2_filename = circfirm.backend.cache.get_uf2_filename(
             "feather_m4_express", VERSION
         )
         expected_uf2_filepath = tests.helpers.get_mount_node(expected_uf2_filename)
@@ -44,14 +44,14 @@ def test_install_successful() -> None:
 
         # Test using cached version of firmware
         result = RUNNER.invoke(
-            cli, ["install", VERSION, "--board", "feather_m4_express"]
+            cli, ["install", VERSION, "--board-id", "feather_m4_express"]
         )
         assert result.exit_code == 0
         assert "Using cached firmware file" in result.output
         os.remove(expected_uf2_filepath)
 
     finally:
-        board_folder = circfirm.backend.get_board_folder("feather_m4_express")
+        board_folder = circfirm.backend.cache.get_board_folder("feather_m4_express")
         if board_folder.exists():
             shutil.rmtree(board_folder)
 
@@ -59,14 +59,18 @@ def test_install_successful() -> None:
 @tests.helpers.as_not_present
 def test_install_no_mount() -> None:
     """Tests the install command when a mounted drive is not found."""
-    result = RUNNER.invoke(cli, ["install", VERSION, "--board", "feather_m4_express"])
+    result = RUNNER.invoke(
+        cli, ["install", VERSION, "--board-id", "feather_m4_express"]
+    )
     assert result.exit_code == ERR_NOT_FOUND
 
 
 @tests.helpers.as_circuitpy
 def test_install_as_circuitpy() -> None:
     """Tests the install command when a mounted CIRCUITPY drive is found."""
-    result = RUNNER.invoke(cli, ["install", VERSION, "--board", "feather_m4_express"])
+    result = RUNNER.invoke(
+        cli, ["install", VERSION, "--board-id", "feather_m4_express"]
+    )
     assert result.exit_code == ERR_FOUND_CIRCUITPY
 
 
@@ -74,7 +78,7 @@ def test_install_as_circuitpy() -> None:
 def test_install_bad_version() -> None:
     """Tests the install command using a bad board version."""
     result = RUNNER.invoke(
-        cli, ["install", "doesnotexist", "--board", "feather_m4_express"]
+        cli, ["install", "doesnotexist", "--board-id", "feather_m4_express"]
     )
     assert result.exit_code == ERR_UF2_DOWNLOAD
 

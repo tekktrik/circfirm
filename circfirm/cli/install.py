@@ -11,7 +11,6 @@ from typing import Optional
 
 import click
 
-import circfirm.backend
 import circfirm.cli
 
 
@@ -20,14 +19,14 @@ import circfirm.cli
 @click.option("-l", "--language", default="en_US", help="CircuitPython language/locale")
 @click.option(
     "-b",
-    "--board",
+    "--board-id",
     default=None,
-    help="Assume the given board name (and connect in bootloader mode)",
+    help="Assume the given board ID (and connect in bootloader mode)",
 )
-def cli(version: str, language: str, board: Optional[str]) -> None:
+def cli(version: str, language: str, board_id: Optional[str]) -> None:
     """Install the specified version of CircuitPython."""
     circuitpy, bootloader = circfirm.cli.get_connection_status()
-    bootloader, board = circfirm.cli.get_board_name(circuitpy, bootloader, board)
+    bootloader, board_id = circfirm.cli.get_board_id(circuitpy, bootloader, board_id)
     circfirm.cli.ensure_bootloader_mode(bootloader)
-    circfirm.cli.download_if_needed(board, version, language)
-    circfirm.cli.copy_cache_firmware(board, version, language, bootloader)
+    circfirm.cli.download_if_needed(board_id, version, language)
+    circfirm.cli.copy_cache_firmware(board_id, version, language, bootloader)

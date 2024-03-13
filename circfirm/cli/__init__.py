@@ -20,7 +20,8 @@ import click_spinner
 import yaml
 
 import circfirm
-import circfirm.backend
+import circfirm.backend.cache
+import circfirm.backend.device
 import circfirm.startup
 
 _T = TypeVar("_T")
@@ -41,29 +42,29 @@ def maybe_support(msg: str) -> None:
         click.echo(msg)
 
 
-def get_board_name(
+def get_board_id(
     circuitpy: Optional[str], bootloader: Optional[str], board: Optional[str]
 ) -> Tuple[str, str]:
-    """Get the board name of a device via CLI."""
+    """Get the board ID of a device via CLI."""
     if not board:
         if not circuitpy and bootloader:
             click.echo("CircuitPython device found, but it is in bootloader mode!")
             click.echo(
-                "Please put the device out of bootloader mode, or use the --board option."
+                "Please put the device out of bootloader mode, or use the --board-id option."
             )
             sys.exit(3)
-        board = circfirm.backend.get_board_info(circuitpy)[0]
+        board = circfirm.backend.device.get_board_info(circuitpy)[0]
 
-        click.echo("Board name detected, please switch the device to bootloader mode.")
-        while not (bootloader := circfirm.backend.find_bootloader()):
+        click.echo("Board ID detected, please switch the device to bootloader mode.")
+        while not (bootloader := circfirm.backend.device.find_bootloader()):
             time.sleep(1)
     return bootloader, board
 
 
 def get_connection_status() -> Tuple[Optional[str], Optional[str]]:
     """Get the status of a connectted CircuitPython device as a CIRCUITPY and bootloader location."""
-    circuitpy = circfirm.backend.find_circuitpy()
-    bootloader = circfirm.backend.find_bootloader()
+    circuitpy = circfirm.backend.device.find_circuitpy()
+    bootloader = circfirm.backend.device.find_bootloader()
     if not circuitpy and not bootloader:
         click.echo("CircuitPython device not found!")
         click.echo("Check that the device is connected and mounted.")
@@ -74,7 +75,7 @@ def get_connection_status() -> Tuple[Optional[str], Optional[str]]:
 def ensure_bootloader_mode(bootloader: Optional[str]) -> None:
     """Ensure the connected device is in bootloader mode."""
     if not bootloader:
-        if circfirm.backend.find_circuitpy():
+        if circfirm.backend.device.find_circuitpy():
             click.echo("CircuitPython device found, but is not in bootloader mode!")
             click.echo("Please put the device in bootloader mode.")
             sys.exit(2)
@@ -82,11 +83,11 @@ def ensure_bootloader_mode(bootloader: Optional[str]) -> None:
 
 def download_if_needed(board: str, version: str, language: str) -> None:
     """Download the firmware for a given board, version, and language via CLI."""
-    if not circfirm.backend.is_downloaded(board, version, language):
+    if not circfirm.backend.cache.is_downloaded(board, version, language):
         try:
             announce_and_await(
                 "Downloading UF2",
-                circfirm.backend.download_uf2,
+                circfirm.backend.cache.download_uf2,
                 args=(board, version, language),
             )
         except ConnectionError as err:
@@ -101,7 +102,7 @@ def copy_cache_firmware(
     board: str, version: str, language: str, bootloader: str
 ) -> None:
     """Copy the cached firmware for a given board, version, and language to the bootloader via CLI."""
-    uf2file = circfirm.backend.get_uf2_filepath(board, version, language)
+    uf2file = circfirm.backend.cache.get_uf2_filepath(board, version, language)
     uf2filename = os.path.basename(uf2file)
     uf2_path = os.path.join(bootloader, uf2filename)
     announce_and_await(
