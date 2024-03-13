@@ -65,13 +65,13 @@ def cache_list(board_id: Optional[str]) -> None:
 
     if not board_list:
         circfirm.cli.maybe_support("Versions have not been cached yet for any boards.")
-        sys.exit(0)
+        return
 
     if board_id is not None and board_id not in board_list:
         circfirm.cli.maybe_support(
             f"No versions for board '{board_id}' are not cached."
         )
-        sys.exit(0)
+        return
 
     specified_board = board_id if board_id is not None else None
     boards = circfirm.backend.cache.get_sorted_boards(specified_board)

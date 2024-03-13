@@ -53,8 +53,6 @@ def download_uf2(board_id: str, version: str, language: str = "en_US") -> None:
 
     SUCCESS = 200
     if response.status_code != SUCCESS:
-        if not list(uf2_file.parent.glob("*")):
-            uf2_file.parent.rmdir()
         raise ConnectionError(f"Could not download the specified UF2 file:\n{url}")
 
     uf2_file.parent.mkdir(parents=True, exist_ok=True)
@@ -70,7 +68,7 @@ def get_sorted_boards(board_id: Optional[str]) -> Dict[str, Dict[str, Set[str]]]
         sorted_versions: Dict[str, Set[str]] = {}
         if board_id is not None and board_id != board_folder:
             continue
-        board_folder_full = get_board_folder(board_id)
+        board_folder_full = get_board_folder(board_folder)
         for item in os.listdir(board_folder_full):
             version, language = parse_firmware_info(item)
             try:

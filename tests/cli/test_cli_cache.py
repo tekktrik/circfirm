@@ -14,6 +14,7 @@ import shutil
 from click.testing import CliRunner
 
 import circfirm
+import circfirm.backend.cache
 import tests.helpers
 from circfirm.cli import cli
 
@@ -72,7 +73,9 @@ def test_cache_save() -> None:
         cli, ["cache", "save", board, version, "--language", langauge]
     )
     assert result.exit_code == 0
-    expected_path = circfirm.backend.get_uf2_filepath(board, version, language=langauge)
+    expected_path = circfirm.backend.cache.get_uf2_filepath(
+        board, version, language=langauge
+    )
     assert expected_path.exists()
     shutil.rmtree(expected_path.parent.resolve())
 
