@@ -21,13 +21,13 @@ def test_get_board_list() -> None:
     """Tests the ability of the backend to get the board list."""
     # Test successful retrieval
     token = os.environ["GH_TOKEN"]
-    board_list = circfirm.backend.github.get_board_list(token)
-    expected_board_list = tests.helpers.get_boards_from_git()
+    board_list = circfirm.backend.github.get_board_id_list(token)
+    expected_board_list = tests.helpers.get_board_ids_from_git()
     assert board_list == expected_board_list
 
     # Test unsuccessful retrieval
     with pytest.raises(ValueError):
-        circfirm.backend.github.get_board_list("badtoken")
+        circfirm.backend.github.get_board_id_list("badtoken")
 
 
 def test_get_rate_limit() -> None:

@@ -23,9 +23,9 @@ def cli():
     """Query things like latest versions and board lists."""
 
 
-@cli.command(name="boards")
+@cli.command(name="board-ids")
 @click.option("-r", "--regex", default=".*", help="Regex pattern to use for board IDs")
-def query_boards(regex: str) -> None:
+def query_board_ids(regex: str) -> None:
     """Query the local CircuitPython board list."""
     settings = circfirm.cli.get_settings()
     gh_token = settings["token"]["github"]
@@ -41,11 +41,11 @@ def query_boards(regex: str) -> None:
         if do_output:
             boards = circfirm.cli.announce_and_await(
                 "Fetching boards list",
-                circfirm.backend.github.get_board_list,
+                circfirm.backend.github.get_board_id_list,
                 args=(gh_token,),
             )
         else:
-            boards = circfirm.backend.github.get_board_list(gh_token)
+            boards = circfirm.backend.github.get_board_id_list(gh_token)
     except ValueError as err:
         raise click.ClickException(err.args[0])
     except requests.ConnectionError as err:

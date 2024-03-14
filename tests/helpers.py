@@ -134,7 +134,7 @@ def copy_firmwares() -> None:
         )
 
 
-def get_boards_from_git() -> List[str]:
+def get_board_ids_from_git() -> List[str]:
     """Get a list of board IDs from the sandbox git repository."""
     ports_path = pathlib.Path("tests/sandbox/circuitpython")
     board_paths = ports_path.glob("ports/*/boards/*")

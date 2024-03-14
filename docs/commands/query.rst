@@ -12,7 +12,7 @@ See ``circfirm query --help`` and ``circfirm query [command] --help`` for more i
 Querying Board IDs
 ------------------
 
-You can query a list of valid board IDs from the CircuitPython GitHub repository using ``circfirm query boards``.
+You can query a list of valid board IDs from the CircuitPython GitHub repository using ``circfirm query board-ids``.
 
 You can use the ``--regex`` option to further select boards from the list matching a provided regex pattern.
 The pattern will be searched for **ANYWHERE** in the board ID (e.g., "hello" **would** match "123hello123") unless
@@ -27,10 +27,10 @@ the pattern specifies otherwise.
 .. code-block:: shell
 
     # List all board IDs
-    circfirm query boards
+    circfirm query board-ids
 
     # List all board IDs containing the phrase "pico"
-    circfirm query boards --regex pico
+    circfirm query board-ids --regex pico
 
 Querying Board Versions
 -----------------------
