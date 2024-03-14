@@ -55,7 +55,7 @@ def get_rate_limit() -> Tuple[int, int, datetime.datetime]:
     return available, total, reset_time
 
 
-def get_board_list(token: str) -> List[str]:
+def get_board_id_list(token: str) -> List[str]:
     """Get a list of CircuitPython boards."""
     boards = set()
     headers = BASE_REQUESTS_HEADERS.copy()

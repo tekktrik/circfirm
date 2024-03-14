@@ -19,7 +19,7 @@ RUNNER = CliRunner()
 def test_current() -> None:
     """Tests the current name and version commands."""
     # Test when connected in CIRCUITPY mode
-    result = RUNNER.invoke(cli, ["current", "id"])
+    result = RUNNER.invoke(cli, ["current", "board-id"])
     assert result.exit_code == 0
     assert result.output == "feather_m4_express\n"
 
@@ -31,5 +31,5 @@ def test_current() -> None:
 @tests.helpers.as_bootloader
 def test_current_in_bootloader() -> None:
     """Tests the current command whenn connected in bootloader mode."""
-    result = RUNNER.invoke(cli, ["current", "id"])
+    result = RUNNER.invoke(cli, ["current", "board-id"])
     assert result.exit_code != 0

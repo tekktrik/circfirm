@@ -30,8 +30,8 @@ def cli() -> None:
     """Check the information about the currently connected board."""
 
 
-@cli.command(name="id")
-def current_id() -> None:
+@cli.command(name="board-id")
+def current_board_id() -> None:
     """Get the board ID of the currently connected board."""
     click.echo(get_board_info()[0])
 

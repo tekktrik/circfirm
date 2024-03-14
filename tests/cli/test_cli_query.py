@@ -26,11 +26,11 @@ def simulate_no_connection(arg: str) -> NoReturn:
     raise requests.ConnectionError
 
 
-def test_query_boards(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_query_board_ids(monkeypatch: pytest.MonkeyPatch) -> None:
     """Tests the ability to query the boards using the CLI."""
     # Test an unauthenticated request with supporting text
-    boards = tests.helpers.get_boards_from_git()
-    pre_expected_output = "".join([f"{board}\n" for board in boards])
+    board_ids = tests.helpers.get_board_ids_from_git()
+    pre_expected_output = "".join([f"{board}\n" for board in board_ids])
     expected_output = "\n".join(
         [
             "Boards list will now be synchronized with the git repository.",
@@ -40,7 +40,7 @@ def test_query_boards(monkeypatch: pytest.MonkeyPatch) -> None:
         ]
     )
 
-    result = RUNNER.invoke(cli, ["query", "boards"])
+    result = RUNNER.invoke(cli, ["query", "board-ids"])
     assert result.exit_code == 0
     assert result.output == expected_output
 
@@ -51,14 +51,14 @@ def test_query_boards(monkeypatch: pytest.MonkeyPatch) -> None:
     assert result.exit_code == 0
     result = RUNNER.invoke(cli, ["config", "edit", "output.supporting.silence", "true"])
     assert result.exit_code == 0
-    result = RUNNER.invoke(cli, ["query", "boards"])
+    result = RUNNER.invoke(cli, ["query", "board-ids"])
     assert result.exit_code == 0
     assert result.output == pre_expected_output
 
     # Test a request with a faulty token
     result = RUNNER.invoke(cli, ["config", "edit", "token.github", "badtoken"])
     assert result.exit_code == 0
-    result = RUNNER.invoke(cli, ["query", "boards"])
+    result = RUNNER.invoke(cli, ["query", "board-ids"])
     assert result.exit_code != 0
 
     result = RUNNER.invoke(cli, ["config", "reset"])
@@ -66,9 +66,9 @@ def test_query_boards(monkeypatch: pytest.MonkeyPatch) -> None:
 
     # Tests failure when cannot fetch results due to no network connection
     monkeypatch.setattr(
-        circfirm.backend.github, "get_board_list", simulate_no_connection
+        circfirm.backend.github, "get_board_id_list", simulate_no_connection
     )
-    result = RUNNER.invoke(cli, ["query", "boards"])
+    result = RUNNER.invoke(cli, ["query", "board-ids"])
     assert result.exit_code != 0
     assert (
         result.output.split("\n")[-2]
