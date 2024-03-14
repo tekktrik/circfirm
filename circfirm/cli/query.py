@@ -54,7 +54,7 @@ def query_boards(regex: str) -> None:
         )
     for board in boards:
         board_id = board.strip()
-        result = re.match(regex, board_id)
+        result = re.search(regex, board_id)
         if result:
             click.echo(board_id)
 
