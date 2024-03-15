@@ -33,7 +33,7 @@ def query_board_ids(regex: str) -> None:
     circfirm.cli.maybe_support(
         "Boards list will now be synchronized with the git repository."
     )
-    if not gh_token:
+    if not gh_token:  # pragma: no cover
         circfirm.cli.maybe_support(
             "Please note that this operation can only be performed 60 times per hour due to GitHub rate limiting."
         )
