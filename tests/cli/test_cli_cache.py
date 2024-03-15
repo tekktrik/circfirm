@@ -97,7 +97,7 @@ def test_cache_clear() -> None:
     """Tests the cache clear command."""
     board = "feather_m4_express"
     version = "7.1.0"
-    langauge = "zh_Latn_pinyin"
+    language = "zh_Latn_pinyin"
 
     # Move firmware files to app directory
     tests.helpers.copy_firmwares()
@@ -137,3 +137,32 @@ def test_cache_clear() -> None:
     assert result.exit_code == 0
     assert result.output == "Cache cleared!\n"
     assert len(list(board_folder.parent.glob("*"))) == 0
+
+
+def test_cache_latest() -> None:
+    """Test the update command when in CIRCUITPY mode."""
+    board = "feather_m0_express"
+    language = "cs"
+    expected_version = "6.1.0"
+
+    uf2_filepath = circfirm.backend.cache.get_uf2_filepath(
+        board, expected_version, language
+    )
+    assert not os.path.exists(uf2_filepath)
+
+    try:
+        # Save the latest version (successful)
+        result = RUNNER.invoke(cli, ["cache", "latest", board, "--language", language])
+        assert result.exit_code == 0
+        assert os.path.exists(uf2_filepath)
+
+        # Save the latest version (unsuccessful)
+        result = RUNNER.invoke(
+            cli, ["cache", "latest", board, "--language", "doesnotexist"]
+        )
+        assert result.exit_code == 1
+
+    finally:
+        board_folder = circfirm.backend.cache.get_board_folder(board)
+        if board_folder.exists():
+            shutil.rmtree(board_folder)

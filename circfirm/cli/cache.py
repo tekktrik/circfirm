@@ -17,6 +17,7 @@ import click
 
 import circfirm
 import circfirm.backend.cache
+import circfirm.backend.s3
 import circfirm.cli
 import circfirm.startup
 
@@ -88,8 +89,33 @@ def cache_list(board_id: Optional[str]) -> None:
 @click.argument("version")
 @click.option("-l", "--language", default="en_US", help="CircuitPython language/locale")
 def cache_save(board_id: str, version: str, language: str) -> None:
-    """Install a version of CircuitPython to cache."""
+    """Download a version of CircuitPython to the cache."""
     try:
+        circfirm.cli.announce_and_await(
+            f"Caching firmware version {version} for {board_id}",
+            circfirm.backend.cache.download_uf2,
+            args=(board_id, version, language),
+        )
+    except ConnectionError as err:
+        raise click.exceptions.ClickException(err.args[0])
+
+
+@cli.command(name="latest")
+@click.argument("board-id")
+@click.option("-l", "--language", default="en_US", help="CircuitPython language/locale")
+@click.option(
+    "-p",
+    "--pre-release",
+    is_flag=True,
+    default=False,
+    help="Whether pre-release versions should be considered",
+)
+def cache_latest(board_id: str, language: str, pre_release: bool) -> None:
+    """Download the latest version of CircuitPython to the cache."""
+    try:
+        version = circfirm.backend.s3.get_latest_board_version(
+            board_id, language, pre_release
+        )
         circfirm.cli.announce_and_await(
             f"Caching firmware version {version} for {board_id}",
             circfirm.backend.cache.download_uf2,
