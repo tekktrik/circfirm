@@ -113,7 +113,7 @@ def test_cache_clear() -> None:
             "--version",
             version,
             "--language",
-            langauge,
+            language,
         ],
     )
     board_folder = pathlib.Path(circfirm.UF2_ARCHIVE) / board
