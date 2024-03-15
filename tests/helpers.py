@@ -12,7 +12,10 @@ import pathlib
 import platform
 import shutil
 import time
-from typing import Callable, List, TypeVar
+from typing import Any, Callable, Dict, List, TypeVar
+
+import pytest
+import yaml
 
 import circfirm
 import circfirm.backend
@@ -141,3 +144,36 @@ def get_board_ids_from_git() -> List[str]:
     return sorted(
         [board_path.name for board_path in board_paths if board_path.is_dir()]
     )
+
+
+def with_token(token: str, use_monkeypatch: bool = False) -> None:
+    """Perform a test with the given token in the configuration settings."""
+
+    def set_token(new_token: str) -> str:
+        """Set a new token."""
+        with open(circfirm.SETTINGS_FILE, encoding="utf-8") as setfile:
+            contents = yaml.safe_load(setfile)
+            prev_token = contents["token"]["github"]
+            contents["token"]["github"] = new_token
+        with open(circfirm.SETTINGS_FILE, mode="w", encoding="utf-8") as setfile:
+            yaml.safe_dump(contents, setfile)
+        return prev_token
+
+    def with_token_set(func: Callable) -> None:
+        def with_token_set_wrapper(*args: Any, **kwargs: Dict[str, Any]) -> None:
+            prev_token = set_token(token)
+            func(*args, **kwargs)
+            set_token(prev_token)
+
+        def with_token_set_wrapper_monkeypatch(
+            monkeypatch: pytest.MonkeyPatch, *args: Any, **kwargs: Dict[str, Any]
+        ) -> None:
+            prev_token = set_token(token)
+            func(monkeypatch, *args, **kwargs)
+            set_token(prev_token)
+
+        if use_monkeypatch:
+            return with_token_set_wrapper_monkeypatch
+        return with_token_set_wrapper
+
+    return with_token_set

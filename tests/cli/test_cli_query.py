@@ -26,15 +26,15 @@ def simulate_no_connection(arg: str) -> NoReturn:
     raise requests.ConnectionError
 
 
-def test_query_board_ids(monkeypatch: pytest.MonkeyPatch) -> None:
+@tests.helpers.with_token(os.environ["GH_TOKEN"])
+def test_query_board_ids() -> None:
     """Tests the ability to query the boards using the CLI."""
-    # Test an unauthenticated request with supporting text
+    # Test an authenticated request with supporting text
     board_ids = tests.helpers.get_board_ids_from_git()
     pre_expected_output = "".join([f"{board}\n" for board in board_ids])
     expected_output = "\n".join(
         [
             "Boards list will now be synchronized with the git repository.",
-            "Please note that this operation can only be performed 60 times per hour due to GitHub rate limiting.",
             "Fetching boards list... done",
             pre_expected_output,
         ]
@@ -45,9 +45,6 @@ def test_query_board_ids(monkeypatch: pytest.MonkeyPatch) -> None:
     assert result.output == expected_output
 
     # Test an authenticated request without supporting text
-    result = RUNNER.invoke(
-        cli, ["config", "edit", "token.github", os.environ["GH_TOKEN"]]
-    )
     assert result.exit_code == 0
     result = RUNNER.invoke(cli, ["config", "edit", "output.supporting.silence", "true"])
     assert result.exit_code == 0
@@ -55,16 +52,17 @@ def test_query_board_ids(monkeypatch: pytest.MonkeyPatch) -> None:
     assert result.exit_code == 0
     assert result.output == pre_expected_output
 
-    # Test a request with a faulty token
-    result = RUNNER.invoke(cli, ["config", "edit", "token.github", "badtoken"])
-    assert result.exit_code == 0
+
+@tests.helpers.with_token("badtoken")
+def test_query_board_ids_bad_token() -> None:
+    """Test a request with a faulty token."""
     result = RUNNER.invoke(cli, ["query", "board-ids"])
     assert result.exit_code != 0
 
-    result = RUNNER.invoke(cli, ["config", "reset"])
-    assert result.exit_code == 0
 
-    # Tests failure when cannot fetch results due to no network connection
+@tests.helpers.with_token(os.environ["GH_TOKEN"], True)
+def test_query_board_ids_no_network(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Tests failure when cannot fetch results due to no network connection."""
     monkeypatch.setattr(
         circfirm.backend.github, "get_board_id_list", simulate_no_connection
     )
@@ -100,6 +98,7 @@ def test_query_versions() -> None:
     assert result.exit_code == 0
     assert result.output == expected_output
 
+    # Test the regex flag
     result = RUNNER.invoke(
         cli,
         [
