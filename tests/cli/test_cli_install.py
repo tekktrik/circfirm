@@ -35,7 +35,7 @@ def test_install_successful() -> None:
         threading.Thread(target=tests.helpers.wait_and_set_bootloader).start()
         result = RUNNER.invoke(cli, ["install", VERSION])
         assert result.exit_code == 0
-        expected_uf2_filename = circfirm.backend.cache.get_uf2_filename(
+        expected_uf2_filename = circfirm.backend.get_uf2_filename(
             "feather_m4_express", VERSION
         )
         expected_uf2_filepath = tests.helpers.get_mount_node(expected_uf2_filename)

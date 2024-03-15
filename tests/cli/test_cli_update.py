@@ -33,7 +33,7 @@ def test_update() -> None:
         threading.Thread(target=tests.helpers.wait_and_set_bootloader).start()
         result = RUNNER.invoke(cli, ["update", "--language", "cs"])
         expected_version = "6.1.0"
-        expected_uf2_filename = circfirm.backend.cache.get_uf2_filename(
+        expected_uf2_filename = circfirm.backend.get_uf2_filename(
             "feather_m4_express", expected_version, language="cs"
         )
         expected_uf2_filepath = tests.helpers.get_mount_node(expected_uf2_filename)
@@ -56,7 +56,7 @@ def test_update_pre_release() -> None:
         threading.Thread(target=tests.helpers.wait_and_set_bootloader).start()
         result = RUNNER.invoke(cli, ["update", "--language", "cs", "--pre-release"])
         expected_version = "6.2.0-beta.2"
-        expected_uf2_filename = circfirm.backend.cache.get_uf2_filename(
+        expected_uf2_filename = circfirm.backend.get_uf2_filename(
             "feather_m4_express", expected_version, language="cs"
         )
         expected_uf2_filepath = tests.helpers.get_mount_node(expected_uf2_filename)
@@ -79,7 +79,7 @@ def test_update_bootloader_mode() -> None:
         result = RUNNER.invoke(
             cli, ["update", "--board-id", board_id, "--language", "cs"]
         )
-        expected_uf2_filename = circfirm.backend.cache.get_uf2_filename(
+        expected_uf2_filename = circfirm.backend.get_uf2_filename(
             board_id, expected_version, language="cs"
         )
         expected_uf2_filepath = tests.helpers.get_mount_node(expected_uf2_filename)

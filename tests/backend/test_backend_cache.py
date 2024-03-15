@@ -69,30 +69,3 @@ def test_download_uf2() -> None:
 
     # Clean up post tests
     shutil.rmtree(expected_path.parent)
-
-
-def test_parse_firmware_info() -> None:
-    """Tests the ability to get firmware information."""
-    board_id = "feather_m4_express"
-    language = "en_US"
-
-    # Test successful parsing
-    for version in ("8.0.0", "9.0.0-beta.2"):
-        try:
-            board_folder = circfirm.backend.cache.get_board_folder(board_id)
-            circfirm.backend.cache.download_uf2(board_id, version, language)
-            downloaded_filename = [file.name for file in board_folder.glob("*")][0]
-
-            (
-                parsed_version,
-                parsed_language,
-            ) = circfirm.backend.cache.parse_firmware_info(downloaded_filename)
-            assert parsed_version == version
-            assert parsed_language == language
-        finally:
-            # Clean up post tests
-            shutil.rmtree(board_folder)
-
-    # Test failed parsing
-    with pytest.raises(ValueError):
-        circfirm.backend.cache.parse_firmware_info("cannotparse")

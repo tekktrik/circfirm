@@ -19,16 +19,11 @@ import circfirm.backend
 import circfirm.startup
 
 
-def get_uf2_filename(board_id: str, version: str, language: str = "en_US") -> str:
-    """Get the structured name for a specific board/version CircuitPython."""
-    return f"adafruit-circuitpython-{board_id}-{language}-{version}.uf2"
-
-
 def get_uf2_filepath(
     board_id: str, version: str, language: str = "en_US"
 ) -> pathlib.Path:
     """Get the path to a downloaded UF2 file."""
-    file = get_uf2_filename(board_id, version, language)
+    file = circfirm.backend.get_uf2_filename(board_id, version, language)
     uf2_folder = get_board_folder(board_id)
     return uf2_folder / file
 
@@ -46,7 +41,7 @@ def is_downloaded(board_id: str, version: str, language: str = "en_US") -> bool:
 
 def download_uf2(board_id: str, version: str, language: str = "en_US") -> None:
     """Download a version of CircuitPython for a specific board."""
-    file = get_uf2_filename(board_id, version, language=language)
+    file = circfirm.backend.get_uf2_filename(board_id, version, language=language)
     uf2_file = get_uf2_filepath(board_id, version, language=language)
     url = f"https://downloads.circuitpython.org/bin/{board_id}/{language}/{file}"
     response = requests.get(url)
@@ -70,7 +65,7 @@ def get_sorted_boards(board_id: Optional[str]) -> Dict[str, Dict[str, Set[str]]]
             continue
         board_folder_full = get_board_folder(board_folder)
         for item in os.listdir(board_folder_full):
-            version, language = parse_firmware_info(item)
+            version, language = circfirm.backend.parse_firmware_info(item)
             try:
                 version_set = set(versions[version])
                 version_set.add(language)
@@ -83,15 +78,3 @@ def get_sorted_boards(board_id: Optional[str]) -> Dict[str, Dict[str, Set[str]]]
             sorted_versions[sorted_version] = versions[sorted_version]
         boards[board_folder] = sorted_versions
     return boards
-
-
-def parse_firmware_info(uf2_filename: str) -> Tuple[str, str]:
-    """Get firmware info."""
-    regex_match = re.match(circfirm.backend.FIRMWARE_REGEX, uf2_filename)
-    if regex_match is None:
-        raise ValueError(
-            "Firmware information could not be determined from the filename"
-        )
-    version = regex_match[3]
-    language = regex_match[2]
-    return version, language

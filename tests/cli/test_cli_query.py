@@ -100,6 +100,21 @@ def test_query_versions() -> None:
     assert result.exit_code == 0
     assert result.output == expected_output
 
+    result = RUNNER.invoke(
+        cli,
+        [
+            "query",
+            "versions",
+            board,
+            "--language",
+            language,
+            "--regex",
+            "^.*beta.1$",
+        ],
+    )
+    assert result.exit_code == 0
+    assert result.output == "6.2.0-beta.1\n"
+
 
 def test_query_latest() -> None:
     """Tests the ability to query the latest version of the firmware using the CLI."""

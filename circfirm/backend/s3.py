@@ -17,6 +17,7 @@ import packaging.version
 from mypy_boto3_s3 import S3ServiceResource
 
 import circfirm.backend
+import circfirm.backend.cache
 
 S3_CONFIG = botocore.client.Config(signature_version=botocore.UNSIGNED)
 S3_RESOURCE: S3ServiceResource = boto3.resource("s3", config=S3_CONFIG)
@@ -32,18 +33,19 @@ def get_board_versions(
     firmware_regex = circfirm.backend.FIRMWARE_REGEX_PATTERN.replace(
         r"[board]", board_id
     ).replace(r"[language]", language)
-    version_regex = f"({regex})" if regex else circfirm.backend._VALID_VERSIONS_CAPTURE
+    version_regex = circfirm.backend._VALID_VERSIONS_CAPTURE
     firmware_regex = firmware_regex.replace(r"[version]", version_regex)
     s3_objects = BUCKET.objects.filter(Prefix=prefix)
     versions = set()
     for s3_object in s3_objects:
         result = re.match(f"{prefix}/{firmware_regex}", s3_object.key)
         if result:
-            try:
-                _ = packaging.version.Version(result[1])
-                versions.add(result[1])
-            except packaging.version.InvalidVersion:
-                pass
+            if regex:
+                firmware_filename = s3_object.key.split("/")[-1]
+                version, _ = circfirm.backend.parse_firmware_info(firmware_filename)
+                if not re.match(regex, version):
+                    continue
+            versions.add(result[1])
     return sorted(versions, key=packaging.version.Version, reverse=True)
 
 
