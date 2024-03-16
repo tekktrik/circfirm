@@ -32,7 +32,27 @@ import circfirm.cli.install
     default=False,
     help="Whether pre-release versions should be considered",
 )
-def cli(board_id: Optional[str], language: str, pre_release: bool) -> None:
+@click.option(
+    "-y",
+    "--limit-to-minor",
+    is_flag=True,
+    default=False,
+    help="Upgrade up to minor version updates",
+)
+@click.option(
+    "-z",
+    "--limit-to-patch",
+    is_flag=True,
+    default=False,
+    help="Upgrade up to patch version updates",
+)
+def cli(
+    board_id: Optional[str],
+    language: str,
+    pre_release: bool,
+    limit_to_minor: bool,
+    limit_to_patch: bool,
+) -> None:
     """Update a connected board to the latest CircuitPython version."""
     circuitpy, bootloader = circfirm.cli.get_connection_status()
     if circuitpy:
@@ -47,9 +67,36 @@ def cli(board_id: Optional[str], language: str, pre_release: bool) -> None:
         current_version = "0.0.0"
     bootloader, board_id = circfirm.cli.get_board_id(circuitpy, bootloader, board_id)
 
-    new_version = circfirm.backend.s3.get_latest_board_version(
-        board_id, language, pre_release
-    )
+    new_versions = circfirm.backend.s3.get_board_versions(board_id, language)
+
+    if not pre_release:
+        new_versions = [
+            version
+            for version in new_versions
+            if not packaging.version.Version(version).is_prerelease
+        ]
+
+    if limit_to_minor or limit_to_patch:
+        new_versions = [
+            version
+            for version in new_versions
+            if packaging.version.Version(version).major
+            <= packaging.version.Version(current_version).major
+        ]
+    if limit_to_patch:
+        new_versions = [
+            version
+            for version in new_versions
+            if packaging.version.Version(version).minor
+            <= packaging.version.Version(current_version).minor
+        ]
+
+    if not new_versions:
+        raise click.ClickException(
+            "No versions exist that meet the given update criteria"
+        )
+
+    new_version = new_versions[0]
     if packaging.version.Version(current_version) >= packaging.version.Version(
         new_version
     ):
