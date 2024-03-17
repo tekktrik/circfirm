@@ -25,9 +25,9 @@ jobs:
         include:
           - os: ubuntu-latest
           - os: windows-latest
-            py-version: 3.8
+            py-version: "3.8"
           - os: macos-latest
-            py-version: 3.8
+            py-version: "3.8"
 
     steps:
       - name: Setup Python 3.x
