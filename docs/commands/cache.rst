@@ -19,6 +19,16 @@ You can save versions of the CircuitPython firmware using ``circfirm cache save`
     # Save the CircuitPython 8.0.0 firmware for the feather_m4_express board
     circfirm cache save feather_m4_express 8.0.0
 
+Saving the Latest Version
+-------------------------
+
+You can save the latest version of the CircuitPython firmware using ``circfirm cache latest``.
+
+.. code-block:: shell
+
+    # Save the latest CircuitPython version for the feather_m4_express board
+    circfirm cache latest feather_m4_express
+
 Listing Versions
 ----------------
 
