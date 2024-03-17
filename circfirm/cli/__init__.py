@@ -108,7 +108,8 @@ def copy_cache_firmware(
     announce_and_await(
         f"Copying UF2 to {board}", shutil.copyfile, args=(uf2file, uf2_path)
     )
-    click.echo("Device should reboot momentarily.")
+    click.echo(f"CircuitPython version now upgraded to {version}")
+    click.echo("Device should reboot momentarily")
 
 
 def announce_and_await(
