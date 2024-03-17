@@ -62,6 +62,27 @@ def as_not_present(func: Callable[..., _T]) -> Callable[..., _T]:
     return as_not_present_wrapper
 
 
+def with_firmwares(func: Callable[..., _T]) -> Callable[..., _T]:
+    """Decorator for running a function with the test firmwares in the cache archive."""  # noqa: D401
+
+    def with_firmwares_wrapper(*args, **kwargs) -> _T:
+        firmware_folder = pathlib.Path("tests/assets/firmwares")
+        for board_folder in firmware_folder.glob("*"):
+            shutil.copytree(
+                board_folder, os.path.join(circfirm.UF2_ARCHIVE, board_folder.name)
+            )
+
+        result = func(*args, **kwargs)
+
+        if os.path.exists(circfirm.UF2_ARCHIVE):
+            shutil.rmtree(circfirm.UF2_ARCHIVE)
+        os.mkdir(circfirm.UF2_ARCHIVE)
+
+        return result
+
+    return with_firmwares_wrapper
+
+
 def wait_and_set_bootloader() -> None:
     """Wait then add the boot_out.txt file."""
     time.sleep(2)
@@ -126,15 +147,6 @@ def copy_uf2_info() -> None:
 def copy_boot_out() -> None:
     """Copy a bootout file to the mounted test drive."""
     _copy_text_file("boot_out.txt")
-
-
-def copy_firmwares() -> None:
-    """Copy firmware files to the app directory."""
-    firmware_folder = pathlib.Path("tests/assets/firmwares")
-    for board_folder in firmware_folder.glob("*"):
-        shutil.copytree(
-            board_folder, os.path.join(circfirm.UF2_ARCHIVE, board_folder.name)
-        )
 
 
 def get_board_ids_from_git() -> List[str]:
