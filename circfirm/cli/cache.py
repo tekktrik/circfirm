@@ -10,7 +10,6 @@ Author(s): Alec Delaney
 import os
 import pathlib
 import shutil
-import sys
 from typing import Optional
 
 import click
