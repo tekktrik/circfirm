@@ -1,0 +1,64 @@
+Required Dependencies
+^^^^^^^^^^^^^^^^^^^^^
+
+This software interacts with the CircuitPython AWS S3 bucket using boto3 by
+Amazon.com Inc or its affiliates (https://github.com/boto/boto3) [Apache-2.0 license].
+
+This software uses type annotations for boto3 provided by boto3-stubs by Vlad
+Emelinaov and maintained by youtype (https://github.com/youtype/mypy_boto3_builder)
+[MIT license].
+
+This software creates its command line interface using click by the pallets
+project (https://palletsprojects.com/p/click/) [BSD-3-Clause license].
+
+This software uses a CLI spinner add-on click-spinner to clink to display loading
+animation created by Yoav Ram (https://github.com/click-contrib/click-spinner)
+[MIT license].
+
+This software compares and orders CircuitPython versions according to PEP 440
+using the packaging library by Donald Stufft and maintained by the Python Packaging
+Authority (https://packaging.pypa.io/en/stable/) [Apache-2.0 or BSD-2-Clause
+licenses].
+
+This software discovers connected CircuitPython boards using the system utilization
+features of psutil, created by Jay Loden, Dave Daeschler, and Giampaolo Rodola
+(https://github.com/giampaolo/psutil) [BSD-3-Clause license].
+
+This software reads and modifies the YAML configuration settings using PyYAML,
+created by Kirill Simonov and Ingy dot Net, and maintained by the YAML community
+(https://pyyaml.org/) [MIT license].
+
+requests~=2.31
+This software makes HTTP requests, such as communicating with the CircuitPython
+GitHub repository and downloading CircuitPython firmware files, using requests,
+created by Kenneth Reitz and maintained by the Python Software Foundation
+(https://requests.readthedocs.io/en/latest/) [Apache-2.0 license].
+
+
+Development Dependencies
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+This software uses the build package for its build frontend, created by Filipe Lains
+and maintained by the Python Packaging Authority (https://build.pypa.io/en/stable/)
+[MIT license].
+
+This software measures code coverage metrics using Coverage.py, authored by and
+copyright Ned Batchelder (https://github.com/nedbat/coveragepy) [Apache-2.0 license].
+
+This software manages code checks such as linting and formatting using pre-commit,
+copyright Anythony Sottile and Ken Struys and (https://github.com/pre-commit/pre-commit)
+[MIT license].
+
+This software performs software tests using pytest, copyright Holger Krekel and others
+(https://docs.pytest.org/en/latest/) [MIT license].
+
+Ths software creates its documentation using Sphinx, copyright the Sphinx team
+(https://www.sphinx-doc.org/en/master/) [BSD license].
+
+This software uses tabs within its documentation provided by sphinx-tabs, copyright
+djungelorm (https://github.com/executablebooks/sphinx-tabs) [MIT license].
+
+sphinx-rtd-theme~=1.0
+This software displays its documentation using the ReadTheDocs Sphinx theme, copyright Dave
+Snider, Read the Docs, Inc. & contributors (https://sphinx-rtd-theme.readthedocs.io/en/stable/)
+[MIT license].
