@@ -42,3 +42,4 @@
    infrastructure/docs
    infrastructure/ci
    infrastructure/license
+   infrastructure/notice
