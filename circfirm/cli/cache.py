@@ -9,6 +9,7 @@ Author(s): Alec Delaney
 
 import os
 import pathlib
+import re
 import shutil
 from typing import Optional
 
@@ -30,8 +31,18 @@ def cli():
 @click.option("-b", "--board-id", default=None, help="CircuitPython board ID")
 @click.option("-v", "--version", default=None, help="CircuitPython version")
 @click.option("-l", "--language", default=None, help="CircuitPython language/locale")
-def clear(
-    board_id: Optional[str], version: Optional[str], language: Optional[str]
+@click.option(
+    "-r",
+    "--regex",
+    is_flag=True,
+    default=False,
+    help="The board ID, version, and language options represent regex patterns",
+)
+def clear(  # noqa: PLR0913
+    board_id: Optional[str],
+    version: Optional[str],
+    language: Optional[str],
+    regex: bool,
 ) -> None:
     """Clear the cache, either entirely or for a specific board/version."""
     if board_id is None and version is None and language is None:
@@ -40,13 +51,33 @@ def clear(
         click.echo("Cache cleared!")
         return
 
-    glob_pattern = "*-*" if board_id is None else f"*-{board_id}"
-    language_pattern = "-*" if language is None else f"-{language}"
-    glob_pattern += language_pattern
-    version_pattern = "-*" if version is None else f"-{version}.uf2"
-    glob_pattern += version_pattern
+    if regex:
+        glob_pattern = "*-*-*-*"
+    else:
+        glob_pattern = "*-*" if board_id is None else f"*-{board_id}"
+        language_pattern = "-*" if language is None else f"-{language}"
+        glob_pattern += language_pattern
+        version_pattern = "-*" if version is None else f"-{version}.uf2"
+        glob_pattern += version_pattern
+
     matching_files = pathlib.Path(circfirm.UF2_ARCHIVE).rglob(glob_pattern)
+
     for matching_file in matching_files:
+        if regex:
+            board_id = ".*" if board_id is None else board_id
+            version = ".*" if version is None else version
+            language = ".*" if language is None else language
+
+            current_board_id = matching_file.parent.name
+            current_version, current_language = circfirm.backend.parse_firmware_info(
+                matching_file.name
+            )
+
+            board_id_matches = re.search(board_id, current_board_id)
+            version_matches = re.match(version, current_version)
+            language_matches = re.match(language, current_language)
+            if not all([board_id_matches, version_matches, language_matches]):
+                continue
         matching_file.unlink()
 
     # Delete board folder if empty

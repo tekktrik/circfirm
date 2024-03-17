@@ -24,7 +24,9 @@ def cli():
 
 
 @cli.command(name="board-ids")
-@click.option("-r", "--regex", default=".*", help="Regex pattern to use for board IDs")
+@click.option(
+    "-r", "--regex", default=".*", help="Regex pattern to use for board IDs (search)"
+)
 def query_board_ids(regex: str) -> None:
     """Query the local CircuitPython board list."""
     settings = circfirm.cli.get_settings()
@@ -62,7 +64,9 @@ def query_board_ids(regex: str) -> None:
 @cli.command(name="versions")
 @click.argument("board-id")
 @click.option("-l", "--language", default="en_US", help="CircuitPython language/locale")
-@click.option("-r", "--regex", default=".*", help="Regex pattern to use for versions")
+@click.option(
+    "-r", "--regex", default=".*", help="Regex pattern to use for versions (match)"
+)
 def query_versions(board_id: str, language: str, regex: str) -> None:
     """Query the CircuitPython versions available for a board."""
     versions = circfirm.backend.s3.get_board_versions(board_id, language, regex=regex)

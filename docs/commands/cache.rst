@@ -45,9 +45,22 @@ You can list cached versions of the CircuitPython firmware using ``circfirm cach
 Clearing the Cache
 ------------------
 
-You can clearr cached firmware versions using ``circfirm cache clear``.
+You can clear cached firmware versions using ``circfirm cache clear``.
 
-You can also specify what should be cleared in terms of board IDs, versions, and languages.
+You can also specify what should be cleared in terms of specific board IDs, versions, and languages
+using the ``--board-id``, ``--version``, and ``--language`` options respectively.
+
+If you would like to use regex for the board ID, version, and language, you can use the ``--regex``
+flag.  The board ID pattern will be searched for **FROM THE BEGINNING** of the board ID (e.g., "hello"
+**would not**  match "123hello123").  The version and language patterns will be searched for
+**ANYWHERE** in the board ID (e.g., "hello" **would** match "123hello123") unless the pattern
+specifies otherwise.  This is done so that:
+
+- Matching board versions is generous (e.g., removing Feather board firmwares using ``feather``)
+- Matching entire version sets more convenient without being too burdensome (e.g., using regex with
+  the version pattern ``8`` is most likely an attempt to remove versions starting with 8 as opposed
+  to containing an 8 anywhere in them)
+- Matching languages is not too greedy with typos
 
 .. code-block:: shell
 
@@ -56,3 +69,6 @@ You can also specify what should be cleared in terms of board IDs, versions, and
 
     # Clear the cache of French versions of the feather_m4_express
     circfirm cache clear --board-id feather_m4_express --language fr
+
+    # Clear the cache of any board ID containing "feather" and all versions in the 8.2 release
+    circfirm cache clear --regex --board-id feather --version "8\.2"
