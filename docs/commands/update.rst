@@ -22,6 +22,10 @@ You can specify a language using the ``--language`` option - the default is US E
 If you would like to include pre-releases as potential update versions, you can use the
 ``--pre-release`` flag.
 
+If you would like to limit updates to only the latest minor or patch update from the current version,
+you can use either the ``--limit-to-minor`` or ``--limit-to-patch`` flags respectively.  Note that if
+both are used, the more limiting flag (``--limit-to-patch``) will take precedence.
+
 .. note::
 
     This command will not update the board if the detected version of CircuitPython on the connected
