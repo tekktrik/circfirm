@@ -22,12 +22,28 @@ jobs:
           "3.11",
           "3.12",
         ]
-        include:
-          - os: ubuntu-latest
+        os: [
+          "ubuntu-latest",
+          "windows-latest",
+          "macos-latest",
+        ]
+        exclude:
           - os: windows-latest
-            py-version: "3.8"
+            py-version: "3.9"
+          - os: windows-latest
+            py-version: "3.10"
+          - os: windows-latest
+            py-version: "3.11"
+          - os: windows-latest
+            py-version: "3.12"
           - os: macos-latest
-            py-version: "3.8"
+            py-version: "3.9"
+          - os: macos-latest
+            py-version: "3.10"
+          - os: macos-latest
+            py-version: "3.11"
+          - os: macos-latest
+            py-version: "3.12"
 
     steps:
       - name: Setup Python 3.x
