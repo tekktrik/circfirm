@@ -10,6 +10,7 @@ Author(s): Alec Delaney
 import os
 import shutil
 import threading
+import time
 
 from click.testing import CliRunner
 
@@ -85,3 +86,37 @@ def test_install_bad_version() -> None:
     # Test using install when in bootloader mode
     result = RUNNER.invoke(cli, ["install", VERSION])
     assert result.exit_code == ERR_IN_BOOTLOADER
+
+
+@tests.helpers.as_circuitpy
+def test_install_with_timeout() -> None:
+    """Tests the install command using the timeout option."""
+    try:
+        threading.Thread(target=tests.helpers.wait_and_set_bootloader).start()
+        result = RUNNER.invoke(cli, ["install", VERSION, "--timeout", "60"])
+        assert result.exit_code == 0
+        expected_uf2_filename = circfirm.backend.get_uf2_filename(
+            "feather_m4_express", VERSION
+        )
+        expected_uf2_filepath = tests.helpers.get_mount_node(expected_uf2_filename)
+        assert os.path.exists(expected_uf2_filepath)
+        os.remove(expected_uf2_filepath)
+
+    finally:
+        board_folder = circfirm.backend.cache.get_board_folder("feather_m4_express")
+        if board_folder.exists():
+            shutil.rmtree(board_folder)
+
+
+@tests.helpers.as_circuitpy
+def test_install_with_timeout_failure() -> None:
+    """Tests the install command using the timeout option that causes a failure."""
+    timeout = 3
+    start_time = time.time()
+    result = RUNNER.invoke(cli, ["install", VERSION, "--timeout", f"{timeout}"])
+    assert result.exit_code != 0
+    assert result.output == (
+        "Board ID detected, please switch the device to bootloader mode.\n"
+        "Error: Bootloader mode device not found within the timeout period\n"
+    )
+    assert time.time() - start_time >= timeout

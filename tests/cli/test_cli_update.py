@@ -11,6 +11,7 @@ import os
 import pathlib
 import shutil
 import threading
+import time
 
 from click.testing import CliRunner
 
@@ -154,3 +155,17 @@ def test_update_overlimiting() -> None:
 
     assert result.exit_code == 1
     assert not mount_uf2_files
+
+
+@tests.helpers.as_circuitpy
+def test_update_timeout_failure() -> None:
+    """Tests the update command with a timeout set that times out."""
+    timeout = 3
+    start_time = time.time()
+    result = RUNNER.invoke(cli, ["update", "--timeout", f"{timeout}"])
+    assert result.exit_code != 0
+    assert result.output == (
+        "Board ID detected, please switch the device to bootloader mode.\n"
+        "Error: Bootloader mode device not found within the timeout period\n"
+    )
+    assert time.time() - start_time >= timeout

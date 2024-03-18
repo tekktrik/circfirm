@@ -19,6 +19,10 @@ bootloader mode, you can do so and simply use the ``--board-id`` option to provi
 
 You can specify a language using the ``--language`` option - the default is US English.
 
+If you would like to specify a timeout for how long the CLI will wait for a device in bootloader
+mode in secounds (e.g., for scripting), you can use the ``--timeout`` option.  The default behavior
+is that it will wait indefinitely (``-1`` secounds).
+
 If you would like to include pre-releases as potential update versions, you can use the
 ``--pre-release`` flag.
 
@@ -44,3 +48,7 @@ both are used, the more limiting flag (``--limit-to-patch``) will take precedenc
 
     # Update CircuitPython on the connected board, considering pre-release versions
     circfirm update --pre-release
+
+    # Update CircuitPython but only wait up to 30 seconds for the device to change from
+    # bootloader mode
+    circfirm install 8.0.0 --timeout 30

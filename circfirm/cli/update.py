@@ -26,6 +26,12 @@ import circfirm.cli.install
 )
 @click.option("-l", "--language", default="en_US", help="CircuitPython langauge/locale")
 @click.option(
+    "-t",
+    "--timeout",
+    default=-1,
+    help="Set a timeout in seconds for the switch to bootloader mode",
+)
+@click.option(
     "-p",
     "--pre-release",
     is_flag=True,
@@ -46,9 +52,10 @@ import circfirm.cli.install
     default=False,
     help="Upgrade up to patch version updates",
 )
-def cli(
+def cli(  # noqa: PLR0913
     board_id: Optional[str],
     language: str,
+    timeout: int,
     pre_release: bool,
     limit_to_minor: bool,
     limit_to_patch: bool,
@@ -65,7 +72,12 @@ def cli(
             "The latest version will be installed regardless of the currently installed version."
         )
         current_version = "0.0.0"
-    bootloader, board_id = circfirm.cli.get_board_id(circuitpy, bootloader, board_id)
+    try:
+        bootloader, board_id = circfirm.cli.get_board_id(
+            circuitpy, bootloader, board_id, timeout
+        )
+    except OSError as err:
+        raise click.ClickException(err.args[0])
 
     new_versions = circfirm.backend.s3.get_board_versions(board_id, language)
 

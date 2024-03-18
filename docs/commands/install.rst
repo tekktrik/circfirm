@@ -19,6 +19,10 @@ bootloader mode, you can do so and simply use the ``--board-id`` option to provi
 
 You can specify a language using the ``--language`` option - the default is US English.
 
+If you would like to specify a timeout for how long the CLI will wait for a device in bootloader
+mode in secounds (e.g., for scripting), you can use the ``--timeout`` option.  The default behavior
+is that it will wait indefinitely (``-1`` secounds).
+
 .. code-block:: shell
 
     # Install CircuitPython 8.0.0 on the connected board
@@ -29,3 +33,7 @@ You can specify a language using the ``--language`` option - the default is US E
 
     # Install CircuitPython 8.0.0 on the connected Adafruit QT Py ESP32 Pico (in bootloader mode)
     circfirm install 8.0.0 --board-id adafruit_qtpy_esp32_pico
+
+    # Install CircuitPython 8.0.0 but only wait up to 30 seconds for the device to change from
+    # bootloader mode
+    circfirm install 8.0.0 --timeout 30
