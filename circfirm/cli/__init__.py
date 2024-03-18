@@ -43,7 +43,10 @@ def maybe_support(msg: str) -> None:
 
 
 def get_board_id(
-    circuitpy: Optional[str], bootloader: Optional[str], board: Optional[str]
+    circuitpy: Optional[str],
+    bootloader: Optional[str],
+    board: Optional[str],
+    timeout: int = -1,
 ) -> Tuple[str, str]:
     """Get the board ID of a device via CLI."""
     if not board:
@@ -56,8 +59,18 @@ def get_board_id(
         board = circfirm.backend.device.get_board_info(circuitpy)[0]
 
         click.echo("Board ID detected, please switch the device to bootloader mode.")
+        if timeout == -1:
+            skip_timeout = True
+        else:
+            skip_timeout = False
+            start_time = time.time()
+
         while not (bootloader := circfirm.backend.device.find_bootloader()):
-            time.sleep(1)
+            if not skip_timeout and time.time() >= start_time + timeout:
+                raise OSError(
+                    "Bootloader mode device not found within the timeout period"
+                )
+            time.sleep(0.05)
     return bootloader, board
 
 
