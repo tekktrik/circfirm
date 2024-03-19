@@ -19,6 +19,7 @@
 
    commands/update
    commands/install
+   commands/detect
    commands/current
    commands/cache
    commands/query
