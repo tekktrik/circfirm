@@ -9,6 +9,8 @@ Author(s): Alec Delaney
 
 import os
 
+import pytest
+
 import circfirm.backend
 import circfirm.startup
 import tests.helpers
@@ -35,6 +37,14 @@ def test_ensure_file() -> None:
         assert os.path.exists(test_file)
     finally:
         os.remove(test_file)
+
+
+def test_specify_file(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Tests the specify_file function."""
+    monkeypatch.setattr(circfirm.startup, "FILE_LIST", [])
+    args = ("test", "file", "here")
+    circfirm.startup.specify_file(*args)
+    assert circfirm.startup.FILE_LIST == [os.path.join(*args)]
 
 
 def test_ensure_app_setup() -> None:
