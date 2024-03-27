@@ -7,74 +7,89 @@
 Author(s): Alec Delaney
 """
 
-import json
+import os
 
 import yaml
 from click.testing import CliRunner
 
+import circfirm
+import circfirm.cli.config
+import tests.helpers
 from circfirm.cli import cli
 
 RUNNER = CliRunner()
 
+DEFAULT_SETTINGS = "tests/assets/settings/settings.yaml"
 
-def get_printed_default_settings() -> None:
+
+name_of = lambda x: f"{x.__name__}"
+
+
+def get_printed_default_settings() -> str:
     """Get the default (template) settings as printed."""
-    with open("circfirm/templates/settings.yaml", encoding="utf-8") as yamlfile:
+    with open(DEFAULT_SETTINGS, encoding="utf-8") as yamlfile:
         settings = yaml.safe_load(yamlfile)
-    return f"{json.dumps(settings, indent=4)}\n"
+    return yaml.safe_dump(settings, indent=4)
 
 
-def test_config() -> None:
+@tests.helpers.with_config_settings
+def test_config_view_all() -> None:
     """Tests the config view command."""
     expected_output = get_printed_default_settings()
-
-    # Test viewing all settings
     result = RUNNER.invoke(cli, ["config", "view"])
     assert result.exit_code == 0
     assert result.output == expected_output
 
-    # Test viewing specific setting
-    result = RUNNER.invoke(cli, ["config", "view", "output.supporting.silence"])
-    assert result.exit_code == 0
-    assert result.output == "false\n"
 
-    # Test viewing non-existent setting
+@tests.helpers.with_config_settings
+def test_config_view_nonscalar() -> None:
+    """Tests viewing a non-scalar type setting."""
+    non_scalar_key = "typed_lists"
+    with open(DEFAULT_SETTINGS, encoding="utf-8") as yamlfile:
+        settings = yaml.safe_load(yamlfile)
+    printed_settings = yaml.safe_dump(settings[non_scalar_key], indent=4)
+    result = RUNNER.invoke(cli, ["config", "view", non_scalar_key])
+    assert result.exit_code == 0
+    assert result.output == printed_settings
+
+
+@tests.helpers.with_config_settings
+def test_config_view_specific() -> None:
+    """Tests viewing specific setting."""
+    scalar_types = (str, int, float, bool)
+    scalar_values = ("This is text", "123", "0.123", "true")
+    for scalar_type, scalar_value in zip(scalar_types, scalar_values):
+        result = RUNNER.invoke(cli, ["config", "view", name_of(scalar_type)])
+        assert result.exit_code == 0
+        assert result.output == f"{scalar_value}\n"
+
+    result = RUNNER.invoke(cli, ["config", "view", "dict.int"])
+    assert result.exit_code == 0
+    assert result.output == "789\n"
+
+
+@tests.helpers.with_config_settings
+def test_config_view_nonexistent() -> None:
+    """Tests viewing non-existent setting."""
     result = RUNNER.invoke(cli, ["config", "view", "doesnotexist"])
-    assert result.exit_code != 0
-
-    # Test writing a setting
-    RUNNER.invoke(cli, ["config", "edit", "output.supporting.silence", "true"])
-    result = RUNNER.invoke(cli, ["config", "view", "output.supporting.silence"])
-    assert result.exit_code == 0
-    assert result.output == "true\n"
-    RUNNER.invoke(cli, ["config", "edit", "output.supporting.silence", "false"])
-    result = RUNNER.invoke(cli, ["config", "view", "output.supporting.silence"])
-    assert result.exit_code == 0
-    assert result.output == "false\n"
-
-    # Test writing a non-existent setting
-    result = RUNNER.invoke(cli, ["config", "edit", "doesnotexist", "123"])
-    assert result.exit_code != 0
-
-    # Test writing to setting tree
-    result = RUNNER.invoke(cli, ["config", "edit", "output", "123"])
-    assert result.exit_code != 0
-
-    # Test writing bad type
-    RUNNER.invoke(cli, ["config", "edit", "output.supporting.silence", "123"])
     assert result.exit_code != 0
 
 
 def test_config_reset() -> None:
     """Tests the reseting of the config settings file."""
-    RUNNER.invoke(cli, ["config", "edit", "output.supporting.silence", "true"])
-    result = RUNNER.invoke(cli, ["config", "view", "output.supporting.silence"])
-    assert result.exit_code == 0
-    assert result.output == "true\n"
-
-    expected_settings = get_printed_default_settings()
-
+    template_filepath = os.path.join("circfirm", "templates", "settings.yaml")
+    with open(template_filepath, encoding="utf-8") as templatefile:
+        expected_settings = templatefile.read()
     result = RUNNER.invoke(cli, ["config", "reset"])
-    result = RUNNER.invoke(cli, ["config", "view"])
     assert result.exit_code == 0
-    assert result.output == expected_settings
+    with open(circfirm.SETTINGS_FILE, encoding="utf-8") as setfile:
+        actual_settings = setfile.read()
+    assert actual_settings == expected_settings
+
+
+@tests.helpers.with_config_settings
+def test_config_path() -> None:
+    """Tests printing the configuration setting path."""
+    result = RUNNER.invoke(cli, ["config", "path"])
+    assert result.exit_code == 0
+    assert result.output == f"{circfirm.SETTINGS_FILE}\n"
