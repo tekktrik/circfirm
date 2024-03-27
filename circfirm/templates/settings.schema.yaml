@@ -1,0 +1,10 @@
+token:
+    github: ABC
+output:
+    supporting:
+        silence: true
+editor: ABC
+plugins:
+    downloaded: [ABC]
+    local: ABC
+    settings: {}

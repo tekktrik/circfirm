@@ -1,0 +1,20 @@
+str: ABC
+int: 123
+float: 0.123
+bool: true
+dict:
+  dict:
+    str: ABC
+    int: 123
+  int: 123
+list:
+  - list: [ABC]
+  - list: [ABC]
+typed_lists:
+  list_str: [ABC]
+  list_int: [123]
+  list_float: [0.123]
+  list_bool: [true]
+  list_dict:
+  - name: str
+    index: 123

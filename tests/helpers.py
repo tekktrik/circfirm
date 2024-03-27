@@ -12,7 +12,7 @@ import pathlib
 import platform
 import shutil
 import time
-from typing import Any, Callable, Dict, List, TypeVar
+from typing import Any, Callable, Dict, List, Tuple, TypeVar
 
 import pytest
 import yaml
@@ -81,6 +81,41 @@ def with_firmwares(func: Callable[..., _T]) -> Callable[..., _T]:
         return result
 
     return with_firmwares_wrapper
+
+
+def with_config_settings(func: Callable[..., _T]) -> Callable[..., _T]:
+    """Decorator for running a function with the test configuration settings."""  # noqa: D401s
+
+    def with_config_settings_wrapper(*args, **kwargs) -> _T:
+        made_dir = False
+        if not os.path.exists(circfirm.APP_DIR):  # pragma: no cover
+            made_dir = True
+            os.mkdir(circfirm.APP_DIR)
+        yaml_file_pairs: List[Tuple[str, str, bool]] = []
+        for filepath in (circfirm.SETTINGS_FILE, circfirm.SETTINGS_SCHEMA_FILE):
+            if os.path.exists(filepath):
+                with open(filepath, encoding="utf-8") as setfile:
+                    yaml_file_pairs.append((filepath, setfile.read(), True))
+            else:  # pragma: no cover
+                yaml_file_pairs.append((filepath, "", False))
+            filename = os.path.basename(filepath)
+            test_filepath = os.path.join("tests", "assets", "settings", filename)
+            shutil.copyfile(test_filepath, filepath)
+
+        try:
+            return func(*args, **kwargs)
+        finally:
+            for filepath, contents, replaced in yaml_file_pairs:
+                if replaced:
+                    with open(filepath, mode="w", encoding="utf-8") as setfile:
+                        setfile.write(contents)
+                else:  # pragma: no cover
+                    os.remove(filepath)
+
+            if made_dir:  # pragma: no cover
+                shutil.rmtree(circfirm.APP_DIR)
+
+    return with_config_settings_wrapper
 
 
 def wait_and_set_bootloader() -> None:

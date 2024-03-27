@@ -1,0 +1,42 @@
+str: This is text
+int: 123
+float: 0.123
+bool: true
+dict:
+  dict:
+    str: More text
+    int: 456
+  int: 789
+list:
+  - list:
+    - A text
+    - B text
+    - C text
+  - list:
+    - D text
+    - C text
+    - E text
+typed_lists:
+  list_str:
+    - A
+    - B
+    - C
+  list_int:
+    - 1
+    - 2
+    - 3
+  list_float:
+    - 0.123
+    - 0.234
+    - 0.345
+  list_bool:
+    - true
+    - false
+    - true
+  list_dict:
+    - name: A
+      index: 0
+    - name: B
+      index: 1
+    - name: C
+      index: 2

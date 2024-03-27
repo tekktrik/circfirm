@@ -160,6 +160,30 @@ def get_settings() -> Dict[str, Any]:
         return yaml.safe_load(yamlfile)
 
 
+def get_settings_schema() -> Dict[str, Any]:
+    """Get the contents of the settings file."""
+    with open(circfirm.SETTINGS_SCHEMA_FILE, encoding="utf-8") as yamlfile:
+        return yaml.safe_load(yamlfile)
+
+
+def ensure_plugin_settings(
+    name: str, settings_path: str, settings_schema_path: Optional[str] = None
+) -> None:
+    if settings_schema_path is None:
+        settings_schema_base = os.path.splitext()[0]
+        settings_schema_path = f"{settings_schema_base}.schema.yaml"
+    orig_paths = (circfirm.SETTINGS_FILE, circfirm.SETTINGS_SCHEMA_FILE)
+    add_paths = (settings_path, settings_schema_path)
+    for orig_path, add_path in zip(orig_paths, add_paths):
+        with open(orig_path, encoding="utf-8") as setfile:
+            orig_settings = yaml.safe_load(setfile)
+        with open(add_path, encoding="utf-8") as setfile:
+            plugin_settings = yaml.safe_load(setfile)
+        orig_settings["plugins"]["settings"][name] = plugin_settings
+        with open(orig_path, mode="w", encoding="utf-8") as setfile:
+            yaml.safe_dump(orig_settings, setfile)
+
+
 def load_subcmd_folder(path: str, super_import_name: str) -> None:
     """Load subcommands dynamically from a folder of modules and packages."""
     subcmd_names = [

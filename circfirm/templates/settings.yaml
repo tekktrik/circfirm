@@ -3,3 +3,8 @@ token:
 output:
     supporting:
         silence: false
+editor: ""
+plugins:
+    downloaded: [ABC]
+    local: ""
+    settings: [{}]
