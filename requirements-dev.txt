@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 build~=1.0
+circfirm-hello-world~=0.0
 coverage~=7.4
 pre-commit~=2.20
 pytest~=8.0

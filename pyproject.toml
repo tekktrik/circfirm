@@ -59,8 +59,10 @@ circfirm = "circfirm.cli:cli"
 [tool.setuptools]
 packages = [
     "circfirm",
-    "circfirm.cli",
     "circfirm.backend",
+    "circfirm.cli",
+    "circfirm.plugins",
+    "circfirm.templates",
 ]
 include-package-data = true
 
@@ -86,5 +88,6 @@ ignore = ["D213", "D203"]
 [tool.pytest.ini_options]
 filterwarnings = ["ignore:datetime.datetime.utcfromtimestamp():DeprecationWarning"]
 addopts = [
-    "--ignore=tests/sandbox/circuitpython"
+    "--ignore=tests/sandbox/circuitpython",
+    "--ignore=tests/backup",
 ]
