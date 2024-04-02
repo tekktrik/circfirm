@@ -10,3 +10,4 @@ psutil~=6.1
 pyyaml~=6.0
 requests~=2.32
 boto3-stubs[essential]~=1.35
+typing-extensions~=4.0

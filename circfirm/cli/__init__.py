@@ -18,29 +18,40 @@ from typing import Any, Callable, Optional, TypeVar
 
 import click
 import click_spinner
-import yaml
 
 import circfirm
 import circfirm.backend.cache
+import circfirm.backend.config
 import circfirm.backend.device
 import circfirm.startup
 
 _T = TypeVar("_T")
 
 
-@click.group()
+@click.group(name="circfirm")
 @click.version_option(package_name="circfirm")
 def cli() -> None:
     """Manage CircuitPython firmware from the command line."""
-    circfirm.startup.ensure_app_setup()
+
+
+def _maybe_output(msg: str, setting_path: Iterable[str], invert: bool = False) -> None:
+    """Output text based on the configurable settings."""
+    settings = get_settings()
+    for path in setting_path:
+        settings = settings[path]
+    settings = not settings if invert else settings
+    if settings:
+        click.echo(msg)
 
 
 def maybe_support(msg: str) -> None:
     """Output supporting text based on the configurable settings."""
-    settings = get_settings()
-    do_output: bool = not settings["output"]["supporting"]["silence"]
-    if do_output:
-        click.echo(msg)
+    _maybe_output(msg, ("output", "supporting", "silence"), invert=True)
+
+
+def maybe_warn(msg: str) -> None:
+    """Output warning text based on the configurable settings."""
+    _maybe_output(msg, ("output", "warning", "silence"), invert=True)
 
 
 def get_board_id(
@@ -157,36 +168,103 @@ def announce_and_await(
 
 def get_settings() -> dict[str, Any]:
     """Get the contents of the settings file."""
-    with open(circfirm.SETTINGS_FILE, encoding="utf-8") as yamlfile:
-        return yaml.safe_load(yamlfile)
+    return circfirm.backend.config.get_config_settings(circfirm.SETTINGS_FILE)
 
 
-def load_subcmd_folder(path: str, super_import_name: str) -> None:
+def load_subcmd_folder(
+    path: str,
+    super_import_name: Optional[str] = None,
+    *,
+    filenames_as_commands: bool = False,
+    ignore_missing_cli: bool = True,
+) -> None:
     """Load subcommands dynamically from a folder of modules and packages."""
-    subcmd_names = [
+    subcmd_modtuples = [
         (modname, ispkg) for _, modname, ispkg in pkgutil.iter_modules((path,))
     ]
-    subcmd_paths = [
+    subcmd_filepaths = [
         os.path.abspath(os.path.join(path, subcmd_name[0]))
-        for subcmd_name in subcmd_names
+        for subcmd_name in subcmd_modtuples
     ]
 
-    for (subcmd_name, ispkg), subcmd_path in zip(subcmd_names, subcmd_paths):
-        import_name = ".".join([super_import_name, subcmd_name])
-        import_path = subcmd_path if ispkg else subcmd_path + ".py"
-        module_spec = importlib.util.spec_from_file_location(import_name, import_path)
-        module = importlib.util.module_from_spec(module_spec)
-        module_spec.loader.exec_module(module)
+    for (_, ispkg), subcmd_path in zip(subcmd_modtuples, subcmd_filepaths):
+        load_subcmd_file(
+            subcmd_path,
+            super_import_name,
+            ispkg,
+            filename_as_command=filenames_as_commands,
+            ignore_missing_cli=ignore_missing_cli,
+        )
+
+
+def load_subcmd_file(
+    path: str,
+    super_import_name: Optional[str] = None,
+    ispkg: bool = False,
+    *,
+    filename_as_command: bool = False,
+    ignore_missing_cli: bool = True,
+) -> None:
+    """Load subcommands dynamically from a file."""
+    modname = os.path.splitext(os.path.basename(path))[0]
+    import_name = f"{super_import_name}.{modname}" if super_import_name else modname
+    if ispkg:
+        import_path = os.path.join(path, "__init__.py")
+        search_paths = {"submodule_search_locations": []}
+    else:
+        import_path = path + ".py"
+        search_paths = {}
+    module_spec = importlib.util.spec_from_file_location(
+        import_name, import_path, **search_paths
+    )
+    module = importlib.util.module_from_spec(module_spec)
+    sys.modules[import_name] = module
+    module_spec.loader.exec_module(module)
+    cmdname = modname if filename_as_command else None
+    load_cmd_from_module(module, cmdname, ignore_missing_entry=ignore_missing_cli)
+
+
+def load_cmd_from_module(
+    module: types.ModuleType,
+    cmdname: Optional[str] = None,
+    *,
+    ignore_missing_entry: bool = True,
+):
+    """Load the sub-command `cli` from the module."""
+    try:
         source_cli: click.MultiCommand = getattr(module, "cli")
-        if isinstance(source_cli, click.Group):
-            subcmd = click.CommandCollection(sources=(source_cli,))
-            subcmd.help = source_cli.__doc__
-        else:
-            subcmd = source_cli
-        cli.add_command(subcmd, subcmd_name)
+        if not cmdname:
+            cmdname = source_cli.name
+        cli.add_command(source_cli, cmdname)
+    except AttributeError:
+        if not ignore_missing_entry:
+            raise RuntimeError("Module does not define a function named `cli()`")
+
+
+# Ensure the application is set up
+circfirm.startup.ensure_app_setup()
 
 
 # Load extra commands from the rest of the circfirm.cli subpackage
 cli_pkg_path = os.path.dirname(os.path.abspath(__file__))
 cli_pkg_name = "circfirm.cli"
-load_subcmd_folder(cli_pkg_path, cli_pkg_name)
+load_subcmd_folder(
+    cli_pkg_path,
+    super_import_name=cli_pkg_name,
+    filenames_as_commands=True,
+    ignore_missing_cli=False,
+)
+
+# Load downloaded plugins
+settings = get_settings()
+downloaded_modules: List[str] = settings["plugins"]["downloaded"]
+for downloaded_module in downloaded_modules:
+    try:
+        module = importlib.import_module(downloaded_module)
+    except ModuleNotFoundError:
+        maybe_warn(f"Could not load plugin {downloaded_module}, skipping")
+        continue
+    load_cmd_from_module(module, None)
+
+# Load local plugins
+load_subcmd_folder(circfirm.LOCAL_PLUGINS)

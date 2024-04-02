@@ -9,6 +9,8 @@ Author(s): Alec Delaney
 
 import os
 
+import pytest
+
 import circfirm.backend
 import circfirm.startup
 import tests.helpers
@@ -37,6 +39,16 @@ def test_ensure_file() -> None:
         os.remove(test_file)
 
 
+def test_specify_file(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Tests the specify_file function."""
+    monkeypatch.setattr(circfirm.startup, "FILE_LIST", [])
+    args = ("test", "file", "here")
+    circfirm.startup.specify_file(*args)
+    assert circfirm.startup.FILE_LIST == [os.path.join(*args)]
+
+
+@tests.helpers.with_local_plugins([])
+# @tests.helpers.reload_cli
 def test_ensure_app_setup() -> None:
     """Tests the ensure_app_setup() function."""
     mount_location = tests.helpers.get_mount()

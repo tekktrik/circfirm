@@ -3,3 +3,8 @@ token:
 output:
     supporting:
         silence: false
+    warning:
+        silence: false
+editor: ""
+plugins:
+    downloaded: []

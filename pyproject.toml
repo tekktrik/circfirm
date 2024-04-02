@@ -59,8 +59,10 @@ circfirm = "circfirm.cli:cli"
 [tool.setuptools]
 packages = [
     "circfirm",
-    "circfirm.cli",
     "circfirm.backend",
+    "circfirm.cli",
+    "circfirm.plugins",
+    "circfirm.templates",
 ]
 include-package-data = true
 

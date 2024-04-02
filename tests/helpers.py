@@ -7,11 +7,14 @@
 Author(s): Alec Delaney
 """
 
+import functools
+import importlib
 import os
 import pathlib
 import platform
 import shutil
 import time
+from collections.abc import Iterable
 from typing import Any, Callable, TypeVar
 
 import pytest
@@ -19,13 +22,46 @@ import yaml
 
 import circfirm
 import circfirm.backend
+import circfirm.cli
 
 _T = TypeVar("_T")
+
+BASE_RESPONSE = """\
+Usage: circfirm [OPTIONS] COMMAND [ARGS]...
+
+  Manage CircuitPython firmware from the command line.
+
+Options:
+  --version  Show the version and exit.
+  --help     Show this message and exit.
+
+Commands:\
+"""
+
+BASE_COMMANDS = """\
+  about    Information about circfirm.
+  cache    Work with cached firmwares.
+  config   View and update the configuration settings for the circfirm CLI.
+  current  Check the information about the currently connected board.
+  detect   Detect connected CircuitPython boards.
+  install  Install the specified version of CircuitPython.
+  query    Query things like latest versions and board lists.
+  update   Update a connected board to the latest CircuitPython version.\
+"""
+
+LOCAL_COMMANDS = {
+    "module_plugin.py": ("modp", "Utilize a local module plugin that will be loaded."),
+    "package_plugin": ("packp", "Utilize a local package plugin that will be loaded."),
+}
+DOWNLOADED_COMMANDS = {
+    "circfirm_hello_world": ("hello", "Say hi."),
+}
 
 
 def as_circuitpy(func: Callable[..., _T]) -> Callable[..., _T]:
     """Decorator for running a function with a device connected in CIRCUITPY mode."""  # noqa: D401
 
+    @functools.wraps(func)
     def as_circuitpy_wrapper(*args, **kwargs) -> _T:
         delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
         delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
@@ -40,6 +76,7 @@ def as_circuitpy(func: Callable[..., _T]) -> Callable[..., _T]:
 def as_bootloader(func: Callable[..., _T]) -> Callable[..., _T]:
     """Decorator for running a function with a device connected in bootloader mode."""  # noqa: D401
 
+    @functools.wraps(func)
     def as_bootloader_wrapper(*args, **kwargs) -> _T:
         delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
         delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
@@ -54,6 +91,7 @@ def as_bootloader(func: Callable[..., _T]) -> Callable[..., _T]:
 def as_not_present(func: Callable[..., _T]) -> Callable[..., _T]:
     """Decorator for running a function without a device connected in either CIRCUITPY or bootloader mode."""  # noqa: D401
 
+    @functools.wraps(func)
     def as_not_present_wrapper(*args, **kwargs) -> _T:
         delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
         delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
@@ -65,6 +103,7 @@ def as_not_present(func: Callable[..., _T]) -> Callable[..., _T]:
 def with_firmwares(func: Callable[..., _T]) -> Callable[..., _T]:
     """Decorator for running a function with the test firmwares in the cache archive."""  # noqa: D401
 
+    @functools.wraps(func)
     def with_firmwares_wrapper(*args, **kwargs) -> _T:
         firmware_folder = pathlib.Path("tests/assets/firmwares")
         for board_folder in firmware_folder.glob("*"):
@@ -81,6 +120,108 @@ def with_firmwares(func: Callable[..., _T]) -> Callable[..., _T]:
         return result
 
     return with_firmwares_wrapper
+
+
+def with_mock_config_settings(func: Callable[..., _T]) -> Callable[..., _T]:
+    """Decorator for running a function with the test configuration settings."""  # noqa: D401s
+
+    @functools.wraps(func)
+    def with_config_settings_wrapper(*args, **kwargs) -> _T:
+        made_dir = False
+        if not os.path.exists(circfirm.APP_DIR):  # pragma: no cover
+            made_dir = True
+            os.mkdir(circfirm.APP_DIR)
+        filepath = circfirm.SETTINGS_FILE
+        if os.path.exists(filepath):
+            with open(filepath, encoding="utf-8") as setfile:
+                contents = setfile.read()
+                replaced = True
+        else:  # pragma: no cover
+            contents = ""
+            replaced = False
+        filename = os.path.basename(filepath)
+        test_filepath = os.path.join("tests", "assets", "settings", filename)
+        shutil.copyfile(test_filepath, filepath)
+
+        try:
+            return func(*args, **kwargs)
+        finally:
+            if replaced:
+                with open(filepath, mode="w", encoding="utf-8") as setfile:
+                    setfile.write(contents)
+            else:  # pragma: no cover
+                os.remove(filepath)
+
+            if made_dir:  # pragma: no cover
+                shutil.rmtree(circfirm.APP_DIR)
+
+    return with_config_settings_wrapper
+
+
+def with_local_plugins(
+    local_plugin_files: Iterable[str],
+) -> Callable[[Callable[..., _T]], Callable[..., _T]]:
+    """Decorator for running a function with the specific local plugins."""  # noqa: D401s
+
+    def with_local_plugins_func(func: Callable[..., _T]) -> Callable[..., _T]:
+        @functools.wraps(func)
+        def with_local_plugins_wrapper(*args, **kwargs) -> _T:
+            try:
+                for local_plugin_file in local_plugin_files:
+                    filepath = os.path.join("tests/assets/plugins", local_plugin_file)
+                    new_filepath = os.path.join(
+                        circfirm.LOCAL_PLUGINS, local_plugin_file
+                    )
+                    path = pathlib.Path(filepath)
+                    if path.is_file():
+                        shutil.copy2(filepath, new_filepath)
+                    else:
+                        shutil.copytree(filepath, new_filepath)
+                importlib.reload(circfirm.cli)
+                return func(*args, **kwargs)
+            finally:
+                plugins = pathlib.Path(circfirm.LOCAL_PLUGINS).glob("*")
+                for plugin in plugins:
+                    if plugin.is_file():
+                        plugin.unlink()
+                    else:
+                        shutil.rmtree(plugin)
+                importlib.reload(circfirm.cli)
+
+        return with_local_plugins_wrapper
+
+    return with_local_plugins_func
+
+
+def with_downloaded_plugins(
+    downloaded_plugins: Iterable[str],
+) -> Callable[[Callable[..., _T]], Callable[..., _T]]:
+    """Decorator for running a function with the specific downloaded plugins."""  # noqa: D401s
+
+    def with_downloaded_plugins_func(func: Callable[..., _T]) -> Callable[..., _T]:
+        @functools.wraps(func)
+        def with_downloaded_plugins_wrapper(*args, **kwargs) -> _T:
+            try:
+                with open(circfirm.SETTINGS_FILE, encoding="utf-8") as setfile:
+                    settings = yaml.safe_load(setfile)
+                settings["plugins"]["downloaded"] = downloaded_plugins
+                with open(
+                    circfirm.SETTINGS_FILE, mode="w", encoding="utf-8"
+                ) as setfile:
+                    yaml.safe_dump(settings, setfile)
+                importlib.reload(circfirm.cli)
+                return func(*args, **kwargs)
+            finally:
+                settings["plugins"]["downloaded"] = []
+                with open(
+                    circfirm.SETTINGS_FILE, mode="w", encoding="utf-8"
+                ) as setfile:
+                    yaml.safe_dump(settings, setfile)
+                importlib.reload(circfirm.cli)
+
+        return with_downloaded_plugins_wrapper
+
+    return with_downloaded_plugins_func
 
 
 def wait_and_set_bootloader() -> None:
@@ -189,3 +330,31 @@ def with_token(token: str, use_monkeypatch: bool = False) -> None:
         return with_token_set_wrapper
 
     return with_token_set
+
+
+def add_command_help_text(
+    orig_command_text: str, new_command: str, new_help_text: str
+) -> str:
+    """Add new help text for a give command."""
+    commands = orig_command_text.split("\n")
+    new_command_text = f"  {new_command}".ljust(11) + new_help_text
+    commands.append(new_command_text)
+    sorted_commands = sorted(commands, key=lambda x: x[2:5])
+    return "\n".join(sorted_commands)
+
+
+def get_help_response(
+    local_plugin_files: Iterable[str] = (), downloaded_plugins: Iterable[str] = ()
+) -> str:
+    """Get the help response with specific plugins."""
+    base_help_text = BASE_COMMANDS
+    plugin_pairs = zip(
+        (local_plugin_files, downloaded_plugins), (LOCAL_COMMANDS, DOWNLOADED_COMMANDS)
+    )
+    for plugins, entry_source in plugin_pairs:
+        for plugin in plugins:
+            cmdname, cmddesc = entry_source[plugin]
+            base_help_text = add_command_help_text(
+                base_help_text.rstrip(), cmdname, cmddesc
+            )
+    return "\n".join((BASE_RESPONSE, base_help_text.rstrip())) + "\n"
