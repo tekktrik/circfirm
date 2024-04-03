@@ -1,18 +1,18 @@
 ..
-    SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
-    SPDX-License-Identifier: MIT
+   SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
+   SPDX-License-Identifier: MIT
 
 Updating 10 Boards Rapidly
 ==========================
 
 .. tabs::
 
-    .. tab:: bash
+   .. tab:: bash
 
-        .. literalinclude:: ../../examples/bash/update_many.sh
-            :language: bash
+      .. literalinclude:: ../../examples/bash/update_many.sh
+         :language: bash
 
-    .. tab:: powershell
+   .. tab:: powershell
 
-        .. literalinclude:: ../../examples/powershell/update_many.ps1
-            :language: powershell
+      .. literalinclude:: ../../examples/powershell/update_many.ps1
+         :language: powershell

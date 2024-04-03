@@ -1,6 +1,6 @@
 ..
-    SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
-    SPDX-License-Identifier: MIT
+   SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
+   SPDX-License-Identifier: MIT
 
 Checking the Current Version
 ============================
@@ -16,8 +16,8 @@ You can get the board ID of the currently connected board using ``circfirm curre
 
 .. code-block:: shell
 
-    # Get the board ID of the connected board
-    circfirm current board-id
+   # Get the board ID of the connected board
+   circfirm current board-id
 
 Getting the Firmware Version
 ----------------------------
@@ -26,5 +26,5 @@ You can get the CircuitPython version of the currently connected board using ``c
 
 .. code-block:: shell
 
-    # Get the firmware version of the connected board
-    circfirm current verson
+   # Get the firmware version of the connected board
+   circfirm current verson

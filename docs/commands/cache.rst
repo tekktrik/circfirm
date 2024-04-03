@@ -1,6 +1,6 @@
 ..
-    SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
-    SPDX-License-Identifier: MIT
+   SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
+   SPDX-License-Identifier: MIT
 
 Caching Versions
 ================
@@ -16,8 +16,8 @@ You can save versions of the CircuitPython firmware using ``circfirm cache save`
 
 .. code-block:: shell
 
-    # Save the CircuitPython 8.0.0 firmware for the feather_m4_express board
-    circfirm cache save feather_m4_express 8.0.0
+   # Save the CircuitPython 8.0.0 firmware for the feather_m4_express board
+   circfirm cache save feather_m4_express 8.0.0
 
 Saving the Latest Version
 -------------------------
@@ -26,8 +26,8 @@ You can save the latest version of the CircuitPython firmware using ``circfirm c
 
 .. code-block:: shell
 
-    # Save the latest CircuitPython version for the feather_m4_express board
-    circfirm cache latest feather_m4_express
+   # Save the latest CircuitPython version for the feather_m4_express board
+   circfirm cache latest feather_m4_express
 
 Listing Versions
 ----------------
@@ -36,11 +36,11 @@ You can list cached versions of the CircuitPython firmware using ``circfirm cach
 
 .. code-block:: shell
 
-    # List all the firmware versions
-    circfirm cache list
+   # List all the firmware versions
+   circfirm cache list
 
-    # List all the firmware versions for the feather_m4_express board
-    circfirm cache list --board-id feather_m4_express
+   # List all the firmware versions for the feather_m4_express board
+   circfirm cache list --board-id feather_m4_express
 
 Clearing the Cache
 ------------------
@@ -64,11 +64,11 @@ specifies otherwise.  This is done so that:
 
 .. code-block:: shell
 
-    # Clear the cache
-    circfirm cache clear
+   # Clear the cache
+   circfirm cache clear
 
-    # Clear the cache of French versions of the feather_m4_express
-    circfirm cache clear --board-id feather_m4_express --language fr
+   # Clear the cache of French versions of the feather_m4_express
+   circfirm cache clear --board-id feather_m4_express --language fr
 
-    # Clear the cache of any board ID containing "feather" and all versions in the 8.2 release
-    circfirm cache clear --regex --board-id feather --version "8\.2"
+   # Clear the cache of any board ID containing "feather" and all versions in the 8.2 release
+   circfirm cache clear --regex --board-id feather --version "8\.2"

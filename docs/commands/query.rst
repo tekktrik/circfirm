@@ -1,6 +1,6 @@
 ..
-    SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
-    SPDX-License-Identifier: MIT
+   SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
+   SPDX-License-Identifier: MIT
 
 Querying Boards and Versions
 ============================
@@ -20,17 +20,17 @@ the pattern specifies otherwise.
 
 .. note::
 
-    Querying board IDs communicates with GitHub, which can only be done 60 times per hour unauthenticated.
-    If you plan to make frequent use of this command consider adding a GitHub token to the configuration
-    settings (``circfirm config edit token.github <your-token-here>``).
+   Querying board IDs communicates with GitHub, which can only be done 60 times per hour unauthenticated.
+   If you plan to make frequent use of this command consider adding a GitHub token to the configuration
+   settings (``circfirm config edit token.github <your-token-here>``).
 
 .. code-block:: shell
 
-    # List all board IDs
-    circfirm query board-ids
+   # List all board IDs
+   circfirm query board-ids
 
-    # List all board IDs containing the phrase "pico"
-    circfirm query board-ids --regex pico
+   # List all board IDs containing the phrase "pico"
+   circfirm query board-ids --regex pico
 
 Querying Board Versions
 -----------------------
@@ -47,14 +47,14 @@ You can also set the language using the ``--language`` option, which can affect 
 
 .. code-block:: shell
 
-    # List all available versions for the Feather M4 Express
-    circfirm query versions feather_m4_express
+   # List all available versions for the Feather M4 Express
+   circfirm query versions feather_m4_express
 
-    # List all available French versions for the Feather M4 Express
-    circfirm query versions feather_m4_express --language fr
+   # List all available French versions for the Feather M4 Express
+   circfirm query versions feather_m4_express --language fr
 
-    # List all versions in the 8.2.X set for the Feather M4 Express
-    circfirm query versions feather_m4_express --regex 8\.2\..+
+   # List all versions in the 8.2.X set for the Feather M4 Express
+   circfirm query versions feather_m4_express --regex 8\.2\..+
 
 Query the Latest Version
 ------------------------
@@ -72,11 +72,11 @@ If you would like to include pre-release versions as potential latest versions, 
 
 .. code-block:: shell
 
-    # Get the latest version of CircuitPython
-    circfirm query latest
+   # Get the latest version of CircuitPython
+   circfirm query latest
 
-    # Get the latest version of CircuitPython for the Feather M4 Express
-    circfirm query latest feather_m4_express
+   # Get the latest version of CircuitPython for the Feather M4 Express
+   circfirm query latest feather_m4_express
 
-    # Get the latest version of CircuitPython for the Feather M4 Express, including pre-releases
-    circfirm query latest feather_m4_express --pre-release
+   # Get the latest version of CircuitPython for the Feather M4 Express, including pre-releases
+   circfirm query latest feather_m4_express --pre-release

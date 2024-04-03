@@ -1,6 +1,6 @@
 ..
-    SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
-    SPDX-License-Identifier: MIT
+   SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
+   SPDX-License-Identifier: MIT
 
 Updating to the Latest Version
 ==============================
@@ -32,23 +32,23 @@ both are used, the more limiting flag (``--limit-to-patch``) will take precedenc
 
 .. note::
 
-    This command will not update the board if the detected version of CircuitPython on the connected
-    board is greater than or equal to updated version.
+   This command will not update the board if the detected version of CircuitPython on the connected
+   board is greater than or equal to updated version.
 
 .. code-block:: shell
 
-    # Update CircuitPython on the connected board
-    circfirm update
+   # Update CircuitPython on the connected board
+   circfirm update
 
-    # Update the French translation of CircuitPython on the connected board
-    circfirm --language fr
+   # Update the French translation of CircuitPython on the connected board
+   circfirm --language fr
 
-    # Update CircuitPython 8.0.0 on the connected Adafruit QT Py ESP32 Pico (in bootloader mode)
-    circfirm update --board-id adafruit_qtpy_esp32_pico
+   # Update CircuitPython 8.0.0 on the connected Adafruit QT Py ESP32 Pico (in bootloader mode)
+   circfirm update --board-id adafruit_qtpy_esp32_pico
 
-    # Update CircuitPython on the connected board, considering pre-release versions
-    circfirm update --pre-release
+   # Update CircuitPython on the connected board, considering pre-release versions
+   circfirm update --pre-release
 
-    # Update CircuitPython but only wait up to 30 seconds for the device to change from
-    # bootloader mode
-    circfirm install 8.0.0 --timeout 30
+   # Update CircuitPython but only wait up to 30 seconds for the device to change from
+   # bootloader mode
+   circfirm install 8.0.0 --timeout 30

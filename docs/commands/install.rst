@@ -1,6 +1,6 @@
 ..
-    SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
-    SPDX-License-Identifier: MIT
+   SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
+   SPDX-License-Identifier: MIT
 
 Installing Specific Versions
 ============================
@@ -25,15 +25,15 @@ is that it will wait indefinitely (``-1`` secounds).
 
 .. code-block:: shell
 
-    # Install CircuitPython 8.0.0 on the connected board
-    circfirm install 8.0.0
+   # Install CircuitPython 8.0.0 on the connected board
+   circfirm install 8.0.0
 
-    # Install the French translation of CircuitPython on the connected board
-    circfirm install 8.0.0 --language fr
+   # Install the French translation of CircuitPython on the connected board
+   circfirm install 8.0.0 --language fr
 
-    # Install CircuitPython 8.0.0 on the connected Adafruit QT Py ESP32 Pico (in bootloader mode)
-    circfirm install 8.0.0 --board-id adafruit_qtpy_esp32_pico
+   # Install CircuitPython 8.0.0 on the connected Adafruit QT Py ESP32 Pico (in bootloader mode)
+   circfirm install 8.0.0 --board-id adafruit_qtpy_esp32_pico
 
-    # Install CircuitPython 8.0.0 but only wait up to 30 seconds for the device to change from
-    # bootloader mode
-    circfirm install 8.0.0 --timeout 30
+   # Install CircuitPython 8.0.0 but only wait up to 30 seconds for the device to change from
+   # bootloader mode
+   circfirm install 8.0.0 --timeout 30
