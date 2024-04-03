@@ -1,7 +1,6 @@
-.. circfirm documentation master file, created by
-   sphinx-quickstart on Thu Mar  7 21:00:53 2024.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+..
+   SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
+   SPDX-License-Identifier: MIT
 
 .. include:: ../README.rst
 
@@ -14,7 +13,7 @@
 
 .. toctree::
    :maxdepth: 2
-   :caption: Commands:
+   :caption: Commands
    :hidden:
 
    commands/update
@@ -24,6 +23,16 @@
    commands/cache
    commands/query
    commands/config
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Configuration
+   :hidden:
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Plugins
+   :hidden:
 
 .. toctree::
    :maxdepth: 2
