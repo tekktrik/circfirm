@@ -49,8 +49,8 @@ BASE_COMMANDS = """\
 """
 
 LOCAL_COMMANDS = {
-    "module_plugin.py": ("modp", "Utilize a local module plugin that will be loaded."),
-    "package_plugin": ("packp", "Utilize a local package plugin that will be loaded."),
+    "examples/plugins/module_plugin.py": ("mod", "Utilize a local module plugin that will be loaded."),
+    "examples/plugins/package_plugin": ("pack", "Utilize a local package plugin that will be loaded."),
 }
 DOWNLOADED_COMMANDS = {
     "circfirm_hello_world": ("hello", "Say hi."),
@@ -158,7 +158,7 @@ def with_mock_config_settings(func: Callable[..., _T]) -> Callable[..., _T]:
 
 
 def with_local_plugins(
-    local_plugin_files: Iterable[str],
+    local_plugin_filepaths: Iterable[str],
 ) -> Callable[[Callable[..., _T]], Callable[..., _T]]:
     """Decorator for running a function with the specific local plugins."""  # noqa: D401s
 
@@ -166,16 +166,15 @@ def with_local_plugins(
         @functools.wraps(func)
         def with_local_plugins_wrapper(*args, **kwargs) -> _T:
             try:
-                for local_plugin_file in local_plugin_files:
-                    filepath = os.path.join("tests/assets/plugins", local_plugin_file)
+                for local_plugin_filepath in local_plugin_filepaths:
+                    filename = os.path.basename(local_plugin_filepath)
                     new_filepath = os.path.join(
-                        circfirm.LOCAL_PLUGINS, local_plugin_file
+                        circfirm.LOCAL_PLUGINS, filename
                     )
-                    path = pathlib.Path(filepath)
-                    if path.is_file():
-                        shutil.copy2(filepath, new_filepath)
+                    if os.path.isfile(local_plugin_filepath):
+                        shutil.copy2(local_plugin_filepath, new_filepath)
                     else:
-                        shutil.copytree(filepath, new_filepath)
+                        shutil.copytree(local_plugin_filepath, new_filepath)
                 importlib.reload(circfirm.cli)
                 return func(*args, **kwargs)
             finally:

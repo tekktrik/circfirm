@@ -14,7 +14,7 @@ import circfirm.plugins
 import tests.helpers
 
 
-@tests.helpers.with_local_plugins(["module_plugin.py"])
+@tests.helpers.with_local_plugins(["examples/plugins/module_plugin.py"])
 def test_uninstall_plugin_settings() -> None:
     """Tests uninstalling a plugin's configuration settings file."""
     plugin_name = "module_plugin"
