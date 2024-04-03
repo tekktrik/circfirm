@@ -82,17 +82,17 @@ def test_config_view_nonexistent() -> None:
     assert result.exit_code != 0
 
 
-@tests.helpers.with_local_plugins(["module_plugin.py"])
+@tests.helpers.with_local_plugins(["examples/plugins/module_plugin.py"])
 def test_config_view_plugin() -> None:
     """Tests seeing plugin settings."""
     result = RUNNER.invoke(cli, ["config", "view", "--plugin", "module_plugin"])
     assert result.exit_code == 0
-    with open("tests/assets/plugins/settings.yaml", encoding="utf-8") as setfile:
+    with open("examples/plugins/module_settings.yaml", encoding="utf-8") as setfile:
         settings = yaml.safe_load(setfile)
     assert result.output == yaml.safe_dump(settings, indent=4)
 
 
-@tests.helpers.with_local_plugins(["module_plugin.py"])
+@tests.helpers.with_local_plugins(["examples/plugins/module_plugin.py"])
 def test_config_view_plugin_missing() -> None:
     """Tests seeing plugin settings."""
     result = RUNNER.invoke(cli, ["config", "view", "--plugin", "doesnotexist"])
