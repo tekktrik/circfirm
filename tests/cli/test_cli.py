@@ -23,7 +23,7 @@ _T = TypeVar("_T")
 RUNNER = CliRunner()
 
 
-@tests.helpers.with_local_plugins(["module_plugin.py", "package_plugin"])
+@tests.helpers.with_local_plugins(["examples/plugins/module_plugin.py", "examples/plugins/package_plugin"])
 def test_load_local_plugins() -> None:
     """Tests loading local plugins."""
     importlib.reload(circfirm.cli)
