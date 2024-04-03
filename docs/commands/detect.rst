@@ -1,6 +1,6 @@
 ..
-    SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
-    SPDX-License-Identifier: MIT
+   SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
+   SPDX-License-Identifier: MIT
 
 Detecting Connected Boards
 ==========================
@@ -16,8 +16,8 @@ You can detect a connected CircuitPython board in CIRCUITPY or equivalent mode u
 
 .. code-block:: shell
 
-    # Detect a connected board in CIRCUITPY (or equivalent) mode
-    circfirm detect circuitpy
+   # Detect a connected board in CIRCUITPY (or equivalent) mode
+   circfirm detect circuitpy
 
 Detecting a Bootloader Board
 ----------------------------
@@ -26,5 +26,5 @@ You can detect a connected CircuitPython board in bootloader mode using ``circfi
 
 .. code-block:: shell
 
-    # Detect a connected board in bootloader mode
-    circfirm detect bootloader
+   # Detect a connected board in bootloader mode
+   circfirm detect bootloader

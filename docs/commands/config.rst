@@ -1,6 +1,6 @@
 ..
-    SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
-    SPDX-License-Identifier: MIT
+   SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
+   SPDX-License-Identifier: MIT
 
 Configuring the CLI
 ===================
@@ -18,11 +18,11 @@ You can view all the settings, a subset, or just a specific one.  Subsettings ar
 
 .. code-block:: shell
 
-    # View all the configuration settings
-    circfirm config view
+   # View all the configuration settings
+   circfirm config view
 
-    # View a specific setting
-    circfirm config view output.supporting.silence
+   # View a specific setting
+   circfirm config view output.supporting.silence
 
 Edit Settings
 -------------
@@ -33,8 +33,8 @@ You must edit a specific setting at a time.  Subsettings are accessed using peri
 
 .. code-block:: shell
 
-    # Edit a configuration settings with a value
-    circfirm config edit output.supporting.silence true
+   # Edit a configuration settings with a value
+   circfirm config edit output.supporting.silence true
 
 Edit Settings via Editor
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -43,8 +43,8 @@ For a more native editing experience using the built-in text editor, you can use
 
 .. code-block:: shell
 
-    # Edit the configuration settings in the native text editor
-    circfirm config editor
+   # Edit the configuration settings in the native text editor
+   circfirm config editor
 
 Reset Settings
 --------------
@@ -53,5 +53,5 @@ You can reset the configuration settings to the default using ``circfirm config 
 
 .. code-block:: shell
 
-    # Reset the configuration settings to the default
-    circfirm config reset
+   # Reset the configuration settings to the default
+   circfirm config reset
