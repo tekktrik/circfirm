@@ -10,8 +10,8 @@ circfirm
    :alt: PyPI - Python Version
 
 .. image:: https://readthedocs.org/projects/circfirm/badge/?version=latest
-    :target: https://circfirm.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
+   :target: https://circfirm.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
 
 .. image:: https://img.shields.io/github/actions/workflow/status/tekktrik/circfirm/push.yml
    :target: https://github.com/tekktrik/circfirm/actions
@@ -39,13 +39,13 @@ which creates an isolated virtual environment for the dependencies:
 
 .. code-block:: shell
 
-    pipx install circfirm
+   pipx install circfirm
 
 You can also just use ``pip`` to install it, if the dependencies won't cause issues:
 
 .. code-block:: shell
 
-    pip install circfirm
+   pip install circfirm
 
 Example Usage
 =============
@@ -54,34 +54,34 @@ The follow commands show some of the functionality of ``circfirm``:
 
 .. code-block:: shell
 
-    # Install a version of CircuitPython to a connected board
-    circfirm install 8.0.0
+   # Install a version of CircuitPython to a connected board
+   circfirm install 8.0.0
 
-    # Install a version of CircuitPython in French to a connected board
-    circfirm install 8.0.0 --language fr
+   # Install a version of CircuitPython in French to a connected board
+   circfirm install 8.0.0 --language fr
 
-    # List all the cached (previously downloaded) CircuitPython versions
-    circfirm cache list
+   # List all the cached (previously downloaded) CircuitPython versions
+   circfirm cache list
 
-    # List all the cached CircuitPython versions for a speciic board
-    circfirm cache list --board-id feather_m4_express
+   # List all the cached CircuitPython versions for a speciic board
+   circfirm cache list --board-id feather_m4_express
 
-    # Save a version of CircuitPython to the cache
-    # (You can also use the --language option here)
-    circfirm cache save feather_m4_express 8.0.0
+   # Save a version of CircuitPython to the cache
+   # (You can also use the --language option here)
+   circfirm cache save feather_m4_express 8.0.0
 
-    # Clear the cached CircuitPython versions
-    circfirm cache clear
+   # Clear the cached CircuitPython versions
+   circfirm cache clear
 
-    # You can use --board-id, --version, and --language options to further specify
-    # what firmwares should be cleared - this clears version 7.0.0 firmwares for
-    # all boards and in all languages
-    circfirm cache clear --version 7.0.0
+   # You can use --board-id, --version, and --language options to further specify
+   # what firmwares should be cleared - this clears version 7.0.0 firmwares for
+   # all boards and in all languages
+   circfirm cache clear --version 7.0.0
 
-    # See help/information about circfirm or any specific command using --help
-    circfirm --help
-    circfirm install --help
-    circfirm cache save --help
+   # See help/information about circfirm or any specific command using --help
+   circfirm --help
+   circfirm install --help
+   circfirm cache save --help
 
 License
 =======
