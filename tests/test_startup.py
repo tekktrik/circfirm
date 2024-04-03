@@ -47,8 +47,6 @@ def test_specify_file(monkeypatch: pytest.MonkeyPatch) -> None:
     assert circfirm.startup.FILE_LIST == [os.path.join(*args)]
 
 
-@tests.helpers.with_local_plugins([])
-# @tests.helpers.reload_cli
 def test_ensure_app_setup() -> None:
     """Tests the ensure_app_setup() function."""
     mount_location = tests.helpers.get_mount()
