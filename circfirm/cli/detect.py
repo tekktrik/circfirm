@@ -7,7 +7,6 @@
 Author(s): Alec Delaney
 """
 
-
 import click
 
 import circfirm.backend.device
