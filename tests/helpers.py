@@ -50,8 +50,14 @@ BASE_COMMANDS = """\
 """
 
 LOCAL_COMMANDS = {
-    "examples/plugins/module_plugin.py": ("mod", "Utilize a local module plugin that will be loaded."),
-    "examples/plugins/package_plugin": ("pack", "Utilize a local package plugin that will be loaded."),
+    "examples/plugins/module_plugin.py": (
+        "mod",
+        "Utilize a local module plugin that will be loaded.",
+    ),
+    "examples/plugins/package_plugin": (
+        "pack",
+        "Utilize a local package plugin that will be loaded.",
+    ),
 }
 DOWNLOADED_COMMANDS = {
     "circfirm_hello_world": ("hello", "Say hi."),
@@ -169,9 +175,7 @@ def with_local_plugins(
             try:
                 for local_plugin_filepath in local_plugin_filepaths:
                     filename = os.path.basename(local_plugin_filepath)
-                    new_filepath = os.path.join(
-                        circfirm.LOCAL_PLUGINS, filename
-                    )
+                    new_filepath = os.path.join(circfirm.LOCAL_PLUGINS, filename)
                     if os.path.isfile(local_plugin_filepath):
                         shutil.copy2(local_plugin_filepath, new_filepath)
                     else:
