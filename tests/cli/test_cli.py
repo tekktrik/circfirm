@@ -32,7 +32,7 @@ def test_load_local_plugins() -> None:
     result = RUNNER.invoke(circfirm.cli.cli, ["--help"])
     assert result.exit_code == 0
     assert result.output == tests.helpers.get_help_response(
-        ["module_plugin.py", "package_plugin"]
+        ["examples/plugins/module_plugin.py", "examples/plugins/package_plugin"]
     )
 
 
