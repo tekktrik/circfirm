@@ -87,7 +87,9 @@ def test_config_view_plugin() -> None:
     """Tests seeing plugin settings."""
     result = RUNNER.invoke(cli, ["config", "view", "--plugin", "module_plugin"])
     assert result.exit_code == 0
-    with open("examples/plugins/module_settings.yaml", encoding="utf-8") as setfile:
+    with open(
+        "examples/plugins/module_plugin_settings.yaml", encoding="utf-8"
+    ) as setfile:
         settings = yaml.safe_load(setfile)
     assert result.output == yaml.safe_dump(settings, indent=4)
 
