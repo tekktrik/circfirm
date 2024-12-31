@@ -88,6 +88,7 @@ def test_cache_save() -> None:
         "https://downloads.circuitpython.org/bin/feather_m4_express/"
         "nolanguage/"
         "adafruit-circuitpython-feather_m4_express-nolanguage-7.3.0.uf2\n"
+        "Are the board ID, version, and language correct?\n"
     )
 
 

@@ -86,5 +86,6 @@ ignore = ["D213", "D203"]
 [tool.pytest.ini_options]
 filterwarnings = ["ignore:datetime.datetime.utcfromtimestamp():DeprecationWarning"]
 addopts = [
-    "--ignore=tests/sandbox/circuitpython"
+    "--ignore=tests/sandbox/circuitpython",
+    "--ignore=tests/backup",
 ]

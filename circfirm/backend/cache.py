@@ -48,7 +48,9 @@ def download_uf2(board_id: str, version: str, language: str = "en_US") -> None:
 
     SUCCESS = 200
     if response.status_code != SUCCESS:
-        raise ConnectionError(f"Could not download the specified UF2 file:\n{url}")
+        raise ConnectionError(
+            f"Could not download the specified UF2 file:\n{url}\nAre the board ID, version, and language correct?"
+        )
 
     uf2_file.parent.mkdir(parents=True, exist_ok=True)
     with open(uf2_file, mode="wb") as uf2file:
