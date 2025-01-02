@@ -23,6 +23,7 @@
    commands/cache
    commands/query
    commands/config
+   commands/path
 
 .. toctree::
    :maxdepth: 2
@@ -36,9 +37,13 @@
    :caption: Plugins
    :hidden:
 
+   plugins/intro
+   plugins/create
+   plugins/example
+
 .. toctree::
    :maxdepth: 2
-   :caption: Examples
+   :caption: Example Scripts
    :hidden:
 
    examples/update_many
