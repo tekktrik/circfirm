@@ -9,8 +9,7 @@ Author(s): Alec Delaney
 
 import os
 import pathlib
-import re
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Optional
 
 import packaging.version
 import requests
@@ -57,12 +56,12 @@ def download_uf2(board_id: str, version: str, language: str = "en_US") -> None:
         uf2file.write(response.content)
 
 
-def get_sorted_boards(board_id: Optional[str]) -> Dict[str, Dict[str, Set[str]]]:
+def get_sorted_boards(board_id: Optional[str]) -> dict[str, dict[str, set[str]]]:
     """Get a sorted collection of boards, versions, and languages."""
-    boards: Dict[str, Dict[str, Set[str]]] = {}
+    boards: dict[str, dict[str, set[str]]] = {}
     for board_folder in sorted(os.listdir(circfirm.UF2_ARCHIVE)):
-        versions: Dict[str, List[str]] = {}
-        sorted_versions: Dict[str, Set[str]] = {}
+        versions: dict[str, list[str]] = {}
+        sorted_versions: dict[str, set[str]] = {}
         if board_id is not None and board_id != board_folder:
             continue
         board_folder_full = get_board_folder(board_folder)

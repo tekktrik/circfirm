@@ -9,7 +9,6 @@ Author(s): Alec Delaney
 
 import enum
 import re
-from typing import Tuple
 
 
 class Language(enum.Enum):
@@ -60,7 +59,7 @@ def get_uf2_filename(board_id: str, version: str, language: str = "en_US") -> st
     return f"adafruit-circuitpython-{board_id}-{language}-{version}.uf2"
 
 
-def parse_firmware_info(uf2_filename: str) -> Tuple[str, str]:
+def parse_firmware_info(uf2_filename: str) -> tuple[str, str]:
     """Get firmware info."""
     regex_match = re.match(FIRMWARE_REGEX, uf2_filename)
     if regex_match is None:

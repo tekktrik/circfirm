@@ -8,7 +8,7 @@ Author(s): Alec Delaney
 """
 
 import re
-from typing import List, Optional
+from typing import Optional
 
 import boto3
 import botocore
@@ -27,7 +27,7 @@ BUCKET = S3_RESOURCE.Bucket(BUCKET_NAME)
 
 def get_board_versions(
     board_id: str, language: str = "en_US", *, regex: Optional[str] = None
-) -> List[str]:
+) -> list[str]:
     """Get a list of CircuitPython versions for a given board."""
     prefix = f"bin/{board_id}/{language}"
     firmware_regex = circfirm.backend.FIRMWARE_REGEX_PATTERN.replace(

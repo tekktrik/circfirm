@@ -7,15 +7,13 @@
 Author(s): Alec Delaney
 """
 
-from typing import Tuple
-
 import click
 
 import circfirm.backend.device
 import circfirm.cli
 
 
-def get_board_info() -> Tuple[str, str]:
+def get_board_info() -> tuple[str, str]:
     """Get board info via the CLI."""
     circuitpy, _ = circfirm.cli.get_connection_status()
     if not circuitpy:

@@ -12,7 +12,7 @@ import pathlib
 import platform
 import shutil
 import time
-from typing import Any, Callable, Dict, List, TypeVar
+from typing import Any, Callable, TypeVar
 
 import pytest
 import yaml
@@ -149,7 +149,7 @@ def copy_boot_out() -> None:
     _copy_text_file("boot_out.txt")
 
 
-def get_board_ids_from_git() -> List[str]:
+def get_board_ids_from_git() -> list[str]:
     """Get a list of board IDs from the sandbox git repository."""
     ports_path = pathlib.Path("tests/sandbox/circuitpython")
     board_paths = ports_path.glob("ports/*/boards/*")
@@ -172,13 +172,13 @@ def with_token(token: str, use_monkeypatch: bool = False) -> None:
         return prev_token
 
     def with_token_set(func: Callable) -> None:
-        def with_token_set_wrapper(*args: Any, **kwargs: Dict[str, Any]) -> None:
+        def with_token_set_wrapper(*args: Any, **kwargs: dict[str, Any]) -> None:
             prev_token = set_token(token)
             func(*args, **kwargs)
             set_token(prev_token)
 
         def with_token_set_wrapper_monkeypatch(
-            monkeypatch: pytest.MonkeyPatch, *args: Any, **kwargs: Dict[str, Any]
+            monkeypatch: pytest.MonkeyPatch, *args: Any, **kwargs: dict[str, Any]
         ) -> None:
             prev_token = set_token(token)
             func(monkeypatch, *args, **kwargs)

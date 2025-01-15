@@ -13,7 +13,8 @@ import pkgutil
 import shutil
 import sys
 import time
-from typing import Any, Callable, Dict, Iterable, Optional, Tuple, TypeVar
+from collections.abc import Iterable
+from typing import Any, Callable, Optional, TypeVar
 
 import click
 import click_spinner
@@ -47,7 +48,7 @@ def get_board_id(
     bootloader: Optional[str],
     board: Optional[str],
     timeout: int = -1,
-) -> Tuple[str, str]:
+) -> tuple[str, str]:
     """Get the board ID of a device via CLI."""
     if not board:
         if not circuitpy and bootloader:
@@ -74,7 +75,7 @@ def get_board_id(
     return bootloader, board
 
 
-def get_connection_status() -> Tuple[Optional[str], Optional[str]]:
+def get_connection_status() -> tuple[Optional[str], Optional[str]]:
     """Get the status of a connectted CircuitPython device as a CIRCUITPY and bootloader location."""
     circuitpy = circfirm.backend.device.find_circuitpy()
     bootloader = circfirm.backend.device.find_bootloader()
@@ -129,7 +130,7 @@ def announce_and_await(
     msg: str,
     func: Callable[..., _T],
     args: Iterable = (),
-    kwargs: Optional[Dict[str, Any]] = None,
+    kwargs: Optional[dict[str, Any]] = None,
     *,
     use_spinner: bool = True,
 ) -> _T:
@@ -154,7 +155,7 @@ def announce_and_await(
         raise err
 
 
-def get_settings() -> Dict[str, Any]:
+def get_settings() -> dict[str, Any]:
     """Get the contents of the settings file."""
     with open(circfirm.SETTINGS_FILE, encoding="utf-8") as yamlfile:
         return yaml.safe_load(yamlfile)

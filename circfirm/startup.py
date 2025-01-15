@@ -10,13 +10,12 @@ Author(s): Alec Delaney
 import os
 import pathlib
 import shutil
-from typing import List, Tuple
 
 import click
 
-FOLDER_LIST: List[str] = []
-FILE_LIST: List[str] = []
-TEMPLATE_LIST: List[Tuple[str, str]] = []
+FOLDER_LIST: list[str] = []
+FILE_LIST: list[str] = []
+TEMPLATE_LIST: list[tuple[str, str]] = []
 
 
 def specify_app_dir(app_name: str) -> str:
