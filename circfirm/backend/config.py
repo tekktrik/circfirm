@@ -7,24 +7,27 @@
 Author(s): Alec Delaney
 """
 
-from typing import Any, Dict, List, Union
+from typing import Any, Union
 
 import yaml
 from typing_extensions import TypeAlias
 
 _YAML_SCALAR_T: TypeAlias = Union[str, int, float, bool]
-_YAML_DICT_T: TypeAlias = Dict[str, "_YAML_NODE_T"]
-_YAML_LIST_T: TypeAlias = List["_YAML_NODE_T"]
+_YAML_DICT_T: TypeAlias = dict[str, "_YAML_NODE_T"]
+_YAML_LIST_T: TypeAlias = list["_YAML_NODE_T"]
 _YAML_NODE_T: TypeAlias = Union[_YAML_SCALAR_T, _YAML_DICT_T, _YAML_LIST_T]
 
 _VALID_TRUE_OPTIONS = ("y", "yes", "true", "1")
 _VALID_FALSE_OPTIONS = ("n", "no", "false", "0")
 
 
-def get_config_settings(settings_filepath: str) -> Any:
+def get_config_settings(settings_filepath: str) -> tuple[dict[str, Any], dict[str, Any]]:
     """Get the contents of a configuration settings file."""
     with open(settings_filepath, encoding="utf-8") as yamlfile:
-        return yaml.safe_load(yamlfile)
+        settings = yaml.safe_load(yamlfile)
+    with open(settings_filepath, encoding="utf-8") as yamlfile:
+        types = yaml.safe_load(yamlfile)
+    return settings, types
 
 
 def is_node_scalar(value: _YAML_NODE_T) -> bool:

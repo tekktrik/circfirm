@@ -9,7 +9,7 @@ Author(s): Alec Delaney
 
 import os
 import shutil
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple
 
 import yaml
 
@@ -39,9 +39,14 @@ def ensure_plugin_settings(name: str, settings_path: str) -> None:
     plugin_settings_folder = os.path.join(circfirm.PLUGIN_SETTINGS, name)
     if not os.path.exists(plugin_settings_folder):
         os.mkdir(plugin_settings_folder)
-    template_args = settings_path, os.path.join(plugin_settings_folder, "settings.yaml")
-    circfirm.startup.specify_template(*template_args)
-    circfirm.startup.ensure_template(*template_args)
+
+    settings_template_args = settings_path, os.path.join(plugin_settings_folder, "settings.yaml")
+    circfirm.startup.specify_template(*settings_template_args)
+    circfirm.startup.ensure_template(*settings_template_args)
+
+    types_template_args = settings_path, os.path.join(plugin_settings_folder, "settings.schema.yaml")
+    circfirm.startup.specify_template(*types_template_args)
+    circfirm.startup.ensure_template(*types_template_args)
 
 
 def _get_settings_file(name: str, extension: str) -> Optional[str]:
@@ -52,9 +57,11 @@ def _get_settings_file(name: str, extension: str) -> Optional[str]:
         return yaml.safe_load(setfile)
 
 
-def get_settings(name: str) -> Dict[str, Any]:
+def get_settings(name: str) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     """Get the contents of the settings file."""
-    return _get_settings_file(name, "yaml")
+    settings = _get_settings_file(name, "yaml")
+    types = _get_settings_file(name, "schema.yaml")
+    return settings, types
 
 
 def get_plugin_settings_path(name: str) -> str:

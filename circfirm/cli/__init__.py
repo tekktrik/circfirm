@@ -36,7 +36,7 @@ def cli() -> None:
 
 def _maybe_output(msg: str, setting_path: Iterable[str], invert: bool = False) -> None:
     """Output text based on the configurable settings."""
-    settings = get_settings()
+    settings, _ = get_settings()
     for path in setting_path:
         settings = settings[path]
     settings = not settings if invert else settings
@@ -166,7 +166,7 @@ def announce_and_await(
         raise err
 
 
-def get_settings() -> dict[str, Any]:
+def get_settings() -> tuple[dict[str, Any], dict[str, Any]]:
     """Get the contents of the settings file."""
     return circfirm.backend.config.get_config_settings(circfirm.SETTINGS_FILE)
 
@@ -256,7 +256,7 @@ load_subcmd_folder(
 )
 
 # Load downloaded plugins
-settings = get_settings()
+settings, _ = get_settings()
 downloaded_modules: List[str] = settings["plugins"]["downloaded"]
 for downloaded_module in downloaded_modules:
     try:

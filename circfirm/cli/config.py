@@ -8,6 +8,8 @@
 Author(s): Alec Delaney
 """
 
+# TODO: Convert to using schema file for settings
+
 import os
 from typing import Any, Dict, List, Tuple
 
@@ -21,7 +23,7 @@ import circfirm.plugins
 import circfirm.startup
 
 
-def _get_config_settings(plugin: str = "") -> Dict[str, Any]:
+def _get_config_settings(plugin: str = "") -> Tuple[Dict[str, Any], Dict[str, Any]]:
     try:
         return (
             circfirm.plugins.get_settings(plugin)
@@ -48,6 +50,7 @@ def cli():
     """View and update the configuration settings for the circfirm CLI."""
 
 
+# TODO: Modify for schema update
 @cli.command(name="view")
 @click.argument("setting", default="all")
 @click.option(
@@ -56,7 +59,7 @@ def cli():
 def config_view(setting: str, plugin: str) -> None:
     """View a config setting."""
     # Get the settings, show all settings if no specific on is specified
-    settings = _get_config_settings(plugin)
+    settings, _ = _get_config_settings(plugin)
     if setting == "all":
         click.echo(yaml.safe_dump(settings, indent=4), nl=False)
         return
@@ -80,6 +83,7 @@ def config_view(setting: str, plugin: str) -> None:
     click.echo(value)
 
 
+# TODO: Modify for schema update
 @cli.command(name="edit")
 @click.argument("setting")
 @click.argument("value")
@@ -93,7 +97,7 @@ def config_edit(
 ) -> None:
     """Update a config setting."""
     # Get the settings, use another reference to parse
-    orig_settings = _get_config_settings(plugin)
+    orig_settings, _ = _get_config_settings(plugin)
     target_setting = orig_settings
 
     config_args = setting.split(".")
@@ -127,6 +131,7 @@ def config_edit(
         yaml.safe_dump(orig_settings, yamlfile)
 
 
+# TODO: Modify for schema update
 @cli.command(name="add")
 @click.argument("setting")
 @click.argument("value")
@@ -136,22 +141,24 @@ def config_edit(
 def config_add(setting: str, value: str, plugin: str) -> None:
     """Add a value to a list."""
     # Get the settings, use another reference to parse
-    orig_settings = _get_config_settings(plugin)
+    orig_settings, types_settings = _get_config_settings(plugin)
     target_setting = orig_settings
+    target_type = types_settings
 
     config_args = setting.split(".")
 
     # Attempt to parse for the specified config setting and add it
     try:
-        for extra_arg in config_args[:-1]:
+        for extra_arg in config_args[:-1]:  # TODO: Explore the use of helper functions here, since reference is basically a pointer
             target_setting = target_setting[extra_arg]
+            target_type = target_type[extra_arg]
         editing_list: List = target_setting[config_args[-1]]
-        target_type = type(editing_list)
-        if target_type in (dict, str, int, float, bool):
+        # TODO: Convert target_type to actual type using new helper function
+        if type(editing_list) in (dict, str, int, float, bool):  # TODO: Should be isinstance
             raise click.ClickException("Cannot add items to this setting")
         target_list: List = target_setting[config_args[-1]]
         try:
-            element_type = type(target_list[0])
+            element_type = type(target_list[0])  # TODO: Should use type from schema
         except IndexError:
             element_type = str
         if element_type == dict:
@@ -166,6 +173,7 @@ def config_add(setting: str, value: str, plugin: str) -> None:
         yaml.safe_dump(orig_settings, yamlfile)
 
 
+# TODO: Modify for schema update
 @cli.command(name="remove")
 @click.argument("setting")
 @click.argument("value")
@@ -175,7 +183,7 @@ def config_add(setting: str, value: str, plugin: str) -> None:
 def config_remove(setting: str, value: str, plugin: str) -> None:
     """Remove a value from a list."""
     # Get the settings, use another reference to parse
-    orig_settings = _get_config_settings(plugin)
+    orig_settings, _ = _get_config_settings(plugin)
     target_setting = orig_settings
 
     config_args = setting.split(".")
@@ -207,13 +215,14 @@ def config_remove(setting: str, value: str, plugin: str) -> None:
         yaml.safe_dump(orig_settings, yamlfile)
 
 
+# TODO: Modify for schema update
 @cli.command(name="editor")
 @click.option(
     "-p", "--plugin", default="", help="Configure a plugin instead of circfirm"
 )
 def config_editor(plugin: str) -> None:  # pragma: no cover
     """Edit the configuration file in an editor."""
-    settings = _get_config_settings()
+    settings, _ = _get_config_settings()
     editor = settings["editor"]
     editor = editor if editor else None
     target_file = _get_settings_filepath(plugin)

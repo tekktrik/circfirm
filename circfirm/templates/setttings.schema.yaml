@@ -1,0 +1,10 @@
+token:
+    github: str
+output:
+    supporting:
+        silence: bool
+    warning:
+        silence: bool
+editor: str
+plugins:
+    downloaded: [str]
