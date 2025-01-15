@@ -9,7 +9,7 @@ Author(s): Alec Delaney
 
 import pathlib
 import re
-from typing import Optional, Tuple
+from typing import Optional
 
 import psutil
 
@@ -21,7 +21,7 @@ BOARD_VER_REGEX = (
 )
 
 
-def get_board_info(device_path: str) -> Tuple[str, str]:
+def get_board_info(device_path: str) -> tuple[str, str]:
     """Get the attached CircuitPytho board's name and version."""
     bootout_file = pathlib.Path(device_path) / circfirm.BOOTOUT_FILE
     with open(bootout_file, encoding="utf-8") as infofile:

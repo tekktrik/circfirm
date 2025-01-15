@@ -9,7 +9,7 @@ Author(s): Alec Delaney
 
 import datetime
 import re
-from typing import List, Tuple, TypedDict
+from typing import TypedDict
 
 import requests
 
@@ -42,7 +42,7 @@ class GitTreeItem(TypedDict):
     url: str
 
 
-def get_rate_limit() -> Tuple[int, int, datetime.datetime]:
+def get_rate_limit() -> tuple[int, int, datetime.datetime]:
     """Get the rate limit for the GitHub REST endpoint."""
     response = requests.get(
         url="https://api.github.com/rate_limit",
@@ -55,7 +55,7 @@ def get_rate_limit() -> Tuple[int, int, datetime.datetime]:
     return available, total, reset_time
 
 
-def get_board_id_list(token: str) -> List[str]:
+def get_board_id_list(token: str) -> list[str]:
     """Get a list of CircuitPython boards."""
     boards = set()
     headers = BASE_REQUESTS_HEADERS.copy()
@@ -69,7 +69,7 @@ def get_board_id_list(token: str) -> List[str]:
         headers=headers,
     )
     try:
-        tree_items: List[GitTreeItem] = response.json()["tree"]
+        tree_items: list[GitTreeItem] = response.json()["tree"]
     except KeyError as err:
         raise ValueError("Could not parse JSON response, check token") from err
     for tree_item in tree_items:

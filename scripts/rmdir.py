@@ -20,5 +20,5 @@ for root, dirs, files in os.walk(target):
     for name in children:
         filepath = os.path.join(root, name)
         os.chmod(filepath, 0o777)
-        
+
 shutil.rmtree(target)

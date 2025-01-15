@@ -9,7 +9,6 @@ Author(s): Alec Delaney
 
 from collections import namedtuple
 from functools import partial
-from typing import List
 
 import boto3.resources.collection
 import pytest
@@ -20,8 +19,8 @@ MockS3Object = namedtuple("MockS3Object", ["key"])
 
 
 def get_fake_s3_objects(
-    board: str, keys: List[str], *args, **kwargs
-) -> List[MockS3Object]:
+    board: str, keys: list[str], *args, **kwargs
+) -> list[MockS3Object]:
     """Create a set of fake S3 objects."""
     template_link = (
         f"bin/{board}/en_US/adafruit-circuitpython-{board}-en_US-[version].uf2"
