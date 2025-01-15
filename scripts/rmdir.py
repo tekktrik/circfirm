@@ -16,7 +16,7 @@ import sys
 target = sys.argv[1]
 
 for root, dirs, files in os.walk(target):
-    children = dirs.extend(files)
+    children = dirs + files
     for name in children:
         filepath = os.path.join(root, name)
         os.chmod(filepath, 0o777)
