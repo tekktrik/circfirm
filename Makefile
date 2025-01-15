@@ -59,8 +59,8 @@ test-run:
 test-clean:
 ifeq "$(OS)" "Windows_NT"
 	-@subst T: /d
-	-@python scripts/rmdir.py testmount
-	-@python scripts/rmdir.py tests/sandbox/circuitpython
+	-@python scripts\rmdir.py testmount
+	-@python scripts\rmdir.py tests\sandbox\circuitpython
 else ifeq "$(shell uname -s)" "Linux"
 	-@sudo umount testmount
 	-@sudo rm -rf testmount
