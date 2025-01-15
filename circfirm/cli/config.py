@@ -11,7 +11,7 @@ Author(s): Alec Delaney
 # TODO: Convert to using schema file for settings
 
 import os
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 import click
 import yaml
@@ -23,7 +23,7 @@ import circfirm.plugins
 import circfirm.startup
 
 
-def _get_config_settings(plugin: str = "") -> Tuple[Dict[str, Any], Dict[str, Any]]:
+def _get_config_settings(plugin: str = "") -> tuple[dict[str, Any], dict[str, Any]]:
     try:
         return (
             circfirm.plugins.get_settings(plugin)
@@ -152,11 +152,11 @@ def config_add(setting: str, value: str, plugin: str) -> None:
         for extra_arg in config_args[:-1]:  # TODO: Explore the use of helper functions here, since reference is basically a pointer
             target_setting = target_setting[extra_arg]
             target_type = target_type[extra_arg]
-        editing_list: List = target_setting[config_args[-1]]
+        editing_list: list = target_setting[config_args[-1]]
         # TODO: Convert target_type to actual type using new helper function
         if type(editing_list) in (dict, str, int, float, bool):  # TODO: Should be isinstance
             raise click.ClickException("Cannot add items to this setting")
-        target_list: List = target_setting[config_args[-1]]
+        target_list: list = target_setting[config_args[-1]]
         try:
             element_type = type(target_list[0])  # TODO: Should use type from schema
         except IndexError:
@@ -192,11 +192,11 @@ def config_remove(setting: str, value: str, plugin: str) -> None:
     try:
         for extra_arg in config_args[:-1]:
             target_setting = target_setting[extra_arg]
-        editing_list: List = target_setting[config_args[-1]]
+        editing_list: list = target_setting[config_args[-1]]
         target_type = type(editing_list)
         if target_type in (dict, str, int, float, bool):
             raise click.ClickException("Cannot remove items from this setting")
-        target_list: List = target_setting[config_args[-1]]
+        target_list: list = target_setting[config_args[-1]]
         try:
             element_type = type(target_list[0])
         except IndexError:

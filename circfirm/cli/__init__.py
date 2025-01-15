@@ -257,7 +257,7 @@ load_subcmd_folder(
 
 # Load downloaded plugins
 settings, _ = get_settings()
-downloaded_modules: List[str] = settings["plugins"]["downloaded"]
+downloaded_modules: list[str] = settings["plugins"]["downloaded"]
 for downloaded_module in downloaded_modules:
     try:
         module = importlib.import_module(downloaded_module)

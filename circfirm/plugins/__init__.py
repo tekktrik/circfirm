@@ -9,7 +9,7 @@ Author(s): Alec Delaney
 
 import os
 import shutil
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional
 
 import yaml
 
@@ -57,7 +57,7 @@ def _get_settings_file(name: str, extension: str) -> Optional[str]:
         return yaml.safe_load(setfile)
 
 
-def get_settings(name: str) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+def get_settings(name: str) -> tuple[dict[str, Any], dict[str, Any]]:
     """Get the contents of the settings file."""
     settings = _get_settings_file(name, "yaml")
     types = _get_settings_file(name, "schema.yaml")

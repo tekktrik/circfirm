@@ -226,7 +226,7 @@ def test_config_remove() -> None:
     with open(circfirm.SETTINGS_FILE, encoding="utf-8") as setfile:
         new_settings = yaml.safe_load(setfile)
     parent_key, type_key = test_key.split(".")
-    modified_list: List[str] = orig_settings[parent_key][type_key]
+    modified_list: list[str] = orig_settings[parent_key][type_key]
     modified_list.remove(remove_value)
     assert new_settings[parent_key][type_key] == modified_list
 
