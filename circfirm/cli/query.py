@@ -57,7 +57,12 @@ def query_board_ids(regex: str) -> None:
         )
     for board in boards:
         board_id = board.strip()
-        result = re.search(regex, board_id)
+        try:
+            result = re.search(regex, board_id)
+        except re.PatternError:
+            raise click.exceptions.ClickException(
+                "Regex pattern error - please check the regex syntax"
+            )
         if result:
             click.echo(board_id)
 
@@ -76,6 +81,10 @@ def query_versions(board_id: str, language: str, regex: str) -> None:
         )
     except botocore.exceptions.ConnectionError as err:
         raise click.exceptions.ClickException(err.args[0])
+    except re.PatternError:
+        raise click.exceptions.ClickException(
+            "Regex pattern error - please check the regex syntax"
+        )
     for version in reversed(versions):
         click.echo(version)
 
