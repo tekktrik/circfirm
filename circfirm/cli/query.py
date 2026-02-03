@@ -9,6 +9,7 @@ Author(s): Alec Delaney
 
 import re
 
+import botocore.exceptions
 import click
 import requests
 
@@ -69,7 +70,12 @@ def query_board_ids(regex: str) -> None:
 )
 def query_versions(board_id: str, language: str, regex: str) -> None:
     """Query the CircuitPython versions available for a board."""
-    versions = circfirm.backend.s3.get_board_versions(board_id, language, regex=regex)
+    try:
+        versions = circfirm.backend.s3.get_board_versions(
+            board_id, language, regex=regex
+        )
+    except botocore.exceptions.ConnectionError as err:
+        raise click.exceptions.ClickException(err.args[0])
     for version in reversed(versions):
         click.echo(version)
 
@@ -86,8 +92,11 @@ def query_versions(board_id: str, language: str, regex: str) -> None:
 )
 def query_latest(board_id: str, language: str, pre_release: bool) -> None:
     """Query the latest CircuitPython versions available."""
-    version = circfirm.backend.s3.get_latest_board_version(
-        board_id, language, pre_release
-    )
+    try:
+        version = circfirm.backend.s3.get_latest_board_version(
+            board_id, language, pre_release
+        )
+    except botocore.exceptions.ConnectionError as err:
+        raise click.exceptions.ClickException(err.args[0])
     if version:
         click.echo(version)

@@ -13,6 +13,7 @@ import re
 import shutil
 from typing import Optional
 
+import botocore.exceptions
 import click
 
 import circfirm
@@ -153,3 +154,7 @@ def cache_latest(board_id: str, language: str, pre_release: bool) -> None:
         )
     except ConnectionError as err:
         raise click.exceptions.ClickException(err.args[0])
+    except botocore.exceptions.ConnectionError:
+        raise click.exceptions.ClickException(
+            "Could not connect to the S3 bucket - check network connection"
+        )

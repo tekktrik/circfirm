@@ -9,6 +9,7 @@ Author(s): Alec Delaney
 
 from typing import Optional
 
+import botocore.exceptions
 import click
 import packaging.version
 
@@ -79,7 +80,10 @@ def cli(  # noqa: PLR0913
     except OSError as err:
         raise click.ClickException(err.args[0])
 
-    new_versions = circfirm.backend.s3.get_board_versions(board_id, language)
+    try:
+        new_versions = circfirm.backend.s3.get_board_versions(board_id, language)
+    except botocore.exceptions.ConnectionError as err:
+        raise click.exceptions.ClickException(err.args[0])
 
     if not pre_release:
         new_versions = [
