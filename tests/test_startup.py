@@ -9,7 +9,6 @@ Author(s): Alec Delaney
 
 import os
 
-import circfirm.backend
 import circfirm.startup
 import tests.helpers
 

@@ -17,8 +17,7 @@ from circfirm.cli import cli
 RUNNER = CliRunner()
 
 
-@tests.helpers.as_circuitpy
-def test_detect_circuitpy_found() -> None:
+def test_detect_circuitpy_found(mock_with_circuitpy: None) -> None:
     """Tests the ability of the detect circuitpy command to find a connected board."""
     result = RUNNER.invoke(cli, ["detect", "circuitpy"])
     assert result.exit_code == 0
@@ -28,15 +27,13 @@ def test_detect_circuitpy_found() -> None:
     assert circuitpy == mount
 
 
-@tests.helpers.as_not_present
-def test_detect_circuitpy_not_found() -> None:
+def test_detect_circuitpy_not_found(mock_with_no_device: None) -> None:
     """Tests the detect circuitpy command without a connected board."""
     result = RUNNER.invoke(cli, ["detect", "circuitpy"])
     assert result.output == "No board connected in CIRCUITPY or equivalent mode\n"
 
 
-@tests.helpers.as_bootloader
-def test_detect_bootloader_found() -> None:
+def test_detect_bootloader_found(mock_with_bootloader: None) -> None:
     """Tests the ability of the detect bootloader command to find a connected board."""
     import time
 
@@ -49,8 +46,7 @@ def test_detect_bootloader_found() -> None:
     assert bootloader == mount
 
 
-@tests.helpers.as_not_present
-def test_detect_bootloader_not_found() -> None:
+def test_detect_bootloader_not_found(mock_with_no_device: None) -> None:
     """Tests the detect bootloader command without a connected board."""
     result = RUNNER.invoke(cli, ["detect", "bootloader"])
     assert result.output == "No board connected in bootloader mode\n"

@@ -15,7 +15,6 @@ import packaging.version
 
 import circfirm.backend.device
 import circfirm.backend.s3
-import circfirm.cli.install
 
 
 @click.command()

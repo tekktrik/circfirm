@@ -11,23 +11,15 @@ import os
 from typing import NoReturn
 
 import pytest
-import requests
 from click.testing import CliRunner
 
-import circfirm.backend.github
 import tests.helpers
 from circfirm.cli import cli
 
 RUNNER = CliRunner()
 
 
-def simulate_no_connection(arg: str) -> NoReturn:
-    """Simulate a network error by raising requests.ConnectionError."""
-    raise requests.ConnectionError
-
-
-@tests.helpers.with_token(os.environ["GH_TOKEN"])
-def test_query_board_ids() -> None:
+def test_query_board_ids(token: None) -> None:
     """Tests the ability to query the boards using the CLI."""
     # Test an authenticated request with supporting text
     board_ids = tests.helpers.get_board_ids_from_git()
@@ -45,33 +37,52 @@ def test_query_board_ids() -> None:
     assert result.output == expected_output
 
     # Test an authenticated request without supporting text
+    preexisting = RUNNER.invoke(cli, ["config", "view", "output.supporting.silence"])
     assert result.exit_code == 0
+    preexisting = preexisting.output.strip()
+    assert preexisting in ("true", "false")
+
+    # Suppress supporting text
     result = RUNNER.invoke(cli, ["config", "edit", "output.supporting.silence", "true"])
     assert result.exit_code == 0
+
+    # Test command
     result = RUNNER.invoke(cli, ["query", "board-ids"])
     assert result.exit_code == 0
     assert result.output == pre_expected_output
 
+    # Reset the supporting text setting
+    result = RUNNER.invoke(
+        cli, ["config", "edit", "output.supporting.silence", preexisting]
+    )
+    assert result.exit_code == 0
 
-@tests.helpers.with_token("badtoken")
-def test_query_board_ids_bad_token() -> None:
+    # Check results of reset
+    final = RUNNER.invoke(cli, ["config", "view", "output.supporting.silence"])
+    assert result.exit_code == 0
+    final = final.output.strip()
+    assert final == preexisting
+
+
+@pytest.mark.parametrize("token", ["badtoken"], indirect=True)
+def test_query_board_ids_bad_token(token: None) -> None:
     """Test a request with a faulty token."""
     result = RUNNER.invoke(cli, ["query", "board-ids"])
     assert result.exit_code != 0
 
 
-@tests.helpers.with_token(os.environ["GH_TOKEN"], True)
-def test_query_board_ids_no_network(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_query_board_ids_no_internet(
+    token: None, mock_requests_no_internet: NoReturn
+) -> None:
     """Tests failure when cannot fetch results due to no network connection."""
-    monkeypatch.setattr(
-        circfirm.backend.github, "get_board_id_list", simulate_no_connection
-    )
     result = RUNNER.invoke(cli, ["query", "board-ids"])
     assert result.exit_code != 0
-    assert (
-        result.output.split("\n")[-2]
-        == "Error: Issue with requesting information from git repository, check network connection"
-    )
+
+
+def test_query_board_ids_bad_regex(token: None) -> None:
+    """Tests failure when a bad regex pattern is provided."""
+    result = RUNNER.invoke(cli, ["query", "board-ids", "--regex", "*badregex"])
+    assert result.exit_code != 0
 
 
 def test_query_versions() -> None:
@@ -115,6 +126,33 @@ def test_query_versions() -> None:
     assert result.output == "6.2.0-beta.1\n"
 
 
+def test_query_versions_no_internet(mock_s3_no_internet: NoReturn) -> None:
+    """Tests the ability to query firmware versions using the CLI."""
+    board = "adafruit_feather_rp2040"
+    language = "cs"
+
+    result = RUNNER.invoke(
+        cli,
+        [
+            "query",
+            "versions",
+            board,
+            "--language",
+            language,
+        ],
+    )
+
+    assert result.exit_code != 0
+
+
+def test_query_versions_bad_regex(token: None) -> None:
+    """Tests failure when a bad regex pattern is provided."""
+    result = RUNNER.invoke(
+        cli, ["query", "versions", "adafruit_feather_rp2040", "--regex", "*badregex"]
+    )
+    assert result.exit_code != 0
+
+
 def test_query_latest() -> None:
     """Tests the ability to query the latest version of the firmware using the CLI."""
     board = "adafruit_feather_rp2040"
@@ -142,3 +180,22 @@ def test_query_latest() -> None:
     )
     assert result.exit_code == 0
     assert result.output == expected_output
+
+
+def test_query_latest_no_internet(mock_s3_no_internet: NoReturn) -> None:
+    """Tests the ability to query the latest version of the firmware using the CLI."""
+    board = "adafruit_feather_rp2040"
+    language = "cs"
+
+    # Test without pre-releases included
+    result = RUNNER.invoke(
+        cli,
+        [
+            "query",
+            "latest",
+            board,
+            "--language",
+            language,
+        ],
+    )
+    assert result.exit_code != 0

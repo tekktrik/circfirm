@@ -17,7 +17,6 @@ import packaging.version
 from mypy_boto3_s3 import S3ServiceResource
 
 import circfirm.backend
-import circfirm.backend.cache
 
 S3_CONFIG = botocore.client.Config(signature_version=botocore.UNSIGNED)
 S3_RESOURCE: S3ServiceResource = boto3.resource("s3", config=S3_CONFIG)

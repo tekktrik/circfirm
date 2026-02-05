@@ -11,83 +11,21 @@ import os
 import pathlib
 import platform
 import shutil
+import threading
 import time
-from typing import Any, Callable, TypeVar
-
-import pytest
-import yaml
 
 import circfirm
-import circfirm.backend
-
-_T = TypeVar("_T")
 
 
-def as_circuitpy(func: Callable[..., _T]) -> Callable[..., _T]:
-    """Decorator for running a function with a device connected in CIRCUITPY mode."""  # noqa: D401
-
-    def as_circuitpy_wrapper(*args, **kwargs) -> _T:
-        delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
-        delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
-        copy_boot_out()
-        result = func(*args, **kwargs)
-        delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
-        return result
-
-    return as_circuitpy_wrapper
-
-
-def as_bootloader(func: Callable[..., _T]) -> Callable[..., _T]:
-    """Decorator for running a function with a device connected in bootloader mode."""  # noqa: D401
-
-    def as_bootloader_wrapper(*args, **kwargs) -> _T:
-        delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
-        delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
-        copy_uf2_info()
-        result = func(*args, **kwargs)
-        delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
-        return result
-
-    return as_bootloader_wrapper
-
-
-def as_not_present(func: Callable[..., _T]) -> Callable[..., _T]:
-    """Decorator for running a function without a device connected in either CIRCUITPY or bootloader mode."""  # noqa: D401
-
-    def as_not_present_wrapper(*args, **kwargs) -> _T:
-        delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
-        delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
-        return func(*args, **kwargs)
-
-    return as_not_present_wrapper
-
-
-def with_firmwares(func: Callable[..., _T]) -> Callable[..., _T]:
-    """Decorator for running a function with the test firmwares in the cache archive."""  # noqa: D401
-
-    def with_firmwares_wrapper(*args, **kwargs) -> _T:
-        firmware_folder = pathlib.Path("tests/assets/firmwares")
-        for board_folder in firmware_folder.glob("*"):
-            shutil.copytree(
-                board_folder, os.path.join(circfirm.UF2_ARCHIVE, board_folder.name)
-            )
-
-        result = func(*args, **kwargs)
-
-        if os.path.exists(circfirm.UF2_ARCHIVE):
-            shutil.rmtree(circfirm.UF2_ARCHIVE)
-        os.mkdir(circfirm.UF2_ARCHIVE)
-
-        return result
-
-    return with_firmwares_wrapper
-
-
-def wait_and_set_bootloader() -> None:
+def start_bootloader_copy_thread() -> None:
     """Wait then add the boot_out.txt file."""
-    time.sleep(2)
-    delete_mount_node(circfirm.BOOTOUT_FILE)
-    copy_uf2_info()
+
+    def wait_and_set_bootloader() -> None:
+        time.sleep(2)
+        delete_mount_node(circfirm.BOOTOUT_FILE)
+        copy_uf2_info()
+
+    threading.Thread(target=wait_and_set_bootloader).start()
 
 
 def set_firmware_version(version: str) -> None:
@@ -156,36 +94,3 @@ def get_board_ids_from_git() -> list[str]:
     return sorted(
         [board_path.name for board_path in board_paths if board_path.is_dir()]
     )
-
-
-def with_token(token: str, use_monkeypatch: bool = False) -> None:
-    """Perform a test with the given token in the configuration settings."""
-
-    def set_token(new_token: str) -> str:
-        """Set a new token."""
-        with open(circfirm.SETTINGS_FILE, encoding="utf-8") as setfile:
-            contents = yaml.safe_load(setfile)
-            prev_token = contents["token"]["github"]
-            contents["token"]["github"] = new_token
-        with open(circfirm.SETTINGS_FILE, mode="w", encoding="utf-8") as setfile:
-            yaml.safe_dump(contents, setfile)
-        return prev_token
-
-    def with_token_set(func: Callable) -> None:
-        def with_token_set_wrapper(*args: Any, **kwargs: dict[str, Any]) -> None:
-            prev_token = set_token(token)
-            func(*args, **kwargs)
-            set_token(prev_token)
-
-        def with_token_set_wrapper_monkeypatch(
-            monkeypatch: pytest.MonkeyPatch, *args: Any, **kwargs: dict[str, Any]
-        ) -> None:
-            prev_token = set_token(token)
-            func(monkeypatch, *args, **kwargs)
-            set_token(prev_token)
-
-        if use_monkeypatch:
-            return with_token_set_wrapper_monkeypatch
-        return with_token_set_wrapper
-
-    return with_token_set

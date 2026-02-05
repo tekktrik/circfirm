@@ -9,14 +9,12 @@ Author(s): Alec Delaney
 
 from click.testing import CliRunner
 
-import tests.helpers
 from circfirm.cli import cli
 
 RUNNER = CliRunner()
 
 
-@tests.helpers.as_circuitpy
-def test_current() -> None:
+def test_current(mock_with_circuitpy: None) -> None:
     """Tests the current name and version commands."""
     # Test when connected in CIRCUITPY mode
     result = RUNNER.invoke(cli, ["current", "board-id"])
@@ -28,8 +26,7 @@ def test_current() -> None:
     assert result.output == "8.0.0-beta.6\n"
 
 
-@tests.helpers.as_bootloader
-def test_current_in_bootloader() -> None:
+def test_current_in_bootloader(mock_with_bootloader: None) -> None:
     """Tests the current command whenn connected in bootloader mode."""
     result = RUNNER.invoke(cli, ["current", "board-id"])
     assert result.exit_code != 0
