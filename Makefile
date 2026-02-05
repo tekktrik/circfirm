@@ -1,5 +1,4 @@
 # SPDX-FileCopyrightText: 2024 Alec Delaney
-#
 # SPDX-License-Identifier: MIT
 
 .PHONY: lint

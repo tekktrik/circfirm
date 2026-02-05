@@ -1,5 +1,4 @@
 # SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
-#
 # SPDX-License-Identifier: Unlicense
 
 # Store the board ID and quantity in variables for use throughout the script

@@ -1,5 +1,4 @@
 # SPDX-FileCopyrightText: 2022 Alec Delaney, for Adafruit Industries
-#
 # SPDX-License-Identifier: MIT
 
 """Pytest configuration file.
