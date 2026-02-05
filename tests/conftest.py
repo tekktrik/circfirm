@@ -1,5 +1,4 @@
 # SPDX-FileCopyrightText: 2022 Alec Delaney, for Adafruit Industries
-#
 # SPDX-License-Identifier: MIT
 
 """Pytest configuration file.
@@ -11,7 +10,7 @@ import os
 import pathlib
 import shutil
 from collections.abc import Iterator
-from typing import NoReturn, Union
+from typing import NoReturn
 
 import botocore.exceptions
 import click
@@ -53,7 +52,7 @@ def pytest_sessionstart(session: pytest.Session) -> None:
 
 
 def pytest_sessionfinish(
-    session: pytest.Session, exitstatus: Union[int, pytest.ExitCode]
+    session: pytest.Session, exitstatus: int | pytest.ExitCode
 ) -> None:
     """Restore the previous cron table after testing."""
     try:

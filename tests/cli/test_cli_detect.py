@@ -1,5 +1,4 @@
 # SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
-#
 # SPDX-License-Identifier: MIT
 
 """Tests the CLI functionality for detect command.
@@ -35,9 +34,6 @@ def test_detect_circuitpy_not_found(mock_with_no_device: None) -> None:
 
 def test_detect_bootloader_found(mock_with_bootloader: None) -> None:
     """Tests the ability of the detect bootloader command to find a connected board."""
-    import time
-
-    time.sleep(2)
     result = RUNNER.invoke(cli, ["detect", "bootloader"])
     assert result.exit_code == 0
     bootloader = pathlib.Path(result.output.strip())

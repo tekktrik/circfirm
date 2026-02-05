@@ -1,5 +1,4 @@
 # SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
-#
 # SPDX-License-Identifier: MIT
 
 """Backend functionality for the working with the CircuitPython firmware S3 bucket.
@@ -8,7 +7,6 @@ Author(s): Alec Delaney
 """
 
 import re
-from typing import Optional
 
 import boto3
 import botocore
@@ -25,7 +23,7 @@ BUCKET = S3_RESOURCE.Bucket(BUCKET_NAME)
 
 
 def get_board_versions(
-    board_id: str, language: str = "en_US", *, regex: Optional[str] = None
+    board_id: str, language: str = "en_US", *, regex: str | None = None
 ) -> list[str]:
     """Get a list of CircuitPython versions for a given board."""
     prefix = f"bin/{board_id}/{language}"
@@ -50,7 +48,7 @@ def get_board_versions(
 
 def get_latest_board_version(
     board_id: str, language: str, pre_release: bool
-) -> Optional[str]:
+) -> str | None:
     """Get the latest version for a board in a given language."""
     versions = get_board_versions(board_id, language)
     if not pre_release:

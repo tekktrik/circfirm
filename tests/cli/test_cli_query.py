@@ -1,5 +1,4 @@
 # SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
-#
 # SPDX-License-Identifier: MIT
 
 """Tests the CLI's query command functionality.
@@ -7,7 +6,6 @@
 Author(s): Alec Delaney
 """
 
-import os
 from typing import NoReturn
 
 import pytest

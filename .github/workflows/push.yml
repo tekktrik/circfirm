@@ -1,5 +1,4 @@
 # SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
-#
 # SPDX-License-Identifier: MIT
 
 name: Build CI
@@ -16,11 +15,11 @@ jobs:
       fail-fast: false
       matrix:
         py-version: [
-          "3.9",
           "3.10",
           "3.11",
           "3.12",
           "3.13",
+          "3.14",
         ]
         os: [
           "ubuntu-latest",
@@ -29,33 +28,32 @@ jobs:
         ]
         exclude:
           - os: windows-latest
-            py-version: "3.10"
-          - os: windows-latest
             py-version: "3.11"
           - os: windows-latest
             py-version: "3.12"
           - os: windows-latest
             py-version: "3.13"
-          - os: macos-latest
-            py-version: "3.10"
+          - os: windows-latest
+            py-version: "3.14"
           - os: macos-latest
             py-version: "3.11"
           - os: macos-latest
             py-version: "3.12"
           - os: macos-latest
             py-version: "3.13"
+          - os: macos-latest
+            py-version: "3.14"
 
     steps:
       - name: Setup Python 3.x
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.py-version }}
       - name: Checkout the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Install requirements
         run: |
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
+          pip install ".[dev]"
       - name: Run pre-commit via make
         run: |
           make check
@@ -80,9 +78,9 @@ jobs:
         run: |
           coverage xml -o coverage_${{ matrix.os }}_${{ matrix.py-version }}.xml
       - name: Upload coverage report to Codecov
-        uses: codecov/codecov-action@v4.0.1
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
-          file: coverage_${{ matrix.os }}_${{ matrix.py-version }}.xml
+          files: coverage_${{ matrix.os }}_${{ matrix.py-version }}.xml
           flags: "${{ matrix.os }}-py-${{ matrix.py-version }}"

@@ -1,5 +1,4 @@
 # SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
-#
 # SPDX-License-Identifier: MIT
 
 """CLI functionality for the cache subcommand.
@@ -11,7 +10,6 @@ import os
 import pathlib
 import re
 import shutil
-from typing import Optional
 
 import botocore.exceptions
 import click
@@ -40,9 +38,9 @@ def cli():
     help="The board ID, version, and language options represent regex patterns",
 )
 def clear(  # noqa: PLR0913
-    board_id: Optional[str],
-    version: Optional[str],
-    language: Optional[str],
+    board_id: str | None,
+    version: str | None,
+    language: str | None,
     regex: bool,
 ) -> None:
     """Clear the cache, either entirely or for a specific board/version."""
@@ -91,7 +89,7 @@ def clear(  # noqa: PLR0913
 
 @cli.command(name="list")
 @click.option("-b", "--board-id", default=None, help="CircuitPython board ID")
-def cache_list(board_id: Optional[str]) -> None:
+def cache_list(board_id: str | None) -> None:
     """List all the boards/versions cached."""
     board_list = os.listdir(circfirm.UF2_ARCHIVE)
 

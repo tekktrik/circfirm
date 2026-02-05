@@ -1,5 +1,4 @@
 # SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
-#
 # SPDX-License-Identifier: MIT
 
 """CLI functionality for the query subcommand.
@@ -51,7 +50,7 @@ def query_board_ids(regex: str) -> None:
             boards = circfirm.backend.github.get_board_id_list(gh_token)
     except ValueError as err:
         raise click.ClickException(err.args[0])
-    except requests.ConnectionError as err:
+    except requests.ConnectionError:
         print("Triggered!")
         raise click.ClickException(
             "Issue with requesting information from git repository, check network connection"

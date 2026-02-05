@@ -1,13 +1,10 @@
 # SPDX-FileCopyrightText: 2024 Alec Delaney
-#
 # SPDX-License-Identifier: MIT
 
 """Configuration file for sphinx documentation."""
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-
-import sphinx_rtd_theme
 
 project = "circfirm"
 copyright = "2024, Alec Delaney"

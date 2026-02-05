@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
 # Based on code from circlink (Authored by Alec Delaney, licensed under MIT license)
-#
 # SPDX-License-Identifier: MIT
 
 """CLI functionality for the config subcommand.

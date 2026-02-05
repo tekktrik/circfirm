@@ -1,5 +1,4 @@
 # SPDX-FileCopyrightText: 2022 Alec Delaney, for Adafruit Industries
-#
 # SPDX-License-Identifier: MIT
 
 [build-system]
@@ -12,7 +11,7 @@ requires = [
 [project]
 name = "circfirm"
 description = "CLI tool for install firmware for CircuitPython boards"
-requires-python = ">=3.9.0"
+requires-python = ">=3.10.0"
 readme = "README.rst"
 authors = [
     {name = "Alec Delaney", email = "tekktrik@gmail.com"}
@@ -35,18 +34,40 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Natural Language :: English",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Operating System :: Unix",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: MacOS",
     "Typing :: Typed",
 ]
-dynamic = ["version", "dependencies", "optional-dependencies"]
+dependencies = [
+    "boto3==1.42.42",
+    "boto3-stubs[essential]==1.42.42",
+    "click==8.3.1",
+    "click-spinner==0.1.10",
+    "packaging==24.2",
+    "psutil==6.1.1",
+    "pyyaml==6.0.3",
+    "requests==2.32.5",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+    "build==1.4.0",
+    "coverage==7.13.3",
+    "pre-commit==4.5.1",
+    "pytest==8.4.2",
+    "sphinx==7.4.7",
+    "sphinx-tabs==3.4.7",
+    "sphinx-rtd-theme==3.1.0",
+]
+
 
 [project.urls]
 Homepage = "https://github.com/tekktrik/circfirm"
@@ -67,10 +88,6 @@ include-package-data = true
 [tool.setuptools.dynamic.version]
 file = "VERSION"
 
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
-optional-dependencies = {dev = {file = ["requirements-dev.txt"]}}
-
 [tool.setuptools_scm]
 
 [tool.coverage.run]
@@ -80,7 +97,7 @@ source = [
 ]
 
 [tool.ruff.lint]
-select = ["D", "PL", "UP", "I"]
+select = ["D", "PL", "UP", "I", "F"]
 ignore = ["D213", "D203"]
 
 [tool.pytest.ini_options]

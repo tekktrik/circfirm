@@ -1,5 +1,4 @@
 # SPDX-FileCopyrightText: 2022 Alec Delaney, for Adafruit Industries
-#
 # SPDX-License-Identifier: MIT
 
 """Main CLI functionality for the tool.
@@ -13,8 +12,8 @@ import pkgutil
 import shutil
 import sys
 import time
-from collections.abc import Iterable
-from typing import Any, Callable, Optional, TypeVar
+from collections.abc import Callable, Iterable
+from typing import Any, TypeVar
 
 import click
 import click_spinner
@@ -44,9 +43,9 @@ def maybe_support(msg: str) -> None:
 
 
 def get_board_id(
-    circuitpy: Optional[str],
-    bootloader: Optional[str],
-    board: Optional[str],
+    circuitpy: str | None,
+    bootloader: str | None,
+    board: str | None,
     timeout: int = -1,
 ) -> tuple[str, str]:
     """Get the board ID of a device via CLI."""
@@ -75,7 +74,7 @@ def get_board_id(
     return bootloader, board
 
 
-def get_connection_status() -> tuple[Optional[str], Optional[str]]:
+def get_connection_status() -> tuple[str | None, str | None]:
     """Get the status of a connectted CircuitPython device as a CIRCUITPY and bootloader location."""
     circuitpy = circfirm.backend.device.find_circuitpy()
     bootloader = circfirm.backend.device.find_bootloader()
@@ -86,7 +85,7 @@ def get_connection_status() -> tuple[Optional[str], Optional[str]]:
     return circuitpy, bootloader
 
 
-def ensure_bootloader_mode(bootloader: Optional[str]) -> None:
+def ensure_bootloader_mode(bootloader: str | None) -> None:
     """Ensure the connected device is in bootloader mode."""
     if not bootloader:
         if circfirm.backend.device.find_circuitpy():
@@ -130,7 +129,7 @@ def announce_and_await(
     msg: str,
     func: Callable[..., _T],
     args: Iterable = (),
-    kwargs: Optional[dict[str, Any]] = None,
+    kwargs: dict[str, Any] | None = None,
     *,
     use_spinner: bool = True,
 ) -> _T:

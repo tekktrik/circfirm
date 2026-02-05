@@ -1,13 +1,10 @@
 # SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
-#
 # SPDX-License-Identifier: MIT
 
 """CLI functionality for the update subcommand.
 
 Author(s): Alec Delaney
 """
-
-from typing import Optional
 
 import botocore.exceptions
 import click
@@ -53,7 +50,7 @@ import circfirm.backend.s3
     help="Upgrade up to patch version updates",
 )
 def cli(  # noqa: PLR0913
-    board_id: Optional[str],
+    board_id: str | None,
     language: str,
     timeout: int,
     pre_release: bool,
