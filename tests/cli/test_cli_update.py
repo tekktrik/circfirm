@@ -46,9 +46,7 @@ def test_update(mock_with_circuitpy: None) -> None:
             shutil.rmtree(board_folder)
 
 
-def test_update_no_internet(
-    mock_s3_no_internet: None, mock_with_circuitpy: None
-) -> None:
+def test_update_no_internet(mock_no_internet: None, mock_with_circuitpy: None) -> None:
     """Test the update command when in CIRCUITPY mode."""
     try:
         tests.helpers.set_firmware_version(ORIGINAL_VERSION)

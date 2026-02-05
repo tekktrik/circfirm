@@ -69,9 +69,7 @@ def test_query_board_ids_bad_token(token: None) -> None:
     assert result.exit_code != 0
 
 
-def test_query_board_ids_no_internet(
-    token: None, mock_requests_no_internet: NoReturn
-) -> None:
+def test_query_board_ids_no_internet(token: None, mock_no_internet: NoReturn) -> None:
     """Tests failure when cannot fetch results due to no network connection."""
     result = RUNNER.invoke(cli, ["query", "board-ids"])
     assert result.exit_code != 0
@@ -124,7 +122,7 @@ def test_query_versions() -> None:
     assert result.output == "6.2.0-beta.1\n"
 
 
-def test_query_versions_no_internet(mock_s3_no_internet: NoReturn) -> None:
+def test_query_versions_no_internet(mock_no_internet: NoReturn) -> None:
     """Tests the ability to query firmware versions using the CLI."""
     board = "adafruit_feather_rp2040"
     language = "cs"
@@ -180,7 +178,7 @@ def test_query_latest() -> None:
     assert result.output == expected_output
 
 
-def test_query_latest_no_internet(mock_s3_no_internet: NoReturn) -> None:
+def test_query_latest_no_internet(mock_no_internet: NoReturn) -> None:
     """Tests the ability to query the latest version of the firmware using the CLI."""
     board = "adafruit_feather_rp2040"
     language = "cs"

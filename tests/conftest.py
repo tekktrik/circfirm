@@ -120,25 +120,19 @@ def mock_with_firmwares_archived() -> Iterator[None]:
 
 
 @pytest.fixture
-def mock_requests_no_internet(monkeypatch: pytest.MonkeyPatch) -> NoReturn:
+def mock_no_internet(monkeypatch: pytest.MonkeyPatch) -> NoReturn:
     """Simulate a network error by raising requests.ConnectionError."""
 
-    def mock_get(*args, **kwargs) -> NoReturn:
+    def mock_requests_get(*args, **kwargs) -> NoReturn:
         """Mock GET function."""
         raise requests.ConnectionError
 
-    monkeypatch.setattr(requests, "get", mock_get)
-
-
-@pytest.fixture
-def mock_s3_no_internet(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Monkeypatch for an S3 command run without an internet connection."""
-
-    def mock_send(self, *args, **kwargs) -> NoReturn:
+    def mock_urllib3session_send(self, *args, **kwargs) -> NoReturn:
         """Mock send method."""
         raise botocore.exceptions.EndpointConnectionError(endpoint_url="test")
 
-    monkeypatch.setattr(URLLib3Session, "send", mock_send)
+    monkeypatch.setattr(requests, "get", mock_requests_get)
+    monkeypatch.setattr(URLLib3Session, "send", mock_urllib3session_send)
 
 
 # Fixtures for working with GitHub tokens in settings file
