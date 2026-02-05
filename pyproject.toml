@@ -12,7 +12,7 @@ requires = [
 [project]
 name = "circfirm"
 description = "CLI tool for install firmware for CircuitPython boards"
-requires-python = ">=3.9.0"
+requires-python = ">=3.10.0"
 readme = "README.rst"
 authors = [
     {name = "Alec Delaney", email = "tekktrik@gmail.com"}
@@ -35,11 +35,11 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Natural Language :: English",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Operating System :: Unix",
     "Operating System :: Microsoft :: Windows",
