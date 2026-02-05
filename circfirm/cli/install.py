@@ -29,7 +29,7 @@ import circfirm.cli
     default=-1,
     help="Set a timeout in seconds for the switch to bootloader mode",
 )
-def cli(version: str, language: str, board_id: Optional[str], timeout: int) -> None:
+def cli(version: str, language: str, board_id: str | None, timeout: int) -> None:
     """Install the specified version of CircuitPython."""
     circuitpy, bootloader = circfirm.cli.get_connection_status()
     try:

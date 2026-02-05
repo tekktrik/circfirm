@@ -55,7 +55,7 @@ def download_uf2(board_id: str, version: str, language: str = "en_US") -> None:
         uf2file.write(response.content)
 
 
-def get_sorted_boards(board_id: Optional[str]) -> dict[str, dict[str, set[str]]]:
+def get_sorted_boards(board_id: str | None) -> dict[str, dict[str, set[str]]]:
     """Get a sorted collection of boards, versions, and languages."""
     boards: dict[str, dict[str, set[str]]] = {}
     for board_folder in sorted(os.listdir(circfirm.UF2_ARCHIVE)):

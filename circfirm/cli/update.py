@@ -53,7 +53,7 @@ import circfirm.backend.s3
     help="Upgrade up to patch version updates",
 )
 def cli(  # noqa: PLR0913
-    board_id: Optional[str],
+    board_id: str | None,
     language: str,
     timeout: int,
     pre_release: bool,

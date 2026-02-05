@@ -35,7 +35,7 @@ def get_board_info(device_path: str) -> tuple[str, str]:
     return board_match[1], version_match[1]
 
 
-def _find_device(filename: str) -> Optional[str]:
+def _find_device(filename: str) -> str | None:
     """Find a specific connected device."""
     for partition in psutil.disk_partitions():
         try:
@@ -47,11 +47,11 @@ def _find_device(filename: str) -> Optional[str]:
     return None
 
 
-def find_circuitpy() -> Optional[str]:
+def find_circuitpy() -> str | None:
     """Find CircuitPython device in non-bootloader mode."""
     return _find_device(circfirm.BOOTOUT_FILE)
 
 
-def find_bootloader() -> Optional[str]:
+def find_bootloader() -> str | None:
     """Find CircuitPython device in bootloader mode."""
     return _find_device(circfirm.UF2INFO_FILE)

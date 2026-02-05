@@ -25,7 +25,7 @@ BUCKET = S3_RESOURCE.Bucket(BUCKET_NAME)
 
 
 def get_board_versions(
-    board_id: str, language: str = "en_US", *, regex: Optional[str] = None
+    board_id: str, language: str = "en_US", *, regex: str | None = None
 ) -> list[str]:
     """Get a list of CircuitPython versions for a given board."""
     prefix = f"bin/{board_id}/{language}"
@@ -50,7 +50,7 @@ def get_board_versions(
 
 def get_latest_board_version(
     board_id: str, language: str, pre_release: bool
-) -> Optional[str]:
+) -> str | None:
     """Get the latest version for a board in a given language."""
     versions = get_board_versions(board_id, language)
     if not pre_release:

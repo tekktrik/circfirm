@@ -53,7 +53,7 @@ def pytest_sessionstart(session: pytest.Session) -> None:
 
 
 def pytest_sessionfinish(
-    session: pytest.Session, exitstatus: Union[int, pytest.ExitCode]
+    session: pytest.Session, exitstatus: int | pytest.ExitCode
 ) -> None:
     """Restore the previous cron table after testing."""
     try:
