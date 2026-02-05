@@ -273,7 +273,7 @@ def test_cache_latest() -> None:
             shutil.rmtree(board_folder)
 
 
-def test_cache_latest_no_internet(mock_s3_no_internet: NoReturn) -> None:
+def test_cache_latest_no_internet(mock_no_internet: NoReturn) -> None:
     """Test the update command when in CIRCUITPY mode when there is no internet connection."""
     board = "feather_m0_express"
     language = "cs"

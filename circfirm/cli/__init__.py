@@ -17,6 +17,7 @@ from typing import Any, TypeVar
 
 import click
 import click_spinner
+import requests
 import yaml
 
 import circfirm
@@ -103,9 +104,10 @@ def download_if_needed(board: str, version: str, language: str) -> None:
                 circfirm.backend.cache.download_uf2,
                 args=(board, version, language),
             )
-        except ConnectionError as err:
+        except (ConnectionError, requests.exceptions.ConnectionError) as err:
             click.echo(" failed")  # Mark as failed
-            click.echo(f"Error: {err.args[0]}")
+            if isinstance(err, ConnectionError):
+                click.echo(f"Error: {err.args[0]}")
             sys.exit(4)
     else:
         click.echo("Using cached firmware file")

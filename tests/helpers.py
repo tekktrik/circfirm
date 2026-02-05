@@ -71,9 +71,9 @@ def delete_mount_node(path: str, missing_ok: bool = False) -> None:
 
 def _copy_text_file(filename: str) -> None:
     """Copy a text file to the mounted test drive."""
-    template_bootloader = os.path.join("tests", "assets", filename)
-    bootloader_dest = os.path.join(get_mount(), filename)
-    shutil.copyfile(template_bootloader, bootloader_dest)
+    template_file = os.path.join("tests", "assets", filename)
+    mount_dest = os.path.join(get_mount(), filename)
+    shutil.copyfile(template_file, mount_dest)
 
 
 def copy_uf2_info() -> None:
