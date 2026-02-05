@@ -15,7 +15,6 @@ import packaging.version
 import requests
 
 import circfirm.backend
-import circfirm.startup
 
 
 def get_uf2_filepath(

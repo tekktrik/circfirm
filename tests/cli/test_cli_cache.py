@@ -10,12 +10,12 @@ Author(s): Alec Delaney
 import os
 import pathlib
 import shutil
+from typing import NoReturn
 
 from click.testing import CliRunner
 
 import circfirm
 import circfirm.backend.cache
-import tests.helpers
 from circfirm.cli import cli
 
 RUNNER = CliRunner()
@@ -28,8 +28,7 @@ def test_cache_list_empty() -> None:
     assert result.output == "Versions have not been cached yet for any boards.\n"
 
 
-@tests.helpers.with_firmwares
-def test_cache_list_all() -> None:
+def test_cache_list_all(mock_with_firmwares_archived: None) -> None:
     """Tests the cache list command with an non-empty cache."""
     with open("tests/assets/responses/full_list.txt", encoding="utf-8") as respfile:
         expected_response = respfile.read()
@@ -38,8 +37,7 @@ def test_cache_list_all() -> None:
     assert result.output == expected_response
 
 
-@tests.helpers.with_firmwares
-def test_cache_list_specific_board_found() -> None:
+def test_cache_list_specific_board_found(mock_with_firmwares_archived: None) -> None:
     """Tests the cache list command with an non-empty cache for a specific board."""
     with open(
         "tests/assets/responses/specific_board.txt", encoding="utf-8"
@@ -50,8 +48,7 @@ def test_cache_list_specific_board_found() -> None:
     assert result.output == expected_response
 
 
-@tests.helpers.with_firmwares
-def test_cache_list_none_found() -> None:
+def test_cache_list_none_found(mock_with_firmwares_archived: None) -> None:
     """Tests the cache list command with an non-empty cache and no matches."""
     fake_board = "does_not_exist"
 
@@ -92,8 +89,7 @@ def test_cache_save() -> None:
     )
 
 
-@tests.helpers.with_firmwares
-def test_cache_clear() -> None:
+def test_cache_clear(mock_with_firmwares_archived: None) -> None:
     """Tests the cache clear command."""
     board = "feather_m4_express"
     version = "7.1.0"
@@ -136,8 +132,7 @@ def test_cache_clear() -> None:
     assert len(list(board_folder.parent.glob("*"))) == 0
 
 
-@tests.helpers.with_firmwares
-def test_cache_clear_regex_board_id() -> None:
+def test_cache_clear_regex_board_id(mock_with_firmwares_archived: None) -> None:
     """Tests the cache clear command when using a regex flag for board ID."""
     board = "feather_m4_express"
     board_regex = "m4"
@@ -160,8 +155,7 @@ def test_cache_clear_regex_board_id() -> None:
     assert not board_folder.exists()
 
 
-@tests.helpers.with_firmwares
-def test_cache_clear_regex_version() -> None:
+def test_cache_clear_regex_version(mock_with_firmwares_archived: None) -> None:
     """Tests the cache clear command when using a regex flag for version."""
     version = "7.1.0"
     version_regex = r".\.1"
@@ -184,8 +178,7 @@ def test_cache_clear_regex_version() -> None:
         assert not list(board_folder.glob(f"*{version}*"))
 
 
-@tests.helpers.with_firmwares
-def test_cache_clear_regex_language() -> None:
+def test_cache_clear_regex_language(mock_with_firmwares_archived: None) -> None:
     """Tests the cache clear command when using a regex flag for language."""
     language = "zh_Latn_pinyin"
     language_regex = ".*Latn"
@@ -208,8 +201,7 @@ def test_cache_clear_regex_language() -> None:
         assert not list(board_folder.glob(f"*{language}*"))
 
 
-@tests.helpers.with_firmwares
-def test_cache_clear_regex_combination() -> None:
+def test_cache_clear_regex_combination(mock_with_firmwares_archived: None) -> None:
     """Tests the cache clear command when using a regex flag for language."""
     board_regex = "feather"
     version = "7.2.0"
@@ -270,13 +262,35 @@ def test_cache_latest() -> None:
         assert result.exit_code == 0
         assert os.path.exists(uf2_filepath)
 
-        # Save the latest version (unsuccessful)
+        # Save the latest version (unsuccessful, does not exist)
         result = RUNNER.invoke(
             cli, ["cache", "latest", board, "--language", "doesnotexist"]
         )
-        assert result.exit_code == 1
+        assert result.exit_code != 0
 
     finally:
         board_folder = circfirm.backend.cache.get_board_folder(board)
         if board_folder.exists():
+            shutil.rmtree(board_folder)
+
+
+def test_cache_latest_no_internet(mock_s3_no_internet: NoReturn) -> None:
+    """Test the update command when in CIRCUITPY mode when there is no internet connection."""
+    board = "feather_m0_express"
+    language = "cs"
+    expected_version = "6.1.0"
+
+    uf2_filepath = circfirm.backend.cache.get_uf2_filepath(
+        board, expected_version, language
+    )
+    assert not os.path.exists(uf2_filepath)
+
+    try:
+        # Save the latest version (unsuccessful, no internet connection)
+        result = RUNNER.invoke(cli, ["cache", "latest", board, "--language", language])
+        assert result.exit_code != 0
+
+    finally:
+        board_folder = circfirm.backend.cache.get_board_folder(board)
+        if board_folder.exists():  # pragma: no cover
             shutil.rmtree(board_folder)

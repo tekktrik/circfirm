@@ -14,6 +14,7 @@ import pytest
 import circfirm.backend.cache
 
 
+# TODO: Parameterize?
 def test_parse_firmware_info() -> None:
     """Tests the ability to get firmware information."""
     board_id = "feather_m4_express"

@@ -9,7 +9,6 @@ Author(s): Alec Delaney
 
 import os
 import shutil
-import threading
 import time
 
 from click.testing import CliRunner
@@ -28,17 +27,19 @@ ERR_UF2_DOWNLOAD = 4
 VERSION = "8.0.0-beta.6"
 
 
-@tests.helpers.as_circuitpy
-def test_install_successful() -> None:
+def test_install_successful(mock_with_circuitpy: None) -> None:
     """Tests the successful use of the install command."""
     try:
         # Test successfully installing the firmware
-        threading.Thread(target=tests.helpers.wait_and_set_bootloader).start()
+        tests.helpers.start_bootloader_copy_thread()
+
         result = RUNNER.invoke(cli, ["install", VERSION])
+
         assert result.exit_code == 0
         expected_uf2_filename = circfirm.backend.get_uf2_filename(
             "feather_m4_express", VERSION
         )
+
         expected_uf2_filepath = tests.helpers.get_mount_node(expected_uf2_filename)
         assert os.path.exists(expected_uf2_filepath)
         os.remove(expected_uf2_filepath)
@@ -57,8 +58,7 @@ def test_install_successful() -> None:
             shutil.rmtree(board_folder)
 
 
-@tests.helpers.as_not_present
-def test_install_no_mount() -> None:
+def test_install_no_mount(mock_with_no_device: None) -> None:
     """Tests the install command when a mounted drive is not found."""
     result = RUNNER.invoke(
         cli, ["install", VERSION, "--board-id", "feather_m4_express"]
@@ -66,8 +66,7 @@ def test_install_no_mount() -> None:
     assert result.exit_code == ERR_NOT_FOUND
 
 
-@tests.helpers.as_circuitpy
-def test_install_as_circuitpy() -> None:
+def test_install_as_circuitpy(mock_with_circuitpy: None) -> None:
     """Tests the install command when a mounted CIRCUITPY drive is found."""
     result = RUNNER.invoke(
         cli, ["install", VERSION, "--board-id", "feather_m4_express"]
@@ -75,8 +74,7 @@ def test_install_as_circuitpy() -> None:
     assert result.exit_code == ERR_FOUND_CIRCUITPY
 
 
-@tests.helpers.as_bootloader
-def test_install_bad_version() -> None:
+def test_install_bad_version(mock_with_bootloader: None) -> None:
     """Tests the install command using a bad board version."""
     result = RUNNER.invoke(
         cli, ["install", "doesnotexist", "--board-id", "feather_m4_express"]
@@ -88,16 +86,18 @@ def test_install_bad_version() -> None:
     assert result.exit_code == ERR_IN_BOOTLOADER
 
 
-@tests.helpers.as_circuitpy
-def test_install_with_timeout() -> None:
+def test_install_with_timeout(mock_with_circuitpy: None) -> None:
     """Tests the install command using the timeout option."""
     try:
-        threading.Thread(target=tests.helpers.wait_and_set_bootloader).start()
+        tests.helpers.start_bootloader_copy_thread()
+
         result = RUNNER.invoke(cli, ["install", VERSION, "--timeout", "60"])
+
         assert result.exit_code == 0
         expected_uf2_filename = circfirm.backend.get_uf2_filename(
             "feather_m4_express", VERSION
         )
+
         expected_uf2_filepath = tests.helpers.get_mount_node(expected_uf2_filename)
         assert os.path.exists(expected_uf2_filepath)
         os.remove(expected_uf2_filepath)
@@ -108,8 +108,7 @@ def test_install_with_timeout() -> None:
             shutil.rmtree(board_folder)
 
 
-@tests.helpers.as_circuitpy
-def test_install_with_timeout_failure() -> None:
+def test_install_with_timeout_failure(mock_with_circuitpy: None) -> None:
     """Tests the install command using the timeout option that causes a failure."""
     timeout = 3
     start_time = time.time()

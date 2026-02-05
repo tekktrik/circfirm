@@ -9,6 +9,7 @@ Author(s): Alec Delaney
 
 import re
 
+import botocore.exceptions
 import click
 import requests
 
@@ -51,12 +52,18 @@ def query_board_ids(regex: str) -> None:
     except ValueError as err:
         raise click.ClickException(err.args[0])
     except requests.ConnectionError as err:
+        print("Triggered!")
         raise click.ClickException(
             "Issue with requesting information from git repository, check network connection"
         )
     for board in boards:
         board_id = board.strip()
-        result = re.search(regex, board_id)
+        try:
+            result = re.search(regex, board_id)
+        except re.PatternError:
+            raise click.exceptions.ClickException(
+                "Regex pattern error - please check the regex syntax"
+            )
         if result:
             click.echo(board_id)
 
@@ -69,7 +76,16 @@ def query_board_ids(regex: str) -> None:
 )
 def query_versions(board_id: str, language: str, regex: str) -> None:
     """Query the CircuitPython versions available for a board."""
-    versions = circfirm.backend.s3.get_board_versions(board_id, language, regex=regex)
+    try:
+        versions = circfirm.backend.s3.get_board_versions(
+            board_id, language, regex=regex
+        )
+    except botocore.exceptions.ConnectionError as err:
+        raise click.exceptions.ClickException(err.args[0])
+    except re.PatternError:
+        raise click.exceptions.ClickException(
+            "Regex pattern error - please check the regex syntax"
+        )
     for version in reversed(versions):
         click.echo(version)
 
@@ -86,8 +102,11 @@ def query_versions(board_id: str, language: str, regex: str) -> None:
 )
 def query_latest(board_id: str, language: str, pre_release: bool) -> None:
     """Query the latest CircuitPython versions available."""
-    version = circfirm.backend.s3.get_latest_board_version(
-        board_id, language, pre_release
-    )
+    try:
+        version = circfirm.backend.s3.get_latest_board_version(
+            board_id, language, pre_release
+        )
+    except botocore.exceptions.ConnectionError as err:
+        raise click.exceptions.ClickException(err.args[0])
     if version:
         click.echo(version)

@@ -13,39 +13,34 @@ import circfirm.backend.device
 import tests.helpers
 
 
-@tests.helpers.as_circuitpy
-def test_find_circuitpy() -> None:
+def test_find_circuitpy(mock_with_circuitpy: None) -> None:
     """Tests finding a CircuitPython device when boot_out.txt is present."""
     mount_location = tests.helpers.get_mount()
     circuitpy = circfirm.backend.device.find_circuitpy()
     assert circuitpy == mount_location
 
 
-@tests.helpers.as_not_present
-def test_find_circuitpy_absent() -> None:
+def test_find_circuitpy_absent(mock_with_no_device: None) -> None:
     """Tests finding a CircuitPython device when boot_out.txt is absent."""
     circuitpy = circfirm.backend.device.find_circuitpy()
     assert circuitpy is None
 
 
-@tests.helpers.as_bootloader
-def test_find_bootloader() -> None:
+def test_find_bootloader(mock_with_bootloader: None) -> None:
     """Tests finding a CircuitPython device in bootloader mode when info_uf2.txt is present."""
     mount_location = tests.helpers.get_mount()
     bootloader = circfirm.backend.device.find_bootloader()
     assert bootloader == mount_location
 
 
-@tests.helpers.as_not_present
-def test_find_bootloader_absent() -> None:
+def test_find_bootloader_absent(mock_with_no_device: None) -> None:
     """Tests finding a CircuitPython device in bootloader mode when info_uf2.txt is absent."""
     bootloader = circfirm.backend.device.find_bootloader()
     assert bootloader is None
     tests.helpers.copy_uf2_info()
 
 
-@tests.helpers.as_circuitpy
-def test_get_board_info() -> None:
+def test_get_board_info(mock_with_circuitpy: None) -> None:
     """Tests getting the board ID and firmware version from the UF2 info file."""
     # Test successful parsing
     mount_location = tests.helpers.get_mount()
