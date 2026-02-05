@@ -47,11 +47,11 @@ jobs:
 
     steps:
       - name: Setup Python 3.x
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.py-version }}
       - name: Checkout the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Install requirements
         run: |
           pip install -r requirements.txt
@@ -80,9 +80,9 @@ jobs:
         run: |
           coverage xml -o coverage_${{ matrix.os }}_${{ matrix.py-version }}.xml
       - name: Upload coverage report to Codecov
-        uses: codecov/codecov-action@v4.0.1
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
-          file: coverage_${{ matrix.os }}_${{ matrix.py-version }}.xml
+          files: coverage_${{ matrix.os }}_${{ matrix.py-version }}.xml
           flags: "${{ matrix.os }}-py-${{ matrix.py-version }}"
