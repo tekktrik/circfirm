@@ -6,7 +6,6 @@
 Author(s): Alec Delaney
 """
 
-import os
 from typing import NoReturn
 
 import pytest

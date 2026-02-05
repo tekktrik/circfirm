@@ -13,7 +13,7 @@ import shutil
 import sys
 import time
 from collections.abc import Callable, Iterable
-from typing import Any, Optional, TypeVar
+from typing import Any, TypeVar
 
 import click
 import click_spinner

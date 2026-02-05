@@ -8,7 +8,6 @@ Author(s): Alec Delaney
 
 import pathlib
 import re
-from typing import Optional
 
 import psutil
 

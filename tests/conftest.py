@@ -10,7 +10,7 @@ import os
 import pathlib
 import shutil
 from collections.abc import Iterator
-from typing import NoReturn, Union
+from typing import NoReturn
 
 import botocore.exceptions
 import click

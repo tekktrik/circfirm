@@ -8,7 +8,6 @@ Author(s): Alec Delaney
 
 import os
 import pathlib
-from typing import Optional
 
 import packaging.version
 import requests

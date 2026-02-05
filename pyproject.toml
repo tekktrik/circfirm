@@ -97,7 +97,7 @@ source = [
 ]
 
 [tool.ruff.lint]
-select = ["D", "PL", "UP", "I"]
+select = ["D", "PL", "UP", "I", "F"]
 ignore = ["D213", "D203"]
 
 [tool.pytest.ini_options]

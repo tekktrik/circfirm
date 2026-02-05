@@ -7,7 +7,6 @@ Author(s): Alec Delaney
 """
 
 import re
-from typing import Optional
 
 import boto3
 import botocore

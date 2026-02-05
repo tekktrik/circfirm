@@ -6,8 +6,6 @@
 Author(s): Alec Delaney
 """
 
-from typing import Optional
-
 import click
 
 import circfirm.cli

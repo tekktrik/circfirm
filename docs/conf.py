@@ -6,8 +6,6 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import sphinx_rtd_theme
-
 project = "circfirm"
 copyright = "2024, Alec Delaney"
 author = "Alec Delaney"

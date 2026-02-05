@@ -10,7 +10,6 @@ import os
 import pathlib
 import re
 import shutil
-from typing import Optional
 
 import botocore.exceptions
 import click
