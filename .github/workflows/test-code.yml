@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
 # SPDX-License-Identifier: MIT
 
-name: Build CI
+name: Run code tests
 
 on:
   pull_request:
