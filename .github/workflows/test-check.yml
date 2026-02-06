@@ -18,8 +18,7 @@ on:
 permissions: read-all
 
 jobs:
-  build:
-    name: Run build CI
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Python

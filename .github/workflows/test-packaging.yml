@@ -16,8 +16,7 @@ on:
 permissions: read-all
 
 jobs:
-  build:
-    name: Run build CI
+  package:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
