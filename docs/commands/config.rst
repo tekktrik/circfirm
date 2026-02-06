@@ -27,7 +27,7 @@ You can view all the settings, a subset, or just a specific one.  Subsettings ar
 Edit Settings
 -------------
 
-You can edit configuration settings using ``circfirm config view``.
+You can edit configuration settings using ``circfirm config edit``.
 
 You must edit a specific setting at a time.  Subsettings are accessed using period separators.
 
