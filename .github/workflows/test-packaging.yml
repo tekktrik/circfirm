@@ -6,7 +6,7 @@ name: Test building package
 on:
   pull_request:
     paths:
-      - '.github/workflows/test-packaging.yaml'
+      - '.github/workflows/test-packaging.yml'
       - 'Makefile'
       - 'pyproject.toml'
       - 'uv.lock'

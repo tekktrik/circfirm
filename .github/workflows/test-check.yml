@@ -6,7 +6,7 @@ name: Run pre-commit checks
 on:
   pull_request:
     paths:
-      - '.github/workflows/test-check.yaml'
+      - '.github/workflows/test-check.yml'
       - 'Makefile'
       - 'pyproject.toml'
       - 'uv.lock'

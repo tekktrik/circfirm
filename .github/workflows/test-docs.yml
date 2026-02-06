@@ -6,7 +6,7 @@ name: Test making documentation
 on:
   pull_request:
     paths:
-      - '.github/workflows/test-docs.yaml'
+      - '.github/workflows/test-docs.yml'
       - 'Makefile'
       - 'pyproject.toml'
       - 'uv.lock'

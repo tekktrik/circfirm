@@ -6,7 +6,7 @@ name: Run code tests
 on:
   pull_request:
     paths:
-      - '.github/workflows/test-code.yaml'
+      - '.github/workflows/test-code.yml'
       - 'Makefile'
       - 'pyproject.toml'
       - 'uv.lock'
