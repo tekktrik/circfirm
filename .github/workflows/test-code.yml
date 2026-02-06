@@ -1,0 +1,86 @@
+# SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
+# SPDX-License-Identifier: MIT
+
+name: Build CI
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/test-code.yaml'
+      - 'Makefile'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - 'circfirm/**'
+      - 'tests/**'
+      - 'scripts/**'
+
+permissions: read-all
+
+jobs:
+  build:
+    name: Run build CI
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        py-version: [
+          "3.10",
+          "3.11",
+          "3.12",
+          "3.13",
+          "3.14",
+        ]
+        os: [
+          "ubuntu-latest",
+          "windows-latest",
+          "macos-latest",
+        ]
+        exclude:
+          - os: windows-latest
+            py-version: "3.11"
+          - os: windows-latest
+            py-version: "3.12"
+          - os: windows-latest
+            py-version: "3.13"
+          - os: windows-latest
+            py-version: "3.14"
+          - os: macos-latest
+            py-version: "3.11"
+          - os: macos-latest
+            py-version: "3.12"
+          - os: macos-latest
+            py-version: "3.13"
+          - os: macos-latest
+            py-version: "3.14"
+
+    steps:
+      - name: Setup Python 3.x
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.py-version }}
+      - name: Checkout the repository
+        uses: actions/checkout@v6
+      - name: Install requirements
+        run: |
+          pip install ".[dev]"
+      - name: Prepare tests
+        run : |
+          make test-prep
+      - name: Run tests
+        run: |
+          make test-run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Clean up after tests
+        run: |
+          make test-clean
+      - name: Create coverage.py XML report
+        run: |
+          coverage xml -o coverage_${{ matrix.os }}_${{ matrix.py-version }}.xml
+      - name: Upload coverage report to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          files: coverage_${{ matrix.os }}_${{ matrix.py-version }}.xml
+          flags: "${{ matrix.os }}-py-${{ matrix.py-version }}"
