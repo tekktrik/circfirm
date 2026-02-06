@@ -1,12 +1,12 @@
 # SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
 # SPDX-License-Identifier: MIT
 
-name: Build CI
+name: Run code tests
 
 on:
   pull_request:
     paths:
-      - '.github/workflows/test-code.yaml'
+      - '.github/workflows/test-code.yml'
       - 'Makefile'
       - 'pyproject.toml'
       - 'uv.lock'
@@ -17,8 +17,7 @@ on:
 permissions: read-all
 
 jobs:
-  build:
-    name: Run build CI
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

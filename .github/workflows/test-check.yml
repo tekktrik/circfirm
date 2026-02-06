@@ -1,12 +1,12 @@
 # SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
 # SPDX-License-Identifier: MIT
 
-name: Build CI
+name: Run pre-commit checks
 
 on:
   pull_request:
     paths:
-      - '.github/workflows/test-check.yaml'
+      - '.github/workflows/test-check.yml'
       - 'Makefile'
       - 'pyproject.toml'
       - 'uv.lock'
@@ -18,8 +18,7 @@ on:
 permissions: read-all
 
 jobs:
-  build:
-    name: Run build CI
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Python
