@@ -3,7 +3,15 @@
 
 name: Build CI
 
-on: ["push", "pull_request"]
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/test-packaging.yaml'
+      - 'Makefile'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - 'circfirm/**'
+      - 'VERSION'
 
 permissions: read-all
 
@@ -54,33 +62,6 @@ jobs:
       - name: Install requirements
         run: |
           pip install ".[dev]"
-      - name: Run pre-commit via make
-        run: |
-          make check
       - name: Test packaging
         run: |
           python -m build
-      - name: Test documentation
-        run: |
-          make docs
-      - name: Prepare tests
-        run : |
-          make test-prep
-      - name: Run tests
-        run: |
-          make test-run
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Clean up after tests
-        run: |
-          make test-clean
-      - name: Create coverage.py XML report
-        run: |
-          coverage xml -o coverage_${{ matrix.os }}_${{ matrix.py-version }}.xml
-      - name: Upload coverage report to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: true
-          files: coverage_${{ matrix.os }}_${{ matrix.py-version }}.xml
-          flags: "${{ matrix.os }}-py-${{ matrix.py-version }}"

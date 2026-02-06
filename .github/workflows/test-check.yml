@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
+# SPDX-License-Identifier: MIT
+
+name: Build CI
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/test-check.yaml'
+      - 'Makefile'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - '.pre-commit-config.yaml'
+      - 'circfirm/**'
+      - '.reuse/**'
+      - 'LICENSES/**'
+
+permissions: read-all
+
+jobs:
+  build:
+    name: Run build CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.X'
+      - name: Checkout the repository
+        uses: actions/checkout@v6
+      - name: Install requirements
+        run: |
+          pip install ".[dev]"
+      - name: Run pre-commit via make
+        run: |
+          make check
