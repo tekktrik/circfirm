@@ -7,7 +7,6 @@
 Author(s): Alec Delaney
 """
 
-import json
 import os
 
 import click
@@ -30,7 +29,7 @@ def config_view(setting: str) -> None:
     # Get the settings, show all settings if no specific one is specified
     settings = circfirm.cli.get_settings()
     if not setting:
-        click.echo(json.dumps(settings, indent=4))
+        click.echo(yaml.safe_dump(settings, indent=4))
         return
 
     # Get the specified settings
@@ -43,7 +42,7 @@ def config_view(setting: str) -> None:
         raise click.ClickException(f"Setting {setting} does not exist")
 
     # Show the specified setting
-    click.echo(json.dumps(value, indent=4))
+    click.echo(yaml.safe_dump(value, indent=4))
 
 
 @cli.command(name="edit")
