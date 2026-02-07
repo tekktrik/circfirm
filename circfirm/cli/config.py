@@ -24,12 +24,12 @@ def cli():
 
 
 @cli.command(name="view")
-@click.argument("setting", default="all")
+@click.argument("setting", default="")
 def config_view(setting: str) -> None:
     """View a config setting."""
     # Get the settings, show all settings if no specific on is specified
     settings = circfirm.cli.get_settings()
-    if setting == "all":
+    if not setting:
         click.echo(json.dumps(settings, indent=4))
         return
 
