@@ -13,7 +13,7 @@ circfirm
     :target: https://circfirm.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-.. image:: https://img.shields.io/github/actions/workflow/status/tekktrik/circfirm/push.yml
+.. image:: https://img.shields.io/github/actions/workflow/status/tekktrik/circfirm/test-code.yml
    :target: https://github.com/tekktrik/circfirm/actions
    :alt: GitHub Actions Workflow Status
 
@@ -82,6 +82,11 @@ The follow commands show some of the functionality of ``circfirm``:
     circfirm --help
     circfirm install --help
     circfirm cache save --help
+
+Documentation
+=============
+
+Documentation for ``circfirm`` can be found `here <https://circfirm.readthedocs.io/en/latest>_`
 
 License
 =======
