@@ -91,6 +91,12 @@ def config_edit(
         yaml.safe_dump(orig_settings, yamlfile)
 
 
+@cli.command(name="path")
+def config_path() -> None:
+    """Print the path where the configuration file is stored."""
+    click.echo(circfirm.SETTINGS_FILE)
+
+
 @cli.command(name="reset")
 def config_reset() -> None:
     """Reset the configuration file with the provided template."""
