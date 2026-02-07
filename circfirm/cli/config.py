@@ -46,15 +46,31 @@ def config_view(setting: str) -> None:
 
 
 @cli.command(name="edit")
-@click.argument("setting")
-@click.argument("value")
+@click.argument("setting", default="")
+@click.argument("value", default="")
 def config_edit(
     setting: str,
     value: str,
 ) -> None:
     """Update a config setting."""
+    if setting and not value:
+        raise click.ClickException(f"No value given for setting {setting}")
+
     # Get the settings, use another reference to parse
     orig_settings = circfirm.cli.get_settings()
+    editor = orig_settings[
+        "editor"
+    ]  # TODO: Make standard warning for missing config options
+    editor = editor if editor else None
+
+    if not setting and not value:
+        try:
+            click.edit(filename=circfirm.SETTINGS_FILE, editor=editor)
+        except click.ClickException as err:
+            raise click.ClickException(
+                f'{editor} is not a path to a valid editor, use `circfirm config edit editor ""` to set to default.'
+            ) from err
+
     target_setting = orig_settings
     config_args = setting.split(".")
 
