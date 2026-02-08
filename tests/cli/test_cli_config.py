@@ -6,11 +6,12 @@
 Author(s): Alec Delaney
 """
 
-import json
+from unittest import mock
 
-import yaml
+import click
 from click.testing import CliRunner
 
+import circfirm
 from circfirm.cli import cli
 
 RUNNER = CliRunner()
@@ -22,7 +23,20 @@ def get_printed_default_settings() -> None:
         return yamlfile.read()
 
 
-def test_config() -> None:
+def test_config_view_and_edit(mock_default_config: None) -> None:
+    """Tests writing and reading the same config setting."""
+    RUNNER.invoke(cli, ["config", "edit", "output.supporting.silence", "true"])
+    result = RUNNER.invoke(cli, ["config", "view", "output.supporting.silence"])
+    assert result.exit_code == 0
+    assert result.output == "true\n"
+
+    RUNNER.invoke(cli, ["config", "edit", "output.supporting.silence", "false"])
+    result = RUNNER.invoke(cli, ["config", "view", "output.supporting.silence"])
+    assert result.exit_code == 0
+    assert result.output == "false\n"
+
+
+def test_config_view(mock_default_config: None) -> None:
     """Tests the config view command."""
     expected_output = get_printed_default_settings()
 
@@ -40,16 +54,9 @@ def test_config() -> None:
     result = RUNNER.invoke(cli, ["config", "view", "doesnotexist"])
     assert result.exit_code != 0
 
-    # Test writing a setting
-    RUNNER.invoke(cli, ["config", "edit", "output.supporting.silence", "true"])
-    result = RUNNER.invoke(cli, ["config", "view", "output.supporting.silence"])
-    assert result.exit_code == 0
-    assert result.output == "true\n"
-    RUNNER.invoke(cli, ["config", "edit", "output.supporting.silence", "false"])
-    result = RUNNER.invoke(cli, ["config", "view", "output.supporting.silence"])
-    assert result.exit_code == 0
-    assert result.output == "false\n"
 
+def test_config_edit(mock_default_config: None) -> None:
+    """Tests the config edit command."""
     # Test writing a non-existent setting
     result = RUNNER.invoke(cli, ["config", "edit", "doesnotexist", "123"])
     assert result.exit_code != 0
@@ -63,7 +70,44 @@ def test_config() -> None:
     assert result.exit_code != 0
 
 
-def test_config_reset() -> None:
+def test_config_edit_setting_only(mock_default_config: None) -> None:
+    """Tests the config edit command with only a setting argument."""
+    result = RUNNER.invoke(cli, ["config", "edit", "somesetting"])
+    assert result.exit_code != 0
+
+
+def test_config_edit_editor(mock_default_config: None) -> None:
+    """Tests the config edit command to use an editor."""
+    with mock.patch("click.edit") as mock_click_edit:
+        result = RUNNER.invoke(cli, ["config", "edit"])
+        assert result.exit_code == 0
+        mock_click_edit.assert_called_once_with(
+            filename=circfirm.SETTINGS_FILE, editor=None
+        )
+
+
+def test_config_edit_editor_bad_option(mock_default_config: None) -> None:
+    """Tests the config edit command to use a non-existent editor."""
+    bad_editor = "doesnotexist"
+    result = RUNNER.invoke(cli, ["config", "edit", "editor", bad_editor])
+    assert result.exit_code == 0
+    with mock.patch("click.edit") as mock_click_edit:
+        mock_click_edit.side_effect = click.ClickException("Example failure")
+        result = RUNNER.invoke(cli, ["config", "edit"])
+        assert result.exit_code != 0
+        mock_click_edit.assert_called_once_with(
+            filename=circfirm.SETTINGS_FILE, editor=bad_editor
+        )
+
+
+def test_config_path(mock_default_config: None) -> None:
+    """Tests the config command for returning the path to the settings file."""
+    result = RUNNER.invoke(cli, ["config", "path"])
+    assert result.exit_code == 0
+    assert result.output == f"{circfirm.SETTINGS_FILE}\n"
+
+
+def test_config_reset(mock_default_config: None) -> None:
     """Tests the reseting of the config settings file."""
     RUNNER.invoke(cli, ["config", "edit", "output.supporting.silence", "true"])
     result = RUNNER.invoke(cli, ["config", "view", "output.supporting.silence"])
