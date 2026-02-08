@@ -160,3 +160,15 @@ def token(request: pytest.FixtureRequest) -> Iterator[None]:
     prev_token = set_token(token)
     yield
     set_token(prev_token)
+
+
+# Fixtures for working with the configuration options
+
+
+@pytest.fixture
+def mock_default_config() -> Iterator[None]:
+    """Reset the configuration options to the default ones."""
+    orig_contents = tests.helpers.copy_default_config()
+    yield
+    with open(circfirm.SETTINGS_FILE, "w") as settings_file:
+        settings_file.write(orig_contents)
