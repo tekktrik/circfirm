@@ -93,3 +93,11 @@ def get_board_ids_from_git() -> list[str]:
     return sorted(
         [board_path.name for board_path in board_paths if board_path.is_dir()]
     )
+
+
+def copy_default_config() -> str:
+    """Copy the default configuration settings."""
+    with open(circfirm.SETTINGS_FILE) as settings_file:
+        contents = settings_file.read()
+    shutil.copyfile("circfirm/templates/settings.yaml", circfirm.SETTINGS_FILE)
+    return contents

@@ -42,12 +42,6 @@ else
 endif
 	-@git clone https://github.com/adafruit/circuitpython tests/sandbox/circuitpython --depth 1
 
-.PHONY: test
-test:
-	-@"${MAKE}" test-prep --no-print-directory
-	-@"${MAKE}" test-run --no-print-directory
-	-@"${MAKE}" test-clean --no-print-directory
-
 .PHONY:
 test-run:
 	@coverage run -m pytest
@@ -70,3 +64,9 @@ else
 	-@rm testfs.dmg -f
 	-@rm -rf tests/sandbox/circuitpython
 endif
+
+.PHONY: test
+test:
+	-@"${MAKE}" test-prep --no-print-directory
+	-@"${MAKE}" test-run --no-print-directory
+	-@"${MAKE}" test-clean --no-print-directory
