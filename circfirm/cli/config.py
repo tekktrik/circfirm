@@ -47,7 +47,7 @@ def config_view(setting: str) -> None:
     # Show the specified setting
     output = yaml.safe_dump(value, indent=4)
     if not isinstance(value, (list, dict)):
-        removable += "...\n"    
+        removable += "...\n"
     output = output.removesuffix(removable)
     click.echo(output)
 
