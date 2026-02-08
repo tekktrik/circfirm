@@ -20,7 +20,7 @@ import yaml
 from botocore.httpsession import URLLib3Session
 
 import circfirm
-from tests.helpers import copy_boot_out, copy_uf2_info, delete_mount_node
+import tests.helpers
 
 BACKUP_FOLDER = pathlib.Path("tests/backup/")
 APP_DIR = pathlib.Path(click.get_app_dir("circfirm")).resolve()
@@ -69,32 +69,32 @@ def pytest_sessionfinish(
 @pytest.fixture
 def mock_with_circuitpy() -> Iterator[None]:
     """Run a with a device connected in CIRCUITPY mode."""
-    delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
-    delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
-    copy_boot_out()
+    tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
+    tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
+    tests.helpers.copy_boot_out()
 
     yield
 
-    delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
+    tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
 
 
 @pytest.fixture
 def mock_with_bootloader() -> Iterator[None]:
     """Run with a device connected in bootloader mode."""  # noqa: D401
-    delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
-    delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
-    copy_uf2_info()
+    tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
+    tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
+    tests.helpers.copy_uf2_info()
 
     yield
 
-    delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
+    tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
 
 
 @pytest.fixture
 def mock_with_no_device() -> None:
     """Run without a device connected in either CIRCUITPY or bootloader mode."""  # noqa: D401
-    delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
-    delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
+    tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
+    tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
 
 
 # Fixtures for mocking cached firmwares
