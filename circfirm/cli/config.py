@@ -42,7 +42,10 @@ def config_view(setting: str) -> None:
         raise click.ClickException(f"Setting {setting} does not exist")
 
     # Show the specified setting
-    click.echo(yaml.safe_dump(value, indent=4))
+    output = yaml.safe_dump(value, indent=4)
+    if not isinstance(value, (list, dict)):
+        output = output.removesuffix("\n...\n")
+    click.echo(output)
 
 
 @cli.command(name="edit")
