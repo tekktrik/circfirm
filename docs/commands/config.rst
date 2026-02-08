@@ -36,6 +36,26 @@ You must edit a specific setting at a time.  Subsettings are accessed using peri
     # Edit a configuration settings with a value
     circfirm config edit output.supporting.silence true
 
+Edit Settings via Editor
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+For a more native editing experience using the built-in text editor, you can use ``circfirm config edit`` without arguments.
+
+.. code-block:: shell
+
+    # Edit the configuration settings in the native text editor
+    circfirm config edit
+
+Get Settings File Path
+^^^^^^^^^^^^^^^^^^^^^^
+
+You can see the path to the configuration settings file using ``circfirm config path``
+
+.. code-block:: shell
+
+    # See the path to the configuration settings file
+    circfirm config path
+
 Reset Settings
 --------------
 
