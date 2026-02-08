@@ -19,8 +19,7 @@ RUNNER = CliRunner()
 def get_printed_default_settings() -> None:
     """Get the default (template) settings as printed."""
     with open("circfirm/templates/settings.yaml", encoding="utf-8") as yamlfile:
-        settings = yaml.safe_load(yamlfile)
-    return f"{json.dumps(settings, indent=4)}\n"
+        return yamlfile.read()
 
 
 def test_config() -> None:

@@ -28,8 +28,11 @@ def config_view(setting: str) -> None:
     """View a config setting."""
     # Get the settings, show all settings if no specific one is specified
     settings = circfirm.cli.get_settings()
+
+    removable = "\n"
+
     if not setting:
-        click.echo(yaml.safe_dump(settings, indent=4))
+        click.echo(yaml.safe_dump(settings, indent=4).removesuffix(removable))
         return
 
     # Get the specified settings
@@ -44,7 +47,8 @@ def config_view(setting: str) -> None:
     # Show the specified setting
     output = yaml.safe_dump(value, indent=4)
     if not isinstance(value, (list, dict)):
-        output = output.removesuffix("\n...\n")
+        removable += "...\n"    
+    output = output.removesuffix(removable)
     click.echo(output)
 
 

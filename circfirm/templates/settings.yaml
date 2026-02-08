@@ -1,6 +1,6 @@
-editor: ""
+editor: ''
 output:
     supporting:
         silence: false
 token:
-    github: ""
+    github: ''
