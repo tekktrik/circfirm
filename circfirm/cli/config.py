@@ -73,6 +73,7 @@ def config_edit(
     if not setting and not value:
         try:
             click.edit(filename=circfirm.SETTINGS_FILE, editor=editor)
+            return
         except click.ClickException as err:
             raise click.ClickException(
                 f'{editor} is not a path to a valid editor, use `circfirm config edit editor ""` to set to default.'
