@@ -4,6 +4,9 @@
 name: Run pre-commit checks
 
 on:
+  push:
+    branches:
+      - 'main'
   pull_request:
     paths:
       - '.github/workflows/test-check.yml'
