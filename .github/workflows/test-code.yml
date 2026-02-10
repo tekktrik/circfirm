@@ -4,6 +4,9 @@
 name: Run code tests
 
 on:
+  push:
+    branches:
+      - 'main'
   pull_request:
     paths:
       - '.github/workflows/test-code.yml'
