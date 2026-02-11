@@ -60,7 +60,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 dev = [
     "build==1.4.0",
-    "coverage==7.13.3",
+    "coverage==7.13.4",
     "pre-commit==4.5.1",
     "pytest==9.0.2",
     "sphinx==8.1.3",
