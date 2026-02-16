@@ -17,7 +17,8 @@ BASE_REQUESTS_HEADERS = {
     "X-GitHub-Api-Version": "2022-11-28",
 }
 
-BOARDS_REGEX = r"ports/.+/boards/([^/]+)"
+NONZEPHYR_BOARDS_REGEX = r"ports/(.+)/boards/([^/]+)"
+ZEPHYR_BOARDS_REGEX = r"ports/zephyr-cp/boards/(.+/[^/]+)"
 
 
 class RateLimit(TypedDict):
@@ -74,7 +75,15 @@ def get_board_id_list(token: str) -> list[str]:
     for tree_item in tree_items:
         if tree_item["type"] != "tree":
             continue
-        result = re.match(BOARDS_REGEX, tree_item["path"])
-        if result:
-            boards.add(result[1])
+
+        # Zephyr boards are organized differently, and require some modifications to the name
+        if zephyr_match := re.match(ZEPHYR_BOARDS_REGEX, tree_item["path"]):
+            result = zephyr_match[1].replace("/", "_")
+            boards.add(result)
+
+        # Non-Zephyr boards are all organized the same
+        elif nonzephyr_match := re.match(NONZEPHYR_BOARDS_REGEX, tree_item["path"]):
+            if nonzephyr_match[1] == "zephyr-cp":
+                continue
+            boards.add(nonzephyr_match[2])
     return sorted(boards)
