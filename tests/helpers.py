@@ -89,10 +89,26 @@ def copy_boot_out() -> None:
 def get_board_ids_from_git() -> list[str]:
     """Get a list of board IDs from the sandbox git repository."""
     ports_path = pathlib.Path("tests/sandbox/circuitpython")
-    board_paths = ports_path.glob("ports/*/boards/*")
-    return sorted(
-        [board_path.name for board_path in board_paths if board_path.is_dir()]
-    )
+
+    # Glob both Zephyr and non-Zephyr boards
+    nonzephyr_board_paths = ports_path.glob("ports/*/boards/*")
+    zephyr_board_paths = ports_path.glob("ports/zephyr-cp/boards/*/*")
+
+    # Remove Zephyr boards from the non-Zephyr list
+    nonzephyr_board_paths = [
+        board_path.name
+        for board_path in nonzephyr_board_paths
+        if "zephyr-cp" not in board_path.parts and board_path.is_dir()
+    ]
+
+    # Clean up the Zephyr boards
+    zephyr_board_paths = [
+        board_path.parent.name + "_" + board_path.name
+        for board_path in zephyr_board_paths
+        if board_path.is_dir()
+    ]
+
+    return sorted(nonzephyr_board_paths + zephyr_board_paths)
 
 
 def copy_default_config() -> str:
