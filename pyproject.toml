@@ -46,7 +46,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "boto3==1.42.50",
+    "boto3==1.42.51",
     "boto3-stubs[essential]==1.42.50",
     "click==8.3.1",
     "click-spinner==0.1.10",
