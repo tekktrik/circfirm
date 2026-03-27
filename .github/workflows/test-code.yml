@@ -80,7 +80,7 @@ jobs:
         run: |
           coverage xml -o coverage_${{ matrix.os }}_${{ matrix.py-version }}.xml
       - name: Upload coverage report to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
