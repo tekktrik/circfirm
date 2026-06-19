@@ -57,7 +57,7 @@ jobs:
         with:
           python-version: ${{ matrix.py-version }}
       - name: Checkout the repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Install requirements
         run: |
           pip install ".[dev]"
