@@ -42,7 +42,7 @@ else
 endif
 	-@git clone https://github.com/adafruit/circuitpython tests/sandbox/circuitpython --depth 1
 
-.PHONY:
+.PHONY: test-run
 test-run:
 	@coverage run -m pytest
 	-@coverage report
