@@ -12,11 +12,21 @@ import re
 import psutil
 
 import circfirm
+import questionary
 
 BOARD_ID_REGEX = r"Board ID:\s*(.*)"
 BOARD_VER_REGEX = (
     r"Adafruit CircuitPython (\d+\.\d+\.\d+(?:-(?:\balpha\b|\bbeta\b)\.\d+)*)"
 )
+
+
+def _maybe_select_option(message: str, options: list[str]) -> str | None:
+    """Select an option from a given list if necessary."""
+    if not options:
+        return None
+    if len(options) == 1:
+        return options[0]
+    return questionary.select(message, options).ask()
 
 
 def get_board_info(device_path: str) -> tuple[str, str]:
@@ -33,16 +43,23 @@ def get_board_info(device_path: str) -> tuple[str, str]:
     return board_match[1], version_match[1]
 
 
-def _find_device(filename: str) -> str | None:
+def _find_devices(filename: str) -> list[str]:
     """Find a specific connected device."""
+    devices = []
     for partition in psutil.disk_partitions():
         try:
             bootout_file = pathlib.Path(partition.mountpoint) / filename
             if bootout_file.exists():
-                return partition.mountpoint
+                devices.append(partition.mountpoint)
         except PermissionError:  # pragma: no cover
             pass
-    return None
+    return devices
+
+
+def _find_device(filename: str) -> list[str]:
+    """Find a specific connected device."""
+    devices = _find_devices(filename)
+    return _maybe_select_option("Please select a mount point.", devices)
 
 
 def find_circuitpy() -> str | None:
@@ -50,6 +67,17 @@ def find_circuitpy() -> str | None:
     return _find_device(circfirm.BOOTOUT_FILE)
 
 
+def find_circuitpys() -> list[str]:
+    """Find CircuitPython devices in non-bootloader mode."""
+    return _find_devices(circfirm.BOOTOUT_FILE)
+
+
 def find_bootloader() -> str | None:
     """Find CircuitPython device in bootloader mode."""
     return _find_device(circfirm.UF2INFO_FILE)
+
+
+def find_bootloaders() -> list[str]:
+    """Find CircuitPython devices in bootloader mode."""
+    return _find_devices(circfirm.UF2INFO_FILE)
+

@@ -66,7 +66,7 @@ def get_board_id(
             skip_timeout = False
             start_time = time.time()
 
-        while not (bootloader := circfirm.backend.device.find_bootloader()):
+        while not (bootloader := circfirm.backend.device.find_bootloader()):  # TODO: Update
             if not skip_timeout and time.time() >= start_time + timeout:
                 raise OSError(
                     "Bootloader mode device not found within the timeout period"

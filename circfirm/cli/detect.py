@@ -19,18 +19,18 @@ def cli() -> None:
 @cli.command(name="circuitpy")
 def detect_circuitpy() -> None:
     """Detect a connected board in CIRCUITPY or equivalent mode."""
-    circuitpy = circfirm.backend.device.find_circuitpy()
-    if not circuitpy:
+    circuitpys = circfirm.backend.device.find_circuitpys()
+    if not circuitpys:
         click.echo("No board connected in CIRCUITPY or equivalent mode")
         return
-    click.echo(circuitpy)
+    click.echo("\n".join(circuitpys))
 
 
 @cli.command(name="bootloader")
 def detect_bootloader() -> None:
     """Detect a connected board in bootloader mode."""
-    bootloader = circfirm.backend.device.find_bootloader()
-    if not bootloader:
+    bootloaders = circfirm.backend.device.find_bootloaders()
+    if not bootloaders:
         click.echo("No board connected in bootloader mode")
         return
-    click.echo(bootloader)
+    click.echo("\n".join(bootloaders))

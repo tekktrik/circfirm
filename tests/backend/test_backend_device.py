@@ -15,7 +15,7 @@ import tests.helpers
 def test_find_circuitpy(mock_with_circuitpy: None) -> None:
     """Tests finding a CircuitPython device when boot_out.txt is present."""
     mount_location = tests.helpers.get_mount()
-    circuitpy = circfirm.backend.device.find_circuitpy()
+    circuitpy = circfirm.backend.device.find_circuitpy()  # TODO: Add test for multiple boards
     assert circuitpy == mount_location
 
 
@@ -28,7 +28,7 @@ def test_find_circuitpy_absent(mock_with_no_device: None) -> None:
 def test_find_bootloader(mock_with_bootloader: None) -> None:
     """Tests finding a CircuitPython device in bootloader mode when info_uf2.txt is present."""
     mount_location = tests.helpers.get_mount()
-    bootloader = circfirm.backend.device.find_bootloader()
+    bootloader = circfirm.backend.device.find_bootloader()  # TODO: Add test for multiple boards
     assert bootloader == mount_location
 
 
