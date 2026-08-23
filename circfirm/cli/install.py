@@ -28,10 +28,10 @@ import circfirm.cli
 )
 def cli(version: str, language: str, board_id: str | None, timeout: int) -> None:
     """Install the specified version of CircuitPython."""
-    circuitpy, bootloader = circfirm.cli.get_connection_status()
+    circuitpys, bootloaders = circfirm.cli.get_connection_statuses()
     try:
         bootloader, board_id = circfirm.cli.get_board_id(
-            circuitpy, bootloader, board_id, timeout
+            circuitpys, bootloaders, board_id, timeout
         )
     except OSError as err:
         raise click.ClickException(err.args[0])

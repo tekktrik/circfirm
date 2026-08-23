@@ -44,21 +44,23 @@ def maybe_support(msg: str) -> None:
 
 
 def get_board_id(
-    circuitpy: str | None,
-    bootloader: str | None,
+    circuitpys: list[str],
+    bootloaders: list[str],
     board: str | None,
     timeout: int = -1,
 ) -> tuple[str, str]:
     """Get the board ID of a device via CLI."""
     if not board:
-        if not circuitpy and bootloader:
-            click.echo("CircuitPython device found, but it is in bootloader mode!")
+        if not circuitpys and bootloaders:
+            click.echo("CircuitPython device(s) found, but it is in bootloader mode!")
             click.echo(
                 "Please put the device out of bootloader mode, or use the --board-id option."
             )
             sys.exit(3)
+        circuitpy = circfirm.backend.device.maybe_select_option(circuitpys)
         board = circfirm.backend.device.get_board_info(circuitpy)[0]
 
+        existing_bootloaders = circfirm.backend.device.find_bootloaders()
         click.echo("Board ID detected, please switch the device to bootloader mode.")
         if timeout == -1:
             skip_timeout = True
@@ -66,24 +68,41 @@ def get_board_id(
             skip_timeout = False
             start_time = time.time()
 
-        while not (bootloader := circfirm.backend.device.find_bootloader()):  # TODO: Update
+        while True:
             if not skip_timeout and time.time() >= start_time + timeout:
                 raise OSError(
                     "Bootloader mode device not found within the timeout period"
                 )
+
+            current_bootloaders = set(circfirm.backend.device.find_bootloaders())
+            new_bootloaders = current_bootloaders.difference(existing_bootloaders)
+
+            if len(new_bootloaders) > 1:
+                raise OSError(
+                    "More than one bootloader was added, cannot confirm the intended target"
+                )
+
+            elif len(new_bootloaders) == 1:
+                bootloader = new_bootloaders.pop()
+                break
+
             time.sleep(0.05)
+
+    else:
+        bootloader = circfirm.backend.device.maybe_select_option(bootloaders)
+
     return bootloader, board
 
 
-def get_connection_status() -> tuple[str | None, str | None]:
+def get_connection_statuses() -> tuple[list[str], list[str]]:
     """Get the status of a connectted CircuitPython device as a CIRCUITPY and bootloader location."""
-    circuitpy = circfirm.backend.device.find_circuitpy()
-    bootloader = circfirm.backend.device.find_bootloader()
-    if not circuitpy and not bootloader:
-        click.echo("CircuitPython device not found!")
+    circuitpys = circfirm.backend.device.find_circuitpys()
+    bootloaders = circfirm.backend.device.find_bootloaders()
+    if not circuitpys and not bootloaders:
+        click.echo("CircuitPython device(s) not found!")
         click.echo("Check that the device is connected and mounted.")
         sys.exit(1)
-    return circuitpy, bootloader
+    return circuitpys, bootloaders
 
 
 def ensure_bootloader_mode(bootloader: str | None) -> None:

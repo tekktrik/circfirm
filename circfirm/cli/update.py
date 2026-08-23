@@ -58,8 +58,9 @@ def cli(  # noqa: PLR0913
     limit_to_patch: bool,
 ) -> None:
     """Update a connected board to the latest CircuitPython version."""
-    circuitpy, bootloader = circfirm.cli.get_connection_status()
-    if circuitpy:
+    circuitpys, bootloaders = circfirm.cli.get_connection_statuses()
+    circuitpy = circfirm.backend.device.maybe_select_option(circuitpys)
+    if circuitpys:
         _, current_version = circfirm.backend.device.get_board_info(circuitpy)
     else:
         click.echo(
@@ -71,7 +72,7 @@ def cli(  # noqa: PLR0913
         current_version = "0.0.0"
     try:
         bootloader, board_id = circfirm.cli.get_board_id(
-            circuitpy, bootloader, board_id, timeout
+            [circuitpy], bootloaders, board_id, timeout
         )
     except OSError as err:
         raise click.ClickException(err.args[0])

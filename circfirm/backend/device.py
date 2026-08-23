@@ -20,7 +20,7 @@ BOARD_VER_REGEX = (
 )
 
 
-def _maybe_select_option(message: str, options: list[str]) -> str | None:
+def maybe_select_option(options: list[str], message: str = "Please select a mount point.") -> str | None:
     """Select an option from a given list if necessary."""
     if not options:
         return None
@@ -59,7 +59,7 @@ def _find_devices(filename: str) -> list[str]:
 def _find_device(filename: str) -> list[str]:
     """Find a specific connected device."""
     devices = _find_devices(filename)
-    return _maybe_select_option("Please select a mount point.", devices)
+    return maybe_select_option(devices)
 
 
 def find_circuitpy() -> str | None:

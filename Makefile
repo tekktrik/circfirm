@@ -20,26 +20,27 @@ docs:
 .PHONY: prepare
 prepare: check test docs
 
-.PHONY: test-prep
-test-prep:
+.PHONY: test-mount
+test-mount:
 ifeq "$(OS)" "Windows_NT"
 	-@mkdir testmount
-	-@xcopy tests\assets\info_uf2.txt testmount
 	-@subst T: testmount
 else ifeq "$(shell uname -s)" "Linux"
 	-@truncate testfs -s 1M
 	-@mkfs.vfat -F12 -S512 testfs
 	-@mkdir testmount
 	-@sudo mount -o loop,user,umask=000 testfs testmount/
-	-@cp tests/assets/info_uf2.txt testmount/
 else ifeq "$(shell uname -s)" "Darwin"
 	-@hdiutil create -size 512m -volname TESTMOUNT -fs FAT32 testfs.dmg
 	-@hdiutil attach testfs.dmg
-	-@cp tests/assets/info_uf2.txt /Volumes/TESTMOUNT
 else
 	@echo "Current OS not supported"
 	@exit 1
 endif
+
+.PHONY: test-prep
+test-prep:
+	-@"${MAKE}" test-mount
 	-@git clone https://github.com/adafruit/circuitpython tests/sandbox/circuitpython --depth 1
 
 .PHONY: test-run
@@ -48,6 +49,7 @@ test-run:
 	-@coverage report
 	-@coverage html
 
+# TODO: Update this like the mounting command
 .PHONY: test-clean
 test-clean:
 ifeq "$(OS)" "Windows_NT"
