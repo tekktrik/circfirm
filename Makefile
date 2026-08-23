@@ -49,21 +49,26 @@ test-run:
 	-@coverage report
 	-@coverage html
 
-# TODO: Update this like the mounting command
-.PHONY: test-clean
-test-clean:
+.PHONY: test-unmount
+test-unmount:
 ifeq "$(OS)" "Windows_NT"
 	-@subst T: /d
 	-@python scripts\rmdir.py testmount
-	-@python scripts\rmdir.py tests\sandbox\circuitpython
 else ifeq "$(shell uname -s)" "Linux"
 	-@sudo umount testmount
 	-@sudo rm -rf testmount
 	-@rm testfs -f
-	-@rm -rf tests/sandbox/circuitpython
 else
 	-@hdiutil detach /Volumes/TESTMOUNT
 	-@rm testfs.dmg -f
+endif
+
+.PHONY: test-clean
+test-clean:
+	-@"${MAKE}" test-unmount
+ifeq "$(OS)" "Windows_NT"
+	-@python scripts\rmdir.py tests\sandbox\circuitpython
+else
 	-@rm -rf tests/sandbox/circuitpython
 endif
 
