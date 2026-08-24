@@ -10,9 +10,9 @@ import pathlib
 import re
 
 import psutil
+import questionary
 
 import circfirm
-import questionary
 
 BOARD_ID_REGEX = r"Board ID:\s*(.*)"
 BOARD_VER_REGEX = (
@@ -20,7 +20,9 @@ BOARD_VER_REGEX = (
 )
 
 
-def maybe_select_option(options: list[str], message: str = "Please select a mount point.") -> str | None:
+def maybe_select_option(
+    options: list[str], message: str = "Please select a mount point."
+) -> str | None:
     """Select an option from a given list if necessary."""
     if not options:
         return None
@@ -80,4 +82,3 @@ def find_bootloader() -> str | None:
 def find_bootloaders() -> list[str]:
     """Find CircuitPython devices in bootloader mode."""
     return _find_devices(circfirm.UF2INFO_FILE)
-

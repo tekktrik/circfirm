@@ -1,3 +1,11 @@
+# SPDX-FileCopyrightText: 2026 Alec Delaney
+# SPDX-License-Identifier: MIT
+
+"""Cross-platform script for determining mount information.
+
+Author(s): Alec Delaney
+"""
+
 import json
 import platform
 import sys

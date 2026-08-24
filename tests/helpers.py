@@ -43,13 +43,12 @@ def set_firmware_version(version: str) -> None:
 
 def get_mount(mount_index: int = 0) -> str:
     """Get the mounted drive."""
-
     with open("scripts/info.json") as jsonfile:
         contents = json.load(jsonfile)
 
     try:
         system = platform.system()
-    except KeyError as err:
+    except KeyError:
         raise RuntimeError("Unsupported OS detected")
     drivefile, directory = contents[system][mount_index]
 
@@ -63,11 +62,7 @@ def get_mount(mount_index: int = 0) -> str:
     assert os.path.exists(mount_location)
     assert os.path.isdir(mount_location)
 
-    return (
-        mount_location
-        if system == "Windows"
-        else os.path.realpath(mount_location)
-    )
+    return mount_location if system == "Windows" else os.path.realpath(mount_location)
 
 
 def get_mount_node(path: str) -> str:
