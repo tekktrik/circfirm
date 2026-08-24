@@ -135,8 +135,8 @@ dmypy.json
 .vscode/
 
 # Project-specific
-testfs
-testmount/
+testfs*
+testmount*/
 
 # Test related
 tests/backup/

@@ -6,6 +6,7 @@
 Author(s): Alec Delaney
 """
 
+import json
 import os
 import pathlib
 import platform
@@ -40,19 +41,31 @@ def set_firmware_version(version: str) -> None:
         bootfile.write(new_contents)
 
 
-def get_mount() -> str:
+def get_mount(mount_index: int = 0) -> str:
     """Get the mounted drive."""
+
+    with open("scripts/info.json") as jsonfile:
+        contents = json.load(jsonfile)
+
+    try:
+        system = platform.system()
+    except KeyError as err:
+        raise RuntimeError("Unsupported OS detected")
+    drivefile, directory = contents[system][mount_index]
+
     if platform.system() == "Windows":  # pragma: no cover
-        mount_location = "T:\\"
+        mount_location = f"{drivefile}\\"
     elif platform.system() == "Darwin":  # pragma: no cover
-        mount_location = "/Volumes/TESTMOUNT"
+        mount_location = f"/Volumes/{directory}"
     else:  # pragma: no cover
-        mount_location = os.path.join(os.path.curdir, "testmount")
+        mount_location = os.path.join(os.path.curdir, directory)
+
     assert os.path.exists(mount_location)
     assert os.path.isdir(mount_location)
+
     return (
         mount_location
-        if platform.system() == "Windows"
+        if system == "Windows"
         else os.path.realpath(mount_location)
     )
 
