@@ -6,6 +6,7 @@
 Author(s): Alec Delaney
 """
 
+import json
 import os
 import pathlib
 import shutil
@@ -26,6 +27,9 @@ BACKUP_FOLDER = pathlib.Path("tests/backup/")
 APP_DIR = pathlib.Path(click.get_app_dir("circfirm")).resolve()
 
 CONFIG_EXISTS = APP_DIR.exists()
+
+with open("scripts/info.json") as infofile:
+    N_DEVICES = len(json.load(infofile)["Windows"])
 
 
 # pytest session configuration
@@ -68,7 +72,7 @@ def pytest_sessionfinish(
 
 @pytest.fixture
 def mock_with_circuitpy() -> Iterator[None]:
-    """Run a with a device connected in CIRCUITPY mode."""
+    """Run with a device connected in CIRCUITPY mode."""
     tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
     tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
     tests.helpers.copy_boot_out()
@@ -76,6 +80,26 @@ def mock_with_circuitpy() -> Iterator[None]:
     yield
 
     tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
+
+
+@pytest.fixture
+def mock_with_multiple_circuitpys() -> Iterator[None]:
+    """Run with multiple devices connected in CIRCUITPY mode."""
+    for i in range(N_DEVICES):
+        tests.helpers.delete_mount_node(
+            circfirm.BOOTOUT_FILE, mount_index=i, missing_ok=True
+        )
+        tests.helpers.delete_mount_node(
+            circfirm.UF2INFO_FILE, mount_index=i, missing_ok=True
+        )
+        tests.helpers.copy_boot_out(mount_index=i)
+
+    yield
+
+    for i in range(N_DEVICES):
+        tests.helpers.delete_mount_node(
+            circfirm.BOOTOUT_FILE, mount_index=i, missing_ok=True
+        )
 
 
 @pytest.fixture
@@ -91,10 +115,35 @@ def mock_with_bootloader() -> Iterator[None]:
 
 
 @pytest.fixture
+def mock_with_multiple_bootloaders() -> Iterator[None]:
+    """Run with multiple devices connected in bootloader mode."""
+    for i in range(N_DEVICES):
+        tests.helpers.delete_mount_node(
+            circfirm.BOOTOUT_FILE, mount_index=i, missing_ok=True
+        )
+        tests.helpers.delete_mount_node(
+            circfirm.UF2INFO_FILE, mount_index=i, missing_ok=True
+        )
+        tests.helpers.copy_uf2_info(mount_index=i)
+
+    yield
+
+    for i in range(N_DEVICES):
+        tests.helpers.delete_mount_node(
+            circfirm.UF2INFO_FILE, mount_index=i, missing_ok=True
+        )
+
+
+@pytest.fixture
 def mock_with_no_device() -> None:
     """Run without a device connected in either CIRCUITPY or bootloader mode."""  # noqa: D401
-    tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
-    tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
+    for i in range(N_DEVICES):
+        tests.helpers.delete_mount_node(
+            circfirm.BOOTOUT_FILE, mount_index=i, missing_ok=True
+        )
+        tests.helpers.delete_mount_node(
+            circfirm.UF2INFO_FILE, mount_index=i, missing_ok=True
+        )
 
 
 # Fixtures for mocking cached firmwares

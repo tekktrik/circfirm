@@ -48,7 +48,7 @@ def get_mount(mount_index: int = 0) -> str:
 
     try:
         system = platform.system()
-    except KeyError:
+    except KeyError:  # pragma: no cover
         raise RuntimeError("Unsupported OS detected")
     drivefile, directory = contents[system][mount_index]
 
@@ -65,33 +65,35 @@ def get_mount(mount_index: int = 0) -> str:
     return mount_location if system == "Windows" else os.path.realpath(mount_location)
 
 
-def get_mount_node(path: str) -> str:
+def get_mount_node(path: str, mount_index: int = 0) -> str:
     """Get a file or folder on the mounted drive."""
-    mount_location = get_mount()
+    mount_location = get_mount(mount_index)
     return os.path.join(mount_location, path)
 
 
-def delete_mount_node(path: str, missing_ok: bool = False) -> None:
+def delete_mount_node(
+    path: str, mount_index: int = 0, missing_ok: bool = False
+) -> None:
     """Delete a file on the mounted druve."""
-    node_file = get_mount_node(path)
+    node_file = get_mount_node(path, mount_index)
     pathlib.Path(node_file).unlink(missing_ok=missing_ok)
 
 
-def _copy_text_file(filename: str) -> None:
+def _copy_text_file(filename: str, mount_index: int = 0) -> None:
     """Copy a text file to the mounted test drive."""
     template_file = os.path.join("tests", "assets", filename)
-    mount_dest = os.path.join(get_mount(), filename)
+    mount_dest = os.path.join(get_mount(mount_index), filename)
     shutil.copyfile(template_file, mount_dest)
 
 
-def copy_uf2_info() -> None:
+def copy_uf2_info(mount_index: int = 0) -> None:
     """Copy a bootloader file to the mounted test drive."""
-    _copy_text_file("info_uf2.txt")
+    _copy_text_file("info_uf2.txt", mount_index)
 
 
-def copy_boot_out() -> None:
+def copy_boot_out(mount_index: int = 0) -> None:
     """Copy a bootout file to the mounted test drive."""
-    _copy_text_file("boot_out.txt")
+    _copy_text_file("boot_out.txt", mount_index)
 
 
 def get_board_ids_from_git() -> list[str]:
