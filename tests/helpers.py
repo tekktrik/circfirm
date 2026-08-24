@@ -41,7 +41,7 @@ def set_firmware_version(version: str) -> None:
         bootfile.write(new_contents)
 
 
-def get_mount(mount_index: int = 0) -> str:
+def get_mount(mount_index: int = 0, missing_ok: bool = False) -> str:
     """Get the mounted drive."""
     with open("scripts/info.json") as jsonfile:
         contents = json.load(jsonfile)
@@ -59,15 +59,16 @@ def get_mount(mount_index: int = 0) -> str:
     else:  # pragma: no cover
         mount_location = os.path.join(os.path.curdir, directory)
 
-    assert os.path.exists(mount_location)
-    assert os.path.isdir(mount_location)
+    if not missing_ok:
+        assert os.path.exists(mount_location)
+        assert os.path.isdir(mount_location)
 
     return mount_location if system == "Windows" else os.path.realpath(mount_location)
 
 
-def get_mount_node(path: str, mount_index: int = 0) -> str:
+def get_mount_node(path: str, mount_index: int = 0, missing_ok: bool = False) -> str:
     """Get a file or folder on the mounted drive."""
-    mount_location = get_mount(mount_index)
+    mount_location = get_mount(mount_index, missing_ok)
     return os.path.join(mount_location, path)
 
 
@@ -75,7 +76,7 @@ def delete_mount_node(
     path: str, mount_index: int = 0, missing_ok: bool = False
 ) -> None:
     """Delete a file on the mounted druve."""
-    node_file = get_mount_node(path, mount_index)
+    node_file = get_mount_node(path, mount_index, missing_ok=missing_ok)
     pathlib.Path(node_file).unlink(missing_ok=missing_ok)
 
 

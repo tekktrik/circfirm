@@ -73,13 +73,21 @@ def pytest_sessionfinish(
 @pytest.fixture
 def mock_with_circuitpy() -> Iterator[None]:
     """Run with a device connected in CIRCUITPY mode."""
-    tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
-    tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
+    for i in range(N_DEVICES):
+        tests.helpers.delete_mount_node(
+            circfirm.BOOTOUT_FILE, mount_index=i, missing_ok=True
+        )
+        tests.helpers.delete_mount_node(
+            circfirm.UF2INFO_FILE, mount_index=i, missing_ok=True
+        )
     tests.helpers.copy_boot_out()
 
     yield
 
-    tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)
+    for i in range(N_DEVICES):
+        tests.helpers.delete_mount_node(
+            circfirm.BOOTOUT_FILE, mount_index=i, missing_ok=True
+        )
 
 
 @pytest.fixture
@@ -111,7 +119,10 @@ def mock_with_bootloader() -> Iterator[None]:
 
     yield
 
-    tests.helpers.delete_mount_node(circfirm.UF2INFO_FILE, missing_ok=True)
+    for i in range(N_DEVICES):
+        tests.helpers.delete_mount_node(
+            circfirm.UF2INFO_FILE, mount_index=i, missing_ok=True
+        )
 
 
 @pytest.fixture
