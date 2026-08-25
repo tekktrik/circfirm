@@ -16,17 +16,16 @@ import time
 
 import circfirm
 
-
 DELAY_TIME_S = 2
 
 
-def start_bootloader_copy_thread() -> None:
+def start_bootloader_copy_thread(mount_index: int = 0) -> None:
     """Wait then add the boot_out.txt file."""
 
     def wait_and_set_bootloader() -> None:
         time.sleep(DELAY_TIME_S)
-        delete_mount_node(circfirm.BOOTOUT_FILE)
-        copy_uf2_info()
+        delete_mount_node(circfirm.BOOTOUT_FILE, mount_index)
+        copy_uf2_info(mount_index)
 
     threading.Thread(target=wait_and_set_bootloader).start()
 
