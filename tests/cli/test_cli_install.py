@@ -57,6 +57,23 @@ def test_install_successful(mock_with_circuitpy: None) -> None:
             shutil.rmtree(board_folder)
 
 
+def test_install_multiple_bootloaders(mock_with_circuitpy: None) -> None:
+    """Tests the successful use of the install command."""
+    try:
+        # Test installing the firmware where mutliple bootloaders are detected
+        tests.helpers.start_multiple_bootloader_copy_thread()
+
+        result = RUNNER.invoke(cli, ["install", VERSION])
+
+        assert result.exit_code == 1
+        assert result.stderr == "Error: More than one bootloader was added, cannot confirm the intended target\n"
+
+    finally:
+        board_folder = circfirm.backend.cache.get_board_folder("feather_m4_express")
+        if board_folder.exists():
+            shutil.rmtree(board_folder)
+
+
 def test_install_no_mount(mock_with_no_device: None) -> None:
     """Tests the install command when a mounted drive is not found."""
     result = RUNNER.invoke(
