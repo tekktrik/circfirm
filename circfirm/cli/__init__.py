@@ -241,8 +241,14 @@ def load_subcmd_folder(path: str, super_import_name: str) -> None:
         module_spec.loader.exec_module(module)
         source_cli: click.MultiCommand = getattr(module, "cli")
         if isinstance(source_cli, click.Group):
-            subcmd = click.CommandCollection(sources=(source_cli,))
-            subcmd.help = source_cli.__doc__
+            subcmd = click.Group(
+                name=subcmd_name,
+                help=source_cli.help or source_cli.__doc__,
+                invoke_without_command=source_cli.invoke_without_command,
+            )
+            subcmd.commands = source_cli.commands
+            subcmd.callback = source_cli.callback
+            subcmd.params = source_cli.params
         else:
             subcmd = source_cli
         cli.add_command(subcmd, subcmd_name)
