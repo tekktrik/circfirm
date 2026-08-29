@@ -22,7 +22,7 @@ def get_board_info() -> list[tuple[str, str]]:
 
     board_infos = []
     for circuitpy in circuitpys:
-        board_info = circfirm.backend.device.get_board_info(circuitpy)
+        board_info = circfirm.backend.device.get_board_info_from_circuitpy(circuitpy)
         board_infos.append(board_info)
     return board_infos
 

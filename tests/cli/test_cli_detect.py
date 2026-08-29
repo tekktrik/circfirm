@@ -20,7 +20,7 @@ def test_detect_circuitpy_found(mock_with_circuitpy: None) -> None:
     """Tests the ability of the detect circuitpy command to find a connected board."""
     result = RUNNER.invoke(cli, ["detect", "circuitpy"])
     assert result.exit_code == 0
-    circuitpy = pathlib.Path(result.output.strip())
+    circuitpy = pathlib.Path(result.output.split("-")[0].strip())
     assert circuitpy.exists()
     mount = pathlib.Path(tests.helpers.get_mount())
     assert circuitpy == mount

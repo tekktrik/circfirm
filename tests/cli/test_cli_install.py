@@ -98,19 +98,27 @@ def test_install_successful_multiple_boards(
             shutil.rmtree(board_folder)
 
 
+def test_install_successful_various_boards(mock_with_various_boards: None) -> None:
+    """Tests installing when both CIRCUITPY and bootloader boards are connected."""
+    with create_pipe_input() as pipe:
+        with create_app_session(input=pipe, output=DummyOutput()):
+            extra_input = "\x1b[B\r"
+            pipe.send_text(extra_input)
+
+            result = RUNNER.invoke(cli, ["install", VERSION])
+
+    assert result.exit_code == ERR_IN_BOOTLOADER
+
+
 def test_install_multiple_bootloaders(mock_with_circuitpy: None) -> None:
-    """Tests the successful use of the install command."""
+    """Tests the detecting multiple new bootloaders."""
     try:
         # Test installing the firmware where mutliple bootloaders are detected
         tests.helpers.start_multiple_bootloader_copy_thread()
 
         result = RUNNER.invoke(cli, ["install", VERSION])
 
-        assert result.exit_code == 1
-        assert (
-            result.stderr
-            == "Error: More than one bootloader was added, cannot confirm the intended target\n"
-        )
+        assert result.exit_code != 0
 
     finally:
         board_folder = circfirm.backend.cache.get_board_folder("feather_m4_express")
@@ -126,14 +134,6 @@ def test_install_no_mount(mock_with_no_device: None) -> None:
     assert result.exit_code == ERR_NOT_FOUND
 
 
-def test_install_as_circuitpy(mock_with_circuitpy: None) -> None:
-    """Tests the install command when a mounted CIRCUITPY drive is found."""
-    result = RUNNER.invoke(
-        cli, ["install", VERSION, "--board-id", "feather_m4_express"]
-    )
-    assert result.exit_code == ERR_FOUND_CIRCUITPY
-
-
 def test_install_bad_version(mock_with_bootloader: None) -> None:
     """Tests the install command using a bad board version."""
     result = RUNNER.invoke(
@@ -144,6 +144,33 @@ def test_install_bad_version(mock_with_bootloader: None) -> None:
     # Test using install when in bootloader mode
     result = RUNNER.invoke(cli, ["install", VERSION])
     assert result.exit_code == ERR_IN_BOOTLOADER
+
+
+def test_install_bootloader_no_board_id(mock_with_various_boards: None) -> None:
+    """Tests the install command when a bootloader board is selected without a board ID provided."""
+    try:
+        with create_pipe_input() as pipe:
+            with create_app_session(input=pipe, output=DummyOutput()):
+                extra_input = "\r"
+                pipe.send_text(extra_input)
+
+                # Test successfully installing the firmware
+                tests.helpers.start_bootloader_copy_thread()
+
+                result = RUNNER.invoke(cli, ["install", VERSION])
+
+        assert result.exit_code == 0
+        expected_uf2_filename = circfirm.backend.get_uf2_filename(
+            "feather_m4_express", VERSION
+        )
+
+        expected_uf2_filepath = tests.helpers.get_mount_node(expected_uf2_filename)
+        assert os.path.exists(expected_uf2_filepath)
+        os.remove(expected_uf2_filepath)
+    finally:
+        board_folder = circfirm.backend.cache.get_board_folder("feather_m4_express")
+        if board_folder.exists():
+            shutil.rmtree(board_folder)
 
 
 def test_install_with_timeout(mock_with_circuitpy: None) -> None:

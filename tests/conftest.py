@@ -111,6 +111,32 @@ def mock_with_multiple_circuitpys() -> Iterator[None]:
 
 
 @pytest.fixture
+def mock_with_various_boards() -> Iterator[None]:
+    """Run with multiple devices connected in CIRCUITPY mode."""
+    for i in range(N_DEVICES):
+        tests.helpers.delete_mount_node(
+            circfirm.BOOTOUT_FILE, mount_index=i, missing_ok=True
+        )
+        tests.helpers.delete_mount_node(
+            circfirm.UF2INFO_FILE, mount_index=i, missing_ok=True
+        )
+        if not i:
+            tests.helpers.copy_boot_out(mount_index=i)
+        else:
+            tests.helpers.copy_uf2_info(mount_index=i)
+
+    yield
+
+    for i in range(N_DEVICES):
+        tests.helpers.delete_mount_node(
+            circfirm.BOOTOUT_FILE, mount_index=i, missing_ok=True
+        )
+        tests.helpers.delete_mount_node(
+            circfirm.UF2INFO_FILE, mount_index=i, missing_ok=True
+        )
+
+
+@pytest.fixture
 def mock_with_bootloader() -> Iterator[None]:
     """Run with a device connected in bootloader mode."""  # noqa: D401
     tests.helpers.delete_mount_node(circfirm.BOOTOUT_FILE, missing_ok=True)

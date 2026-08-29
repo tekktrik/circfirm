@@ -59,9 +59,25 @@ def cli(  # noqa: PLR0913
 ) -> None:
     """Update a connected board to the latest CircuitPython version."""
     circuitpys, bootloaders = circfirm.cli.get_connection_statuses()
-    circuitpy = circfirm.backend.device.maybe_select_option(circuitpys)
-    if circuitpys:
-        _, current_version = circfirm.backend.device.get_board_info(circuitpy)
+
+    if not circuitpys and not board_id:
+        click.echo("CircuitPython devices found, but all are in bootloader mode!")
+        circfirm.cli.warn_not_circuitpy_mode()
+
+    device_path = circfirm.cli.get_device_from_all_connected(circuitpys, bootloaders)
+
+    if device_path in circuitpys:
+        board_id, current_version = (
+            circfirm.backend.device.get_board_info_from_circuitpy(device_path)
+        )
+        try:
+            bootloader = circfirm.cli.ensure_bootloader_mode(
+                device_path, timeout=timeout
+            )
+        except OSError as err:
+            raise click.ClickException(err.args[0])
+    elif not board_id:
+        circfirm.cli.warn_not_circuitpy_mode()
     else:
         click.echo(
             "Bootloader mode detected - cannot check the currently installed version"
@@ -70,12 +86,7 @@ def cli(  # noqa: PLR0913
             "The latest version will be installed regardless of the currently installed version."
         )
         current_version = "0.0.0"
-    try:
-        bootloader, board_id = circfirm.cli.get_board_id(
-            [circuitpy], bootloaders, board_id, timeout
-        )
-    except OSError as err:
-        raise click.ClickException(err.args[0])
+        bootloader = device_path
 
     try:
         new_versions = circfirm.backend.s3.get_board_versions(board_id, language)
@@ -118,6 +129,5 @@ def cli(  # noqa: PLR0913
         )
         return
 
-    circfirm.cli.ensure_bootloader_mode(bootloader)
     circfirm.cli.download_if_needed(board_id, new_version, language)
     circfirm.cli.copy_cache_firmware(board_id, new_version, language, bootloader)

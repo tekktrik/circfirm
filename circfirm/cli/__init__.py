@@ -17,6 +17,7 @@ from typing import Any, TypeVar
 
 import click
 import click_spinner
+import questionary
 import requests
 import yaml
 
@@ -43,55 +44,59 @@ def maybe_support(msg: str) -> None:
         click.echo(msg)
 
 
-def get_board_id(
+def format_circuitpy_info(
+    device_path: str, name: str, version: str, appended: str = ""
+) -> str:
+    """Create a formatted string representing the CIRCUITPYs device."""
+    if appended:
+        appended = " " + appended
+    return f"{device_path} - {name} ({version}){appended}"
+
+
+def format_bootloader_info(device_path: str, appended: str = "") -> str:
+    """Create a formatted string representing the bootloader device."""
+    if appended:
+        appended = " " + appended
+    return f"{device_path}{appended}"
+
+
+def maybe_select_device(
+    device_paths: list[str],
+    is_circuitpy: list[bool],
+    message: str = "Please select a device.",
+    specify_devices: bool = False,
+) -> str | None:
+    """Select an option from a given list if necessary."""
+    if not device_paths:
+        return None
+
+    if len(device_paths) == 1:
+        return device_paths[0]
+
+    formatted_options = []
+    for dp, ic in zip(device_paths, is_circuitpy):
+        if ic:
+            n, v = circfirm.backend.device.get_board_info_from_circuitpy(dp)
+            appended = "[CIRCUITPY mode]" if specify_devices else ""
+            formatted_option = format_circuitpy_info(dp, n, v, appended=appended)
+        else:
+            appended = "[bootloader mode]" if specify_devices else ""
+            formatted_option = format_bootloader_info(dp, appended=appended)
+        formatted_options.append(formatted_option)
+
+    verbose_selection = questionary.select(message, formatted_options).ask()
+    verbose_index = formatted_options.index(verbose_selection)
+    return device_paths[verbose_index]
+
+
+def get_device_from_all_connected(
     circuitpys: list[str],
     bootloaders: list[str],
-    board: str | None,
-    timeout: int = -1,
-) -> tuple[str, str]:
-    """Get the board ID of a device via CLI."""
-    if not board:
-        if not circuitpys and bootloaders:
-            click.echo("CircuitPython device(s) found, but it is in bootloader mode!")
-            click.echo(
-                "Please put the device out of bootloader mode, or use the --board-id option."
-            )
-            sys.exit(3)
-        circuitpy = circfirm.backend.device.maybe_select_option(circuitpys)
-        board = circfirm.backend.device.get_board_info(circuitpy)[0]
-
-        existing_bootloaders = circfirm.backend.device.find_bootloaders()
-        click.echo("Board ID detected, please switch the device to bootloader mode.")
-        if timeout == -1:
-            skip_timeout = True
-        else:
-            skip_timeout = False
-            start_time = time.time()
-
-        while True:
-            if not skip_timeout and time.time() >= start_time + timeout:
-                raise OSError(
-                    "Bootloader mode device not found within the timeout period"
-                )
-
-            current_bootloaders = set(circfirm.backend.device.find_bootloaders())
-            new_bootloaders = current_bootloaders.difference(existing_bootloaders)
-
-            if len(new_bootloaders) > 1:
-                raise OSError(
-                    "More than one bootloader was added, cannot confirm the intended target"
-                )
-
-            elif len(new_bootloaders) == 1:
-                bootloader = new_bootloaders.pop()
-                break
-
-            time.sleep(0.05)
-
-    else:
-        bootloader = circfirm.backend.device.maybe_select_option(bootloaders)
-
-    return bootloader, board
+) -> str:
+    """Get the device path of the board, ensureing it is in bootloader mode."""
+    all_options = circuitpys + bootloaders
+    all_types = [dp in circuitpys for dp in all_options]
+    return maybe_select_device(all_options, all_types, specify_devices=True)
 
 
 def get_connection_statuses() -> tuple[list[str], list[str]]:
@@ -105,13 +110,50 @@ def get_connection_statuses() -> tuple[list[str], list[str]]:
     return circuitpys, bootloaders
 
 
-def ensure_bootloader_mode(bootloader: str | None) -> None:
-    """Ensure the connected device is in bootloader mode."""
-    if not bootloader:
-        if circfirm.backend.device.find_circuitpy():
-            click.echo("CircuitPython device found, but is not in bootloader mode!")
-            click.echo("Please put the device in bootloader mode.")
-            sys.exit(2)
+def warn_not_circuitpy_mode() -> None:
+    """Warn that a device is not in CIRCUITPY mode when it must be."""
+    click.echo(
+        "Please put the device out of bootloader mode, or use the --board-id option."
+    )
+    sys.exit(3)
+
+
+def ensure_bootloader_mode(
+    device_path: str,
+    timeout: int = -1,
+) -> str:
+    """Ensure that the connected device is in bootloader mode."""
+    existing_bootloaders = circfirm.backend.device.find_bootloaders()
+    click.echo("Board ID detected, please switch the device to bootloader mode.")
+    if timeout == -1:
+        skip_timeout = True
+    else:
+        skip_timeout = False
+        start_time = time.time()
+
+    disconnected = False
+    while True:
+        if not skip_timeout and time.time() >= start_time + timeout:
+            raise OSError("Bootloader mode device not found within the timeout period")
+
+        if not disconnected:
+            if device_path not in circfirm.backend.device.find_circuitpys():
+                disconnected = True
+        else:
+            current_bootloaders = set(circfirm.backend.device.find_bootloaders())
+            new_bootloaders = current_bootloaders.difference(existing_bootloaders)
+
+            if len(new_bootloaders) > 1:
+                raise OSError(
+                    "More than one bootloader was added, cannot confirm the intended target"
+                )
+
+            if new_bootloaders:
+                bootloader = new_bootloaders.pop()
+                break
+
+        time.sleep(0.05)
+    return bootloader
 
 
 def download_if_needed(board: str, version: str, language: str) -> None:
