@@ -6,7 +6,6 @@
 Author(s): Alec Delaney
 """
 
-import json
 import os
 import pathlib
 import shutil
@@ -22,14 +21,12 @@ from botocore.httpsession import URLLib3Session
 
 import circfirm
 import tests.helpers
+from tests.helpers import N_DEVICES
 
 BACKUP_FOLDER = pathlib.Path("tests/backup/")
 APP_DIR = pathlib.Path(click.get_app_dir("circfirm")).resolve()
 
 CONFIG_EXISTS = APP_DIR.exists()
-
-with open("scripts/info.json") as infofile:
-    N_DEVICES = len(json.load(infofile)["Windows"])
 
 
 # pytest session configuration

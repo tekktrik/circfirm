@@ -18,6 +18,9 @@ import circfirm
 
 DELAY_TIME_S = 1
 
+with open("scripts/info.json") as infofile:
+    N_DEVICES = len(json.load(infofile)["Windows"])
+
 
 def start_bootloader_copy_thread(mount_index: int = 0) -> None:
     """Wait then add the info_uf2.txt file."""
