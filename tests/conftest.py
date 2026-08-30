@@ -36,7 +36,7 @@ with open("scripts/info.json") as infofile:
 
 
 def pytest_sessionstart(session: pytest.Session) -> None:
-    """Save the current cron table before testing."""
+    """Save the current cache and settings before testing."""
     # Load environment variables if not in GitHub Actions
     if "GH_TOKEN" not in os.environ:  # pragma: no cover
         with open(".env", encoding="utf-8") as envfile:
@@ -58,7 +58,7 @@ def pytest_sessionstart(session: pytest.Session) -> None:
 def pytest_sessionfinish(
     session: pytest.Session, exitstatus: int | pytest.ExitCode
 ) -> None:
-    """Restore the previous cron table after testing."""
+    """Restore the previous cache and settings after testing."""
     try:
         shutil.rmtree(APP_DIR)
     except FileNotFoundError:  # pragma: no cover
