@@ -11,14 +11,6 @@ import click
 import circfirm.backend.device
 
 
-def _detect_circuitpys(
-    announce_none: bool = True,
-    append_circuitpy="",
-    append_bootloader="[bootloader]",
-) -> None:
-    pass
-
-
 @click.group(invoke_without_command=True)
 @click.pass_context
 def cli(ctx: click.Context) -> None:
