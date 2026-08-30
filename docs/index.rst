@@ -19,8 +19,8 @@
 
    commands/update
    commands/install
-   commands/detect
-   commands/current
+   commands/devices
+   commands/info
    commands/cache
    commands/query
    commands/config
