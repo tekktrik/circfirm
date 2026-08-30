@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2024 Alec Delaney, for Adafruit Industries
 # SPDX-License-Identifier: MIT
 
-"""CLI functionality for the detect subcommand.
+"""CLI functionality for the devices subcommand.
 
 Author(s): Alec Delaney
 """
@@ -41,7 +41,7 @@ def cli(ctx: click.Context) -> None:
             click.echo(formatted)
 
 
-@cli.command(name="circuitpys")
+@cli.command(name="circuitpy")
 @click.option(
     "-p",
     "--paths-only",
@@ -49,7 +49,7 @@ def cli(ctx: click.Context) -> None:
     default=False,
     help="Return only paths",
 )
-def detect_circuitpys(paths_only: bool) -> None:
+def devices_circuitpy(paths_only: bool) -> None:
     """Detect connected boards in CIRCUITPY or equivalent mode."""
     circuitpys = circfirm.backend.device.find_circuitpys()
 
@@ -69,8 +69,8 @@ def detect_circuitpys(paths_only: bool) -> None:
         click.echo(formatted)
 
 
-@cli.command(name="bootloaders")
-def detect_bootloaders() -> None:
+@cli.command(name="bootloader")
+def devices_bootloader() -> None:
     """Detect connected boards in bootloader mode."""
     bootloaders = circfirm.backend.device.find_bootloaders()
 
