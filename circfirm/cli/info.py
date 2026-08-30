@@ -16,7 +16,7 @@ import circfirm.cli
 @click.pass_context
 @click.argument("device-path")
 def cli(ctx: click.Context, device_path: str) -> None:
-    """Check the information about the currently connected board."""
+    """Check the information about the selected board."""
     circuitpys, _ = circfirm.cli.get_connection_statuses()
     if not circuitpys:
         raise click.ClickException(
@@ -31,8 +31,8 @@ def cli(ctx: click.Context, device_path: str) -> None:
 
 @cli.command(name="board-id")
 @click.pass_context
-def current_board_ids(ctx: click.Context) -> None:
-    """Get the board ID of the currently connected board."""
+def info_board_ids(ctx: click.Context) -> None:
+    """Get the board ID of the selected board."""
     device_path = ctx.parent.params["device_path"]
     info = circfirm.backend.device.get_board_info_from_circuitpy(device_path)
     click.echo(info[0])
@@ -40,8 +40,8 @@ def current_board_ids(ctx: click.Context) -> None:
 
 @cli.command(name="version")
 @click.pass_context
-def current_versions(ctx: click.Context) -> None:
-    """Get the CircuitPython version of the currently connected board."""
+def info_versions(ctx: click.Context) -> None:
+    """Get the CircuitPython version of the selected board."""
     device_path = ctx.parent.params["device_path"]
     info = circfirm.backend.device.get_board_info_from_circuitpy(device_path)
     click.echo(info[1])

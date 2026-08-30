@@ -15,7 +15,7 @@ RUNNER = CliRunner()
 
 
 def test_info(mock_with_circuitpy: None) -> None:
-    """Tests the current name and version commands."""
+    """Tests the info name and version commands."""
     # Test when connected in CIRCUITPY mode
     device_path = tests.helpers.get_mount()
 
@@ -29,7 +29,7 @@ def test_info(mock_with_circuitpy: None) -> None:
 
 
 def test_info_in_bootloader(mock_with_bootloader: None) -> None:
-    """Tests the current command when connected in bootloader mode."""
+    """Tests the info command when connected in bootloader mode."""
     device_path = tests.helpers.get_mount()
     result = RUNNER.invoke(cli, ["info", device_path, "board-id"])
     assert result.exit_code != 0
