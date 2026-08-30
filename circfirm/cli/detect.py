@@ -11,35 +11,12 @@ import click
 import circfirm.backend.device
 
 
-def _detect_circuitpys(announce_none: bool = True) -> int:
-    circuitpys = circfirm.backend.device.find_circuitpys()
-
-    if not circuitpys and announce_none:
-        click.echo("No board connected in CIRCUITPY or equivalent mode")
-        return
-
-    for device_path in sorted(circuitpys):
-        name, version = circfirm.backend.device.get_board_info_from_circuitpy(
-            device_path
-        )
-        formatted = circfirm.cli.format_circuitpy_info(device_path, name, version)
-        click.echo(formatted)
-
-    return len(circuitpys)
-
-
-def _detect_bootloaders(announce_none: bool = True) -> int:
-    bootloaders = circfirm.backend.device.find_bootloaders()
-
-    if not bootloaders and announce_none:
-        click.echo("No board connected in bootloader mode")
-        return
-
-    for device_path in sorted(bootloaders):
-        formatted = circfirm.cli.format_bootloader_info(device_path)
-        click.echo(formatted)
-
-    return len(bootloaders)
+def _detect_circuitpys(
+    announce_none: bool = True,
+    append_circuitpy="",
+    append_bootloader="[bootloader]",
+) -> None:
+    pass
 
 
 @click.group(invoke_without_command=True)
@@ -47,19 +24,68 @@ def _detect_bootloaders(announce_none: bool = True) -> int:
 def cli(ctx: click.Context) -> None:
     """Detect connected CircuitPython boards."""
     if ctx.invoked_subcommand is None:
-        num_circuitpys = _detect_circuitpys(False)
-        num_bootloaders = _detect_bootloaders(False)
-        if not num_circuitpys and not num_bootloaders:
+        circuitpys = circfirm.backend.device.find_circuitpys()
+        bootloaders = circfirm.backend.device.find_bootloaders()
+
+        devices = circuitpys + bootloaders
+        are_circuitpys = [device in circuitpys for device in devices]
+
+        if not devices:
             click.echo("No boards connected in either CIRCUITPY or bootloader modes")
+            return
+
+        for device_path, is_circuitpy in sorted(zip(devices, are_circuitpys)):
+            if is_circuitpy:
+                name, version = circfirm.backend.device.get_board_info_from_circuitpy(
+                    device_path
+                )
+                formatted = circfirm.cli.format_circuitpy_info(
+                    device_path, name, version, "[CIRCUITPY]"
+                )
+            else:
+                formatted = circfirm.cli.format_bootloader_info(
+                    device_path, "[bootloader]"
+                )
+            click.echo(formatted)
 
 
-@cli.command(name="circuitpy")
-def detect_circuitpys() -> None:
+@cli.command(name="circuitpys")
+@click.option(
+    "-p",
+    "--paths-only",
+    is_flag=True,
+    default=False,
+    help="Return only paths",
+)
+def detect_circuitpys(paths_only: bool) -> None:
     """Detect connected boards in CIRCUITPY or equivalent mode."""
-    _detect_circuitpys()
+    circuitpys = circfirm.backend.device.find_circuitpys()
+
+    if not circuitpys:
+        click.echo("No board connected in CIRCUITPY or equivalent mode")
+        return
+
+    for device_path in sorted(circuitpys):
+        name, version = circfirm.backend.device.get_board_info_from_circuitpy(
+            device_path
+        )
+        formatted = (
+            circfirm.cli.format_circuitpy_info(device_path, name, version)
+            if not paths_only
+            else device_path
+        )
+        click.echo(formatted)
 
 
 @cli.command(name="bootloaders")
 def detect_bootloaders() -> None:
     """Detect connected boards in bootloader mode."""
-    _detect_bootloaders()
+    bootloaders = circfirm.backend.device.find_bootloaders()
+
+    if not bootloaders:
+        click.echo("No board connected in bootloader mode")
+        return
+
+    for device_path in sorted(bootloaders):
+        formatted = circfirm.cli.format_bootloader_info(device_path)
+        click.echo(formatted)
