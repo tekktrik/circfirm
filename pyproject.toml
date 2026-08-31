@@ -47,7 +47,7 @@ classifiers = [
 ]
 dependencies = [
     "boto3==1.43.77",
-    "boto3-stubs[essential]==1.43.77",
+    "boto3-stubs[essential]==1.43.82",
     "click==8.5.0",
     "click-spinner==0.2.0",
     "packaging==26.3",
