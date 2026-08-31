@@ -51,7 +51,6 @@ def query_board_ids(regex: str) -> None:
     except ValueError as err:
         raise click.ClickException(err.args[0])
     except requests.ConnectionError:
-        print("Triggered!")
         raise click.ClickException(
             "Issue with requesting information from git repository, check network connection"
         )
