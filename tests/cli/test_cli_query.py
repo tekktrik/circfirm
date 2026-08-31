@@ -77,7 +77,7 @@ def test_query_board_ids_no_internet(token: None, mock_no_internet: NoReturn) ->
 
 def test_query_board_ids_bad_regex(token: None) -> None:
     """Tests failure when a bad regex pattern is provided."""
-    result = RUNNER.invoke(cli, ["query", "board-ids", "--regex", "*badregex"])
+    result = RUNNER.invoke(cli, ["query", "board-ids", "--regex", "badregex("])
     assert result.exit_code != 0
 
 
