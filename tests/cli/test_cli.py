@@ -19,6 +19,12 @@ LANGUAGE = "cs"
 VERSION = "6.1.0"
 
 
+def test_maybe_select_device_no_inputs() -> None:
+    """Tests selecting a device when none where detected."""
+    selected = circfirm.cli.maybe_select_device([], [])
+    assert selected is None
+
+
 @pytest.mark.parametrize(
     "cached",
     (

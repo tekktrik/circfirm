@@ -17,6 +17,7 @@ from typing import Any, TypeVar
 
 import click
 import click_spinner
+import questionary
 import requests
 import yaml
 
@@ -43,56 +44,116 @@ def maybe_support(msg: str) -> None:
         click.echo(msg)
 
 
-def get_board_id(
-    circuitpy: str | None,
-    bootloader: str | None,
-    board: str | None,
-    timeout: int = -1,
-) -> tuple[str, str]:
-    """Get the board ID of a device via CLI."""
-    if not board:
-        if not circuitpy and bootloader:
-            click.echo("CircuitPython device found, but it is in bootloader mode!")
-            click.echo(
-                "Please put the device out of bootloader mode, or use the --board-id option."
-            )
-            sys.exit(3)
-        board = circfirm.backend.device.get_board_info(circuitpy)[0]
+def format_circuitpy_info(
+    device_path: str, name: str, version: str, appended: str = ""
+) -> str:
+    """Create a formatted string representing the CIRCUITPYs device."""
+    if appended:
+        appended = " " + appended
+    return f"{device_path} - {name} ({version}){appended}"
 
-        click.echo("Board ID detected, please switch the device to bootloader mode.")
-        if timeout == -1:
-            skip_timeout = True
+
+def format_bootloader_info(device_path: str, appended: str = "") -> str:
+    """Create a formatted string representing the bootloader device."""
+    if appended:
+        appended = " " + appended
+    return f"{device_path}{appended}"
+
+
+def maybe_select_device(
+    device_paths: list[str],
+    is_circuitpy: list[bool],
+    message: str = "Please select a device.",
+    specify_devices: bool = False,
+) -> str | None:
+    """Select an option from a given list if necessary."""
+    if not device_paths:
+        return None
+
+    if len(device_paths) == 1:
+        return device_paths[0]
+
+    formatted_options = []
+    for dp, ic in zip(device_paths, is_circuitpy):
+        if ic:
+            n, v = circfirm.backend.device.get_board_info_from_circuitpy(dp)
+            appended = "[CIRCUITPY mode]" if specify_devices else ""
+            formatted_option = format_circuitpy_info(dp, n, v, appended=appended)
         else:
-            skip_timeout = False
-            start_time = time.time()
+            appended = "[bootloader mode]" if specify_devices else ""
+            formatted_option = format_bootloader_info(dp, appended=appended)
+        formatted_options.append(formatted_option)
 
-        while not (bootloader := circfirm.backend.device.find_bootloader()):
-            if not skip_timeout and time.time() >= start_time + timeout:
-                raise OSError(
-                    "Bootloader mode device not found within the timeout period"
-                )
-            time.sleep(0.05)
-    return bootloader, board
+    verbose_selection = questionary.select(message, formatted_options).ask()
+    verbose_index = formatted_options.index(verbose_selection)
+    return device_paths[verbose_index]
 
 
-def get_connection_status() -> tuple[str | None, str | None]:
+def get_device_from_all_connected(
+    circuitpys: list[str],
+    bootloaders: list[str],
+) -> str:
+    """Get the device path of the board, ensureing it is in bootloader mode."""
+    all_options = circuitpys + bootloaders
+    all_types = [dp in circuitpys for dp in all_options]
+    return maybe_select_device(all_options, all_types, specify_devices=True)
+
+
+def get_connection_statuses() -> tuple[list[str], list[str]]:
     """Get the status of a connectted CircuitPython device as a CIRCUITPY and bootloader location."""
-    circuitpy = circfirm.backend.device.find_circuitpy()
-    bootloader = circfirm.backend.device.find_bootloader()
-    if not circuitpy and not bootloader:
-        click.echo("CircuitPython device not found!")
+    circuitpys = circfirm.backend.device.find_circuitpys()
+    bootloaders = circfirm.backend.device.find_bootloaders()
+    if not circuitpys and not bootloaders:
+        click.echo("CircuitPython device(s) not found!")
         click.echo("Check that the device is connected and mounted.")
         sys.exit(1)
-    return circuitpy, bootloader
+    return circuitpys, bootloaders
 
 
-def ensure_bootloader_mode(bootloader: str | None) -> None:
-    """Ensure the connected device is in bootloader mode."""
-    if not bootloader:
-        if circfirm.backend.device.find_circuitpy():
-            click.echo("CircuitPython device found, but is not in bootloader mode!")
-            click.echo("Please put the device in bootloader mode.")
-            sys.exit(2)
+def warn_not_circuitpy_mode() -> None:
+    """Warn that a device is not in CIRCUITPY mode when it must be."""
+    click.echo(
+        "Please put the device out of bootloader mode, or use the --board-id option."
+    )
+    sys.exit(3)
+
+
+def ensure_bootloader_mode(
+    device_path: str,
+    timeout: int = -1,
+) -> str:
+    """Ensure that the connected device is in bootloader mode."""
+    existing_bootloaders = circfirm.backend.device.find_bootloaders()
+    click.echo("Board ID detected, please switch the device to bootloader mode.")
+    if timeout == -1:
+        skip_timeout = True
+    else:
+        skip_timeout = False
+        start_time = time.time()
+
+    disconnected = False
+    while True:
+        if not skip_timeout and time.time() >= start_time + timeout:
+            raise OSError("Bootloader mode device not found within the timeout period")
+
+        if not disconnected:
+            if device_path not in circfirm.backend.device.find_circuitpys():
+                disconnected = True
+        else:
+            current_bootloaders = set(circfirm.backend.device.find_bootloaders())
+            new_bootloaders = current_bootloaders.difference(existing_bootloaders)
+
+            if len(new_bootloaders) > 1:
+                raise OSError(
+                    "More than one bootloader was added, cannot confirm the intended target"
+                )
+
+            if new_bootloaders:
+                bootloader = new_bootloaders.pop()
+                break
+
+        time.sleep(0.05)
+    return bootloader
 
 
 def download_if_needed(board: str, version: str, language: str) -> None:
@@ -180,8 +241,14 @@ def load_subcmd_folder(path: str, super_import_name: str) -> None:
         module_spec.loader.exec_module(module)
         source_cli: click.MultiCommand = getattr(module, "cli")
         if isinstance(source_cli, click.Group):
-            subcmd = click.CommandCollection(sources=(source_cli,))
-            subcmd.help = source_cli.__doc__
+            subcmd = click.Group(
+                name=subcmd_name,
+                help=source_cli.help or source_cli.__doc__,
+                invoke_without_command=source_cli.invoke_without_command,
+            )
+            subcmd.commands = source_cli.commands
+            subcmd.callback = source_cli.callback
+            subcmd.params = source_cli.params
         else:
             subcmd = source_cli
         cli.add_command(subcmd, subcmd_name)

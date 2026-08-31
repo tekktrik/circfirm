@@ -12,6 +12,9 @@ import shutil
 import time
 
 from click.testing import CliRunner
+from prompt_toolkit.application import create_app_session
+from prompt_toolkit.input import create_pipe_input
+from prompt_toolkit.output import DummyOutput
 
 import circfirm
 import circfirm.backend.cache
@@ -20,7 +23,10 @@ from circfirm.cli import cli
 
 RUNNER = CliRunner()
 
+VERSION = "8.0.0-beta.6"
 ORIGINAL_VERSION = "6.0.0"
+
+ERR_IN_BOOTLOADER = 3
 
 
 def test_update(mock_with_circuitpy: None) -> None:
@@ -113,6 +119,18 @@ def test_update_bootloader_mode(mock_with_bootloader: None) -> None:
             shutil.rmtree(board_folder)
 
 
+def test_upgrade_successful_various_boards(mock_with_various_boards: None) -> None:
+    """Tests installing when both CIRCUITPY and bootloader boards are connected."""
+    with create_pipe_input() as pipe:
+        with create_app_session(input=pipe, output=DummyOutput()):
+            extra_input = "\x1b[B\r"
+            pipe.send_text(extra_input)
+
+            result = RUNNER.invoke(cli, ["update"])
+
+    assert result.exit_code == ERR_IN_BOOTLOADER
+
+
 def test_update_to_lower(mock_with_circuitpy: None) -> None:
     """Tests the update command when the current version is higher."""
     tests.helpers.set_firmware_version("100.0.0")
@@ -171,6 +189,12 @@ def test_update_overlimiting(mock_with_circuitpy: None) -> None:
 
     assert result.exit_code == 1
     assert not mount_uf2_files
+
+
+def test_update_bootloaders_no_board_id(mock_with_multiple_bootloaders: None) -> None:
+    """Tests the update command when only bootloader boards are connected without a board ID provided."""
+    result = RUNNER.invoke(cli, ["update"])
+    assert result.exit_code == ERR_IN_BOOTLOADER
 
 
 def test_update_timeout_failure(mock_with_circuitpy: None) -> None:

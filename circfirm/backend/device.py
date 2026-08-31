@@ -18,8 +18,10 @@ BOARD_VER_REGEX = (
     r"Adafruit CircuitPython (\d+\.\d+\.\d+(?:-(?:\balpha\b|\bbeta\b)\.\d+)*)"
 )
 
+INDEX_BOARD_ID_REGEX = r'location.replace\("https://circuitpython.org/board/(.*)/"\);'
 
-def get_board_info(device_path: str) -> tuple[str, str]:
+
+def get_board_info_from_circuitpy(device_path: str) -> tuple[str, str]:
     """Get the attached CircuitPytho board's name and version."""
     bootout_file = pathlib.Path(device_path) / circfirm.BOOTOUT_FILE
     with open(bootout_file, encoding="utf-8") as infofile:
@@ -33,23 +35,24 @@ def get_board_info(device_path: str) -> tuple[str, str]:
     return board_match[1], version_match[1]
 
 
-def _find_device(filename: str) -> str | None:
+def _find_devices(filename: str) -> list[str]:
     """Find a specific connected device."""
+    devices = []
     for partition in psutil.disk_partitions():
         try:
             bootout_file = pathlib.Path(partition.mountpoint) / filename
             if bootout_file.exists():
-                return partition.mountpoint
+                devices.append(partition.mountpoint)
         except PermissionError:  # pragma: no cover
             pass
-    return None
+    return devices
 
 
-def find_circuitpy() -> str | None:
-    """Find CircuitPython device in non-bootloader mode."""
-    return _find_device(circfirm.BOOTOUT_FILE)
+def find_circuitpys() -> list[str]:
+    """Find CircuitPython devices in non-bootloader mode."""
+    return _find_devices(circfirm.BOOTOUT_FILE)
 
 
-def find_bootloader() -> str | None:
-    """Find CircuitPython device in bootloader mode."""
-    return _find_device(circfirm.UF2INFO_FILE)
+def find_bootloaders() -> list[str]:
+    """Find CircuitPython devices in bootloader mode."""
+    return _find_devices(circfirm.UF2INFO_FILE)

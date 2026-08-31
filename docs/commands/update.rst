@@ -14,6 +14,8 @@ where the board ID will be read from the ``boot_out.txt`` file.  The CLI will th
 board into bootloader mode, after which the selected CircuitPython version will be installed on
 the board.
 
+If you have multiple boards connected, you will be prompted to select one.
+
 If you wish to skip the step where the board ID is collected and simply connected the board in
 bootloader mode, you can do so and simply use the ``--board-id`` option to provide the board ID.
 
