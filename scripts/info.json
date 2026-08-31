@@ -1,7 +1,7 @@
 {
     "Windows": [
         ["T:", "testmount1"],
-        ["Q:", "testmount2"]
+        ["V:", "testmount2"]
     ],
     "Linux": [
         ["testfs1", "testmount1"],
