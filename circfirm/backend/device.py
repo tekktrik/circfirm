@@ -18,8 +18,6 @@ BOARD_VER_REGEX = (
     r"Adafruit CircuitPython (\d+\.\d+\.\d+(?:-(?:\balpha\b|\bbeta\b)\.\d+)*)"
 )
 
-INDEX_BOARD_ID_REGEX = r'location.replace\("https://circuitpython.org/board/(.*)/"\);'
-
 
 def get_board_info_from_circuitpy(device_path: str) -> tuple[str, str]:
     """Get the attached CircuitPytho board's name and version."""
