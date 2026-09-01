@@ -32,7 +32,7 @@ def get_board_info_from_circuitpy(device_path: str) -> tuple[str, str]:
 
 
 def _find_devices(filename: str) -> list[str]:
-    """Find a specific connected device."""
+    """Find connected devices."""
     devices = []
     for partition in psutil.disk_partitions():
         try:
