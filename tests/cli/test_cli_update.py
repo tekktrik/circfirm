@@ -25,6 +25,7 @@ RUNNER = CliRunner()
 
 VERSION = "8.0.0-beta.6"
 ORIGINAL_VERSION = "6.0.0"
+INCOMPARABLE_VERSION = "7.1.2-rc.0-3-gd897c15f24-dirty"
 
 ERR_IN_BOOTLOADER = 3
 
@@ -50,6 +51,27 @@ def test_update(mock_with_circuitpy: None) -> None:
         board_folder = circfirm.backend.cache.get_board_folder("feather_m4_express")
         if board_folder.exists():
             shutil.rmtree(board_folder)
+
+
+def test_update_bad_version_parsing(mock_with_circuitpy: None) -> None:
+    """Test the update command when the board has a version that cannot be compareed."""
+    tests.helpers.set_firmware_version(INCOMPARABLE_VERSION)
+    tests.helpers.start_bootloader_copy_thread()
+
+    result = RUNNER.invoke(cli, ["update", "--language", "cs"])
+    assert result.exit_code != 0
+    assert result.output == (
+        "Board ID detected, please switch the device to bootloader mode.\n"
+        f"Board currently has version {INCOMPARABLE_VERSION}, which cannot be used for version comparison.\n"
+        "Please use the install command to explicitly install a specific version.\n"
+    )
+
+    expected_version = "6.1.0"
+    expected_uf2_filename = circfirm.backend.get_uf2_filename(
+        "feather_m4_express", expected_version, language="cs"
+    )
+    expected_uf2_filepath = tests.helpers.get_mount_node(expected_uf2_filename)
+    assert not os.path.exists(expected_uf2_filepath)
 
 
 def test_update_no_internet(mock_no_internet: None, mock_with_circuitpy: None) -> None:
