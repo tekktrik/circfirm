@@ -37,7 +37,7 @@ class Language(enum.Enum):
 
 _ALL_LANGAGES = [language.value for language in Language]
 _ALL_LANGUAGES_REGEX = "|".join(_ALL_LANGAGES)
-_VALID_VERSIONS_CAPTURE = r"(\d+\.\d+\.\d+(?:-(?:\balpha\b|\bbeta\b)\.\d+)*)"
+_VALID_VERSIONS_CAPTURE = r"(\d+\.\d+\.\d+(?:-(?:\balpha\b|\bbeta\b|\brc\b)\.\d+)*)"
 FIRMWARE_REGEX_PATTERN = "-".join(
     [
         r"adafruit-circuitpython",
