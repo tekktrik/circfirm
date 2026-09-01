@@ -14,9 +14,7 @@ import psutil
 import circfirm
 
 BOARD_ID_REGEX = r"Board ID:\s*(.*)"
-BOARD_VER_REGEX = (
-    r"Adafruit CircuitPython (\d+\.\d+\.\d+(?:-(?:\balpha\b|\bbeta\b)\.\d+)*)"
-)
+BOARD_VER_REGEX = r"Adafruit CircuitPython (\d+\.\d+\.\d+(?:-.+)*) on \d+-\d+-\d+;"
 
 
 def get_board_info_from_circuitpy(device_path: str) -> tuple[str, str]:

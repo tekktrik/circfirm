@@ -6,6 +6,8 @@
 Author(s): Alec Delaney
 """
 
+import sys
+
 import botocore.exceptions
 import click
 import packaging.version
@@ -87,6 +89,17 @@ def cli(  # noqa: PLR0913
         )
         current_version = "0.0.0"
         bootloader = device_path
+
+    try:
+        _ = packaging.version.Version(current_version)
+    except packaging.version.InvalidVersion:
+        click.echo(
+            f"Board currently has version {current_version}, which cannot be used for version comparison."
+        )
+        click.echo(
+            "Please use the install command to explicitly install a specific version."
+        )
+        sys.exit(1)
 
     try:
         new_versions = circfirm.backend.s3.get_board_versions(board_id, language)
