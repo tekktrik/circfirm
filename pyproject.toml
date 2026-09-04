@@ -46,27 +46,27 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "boto3==1.43.77",
-    "boto3-stubs[essential]==1.43.77",
-    "click==8.5.0",
-    "click-spinner==0.2.0",
-    "packaging==26.3",
-    "psutil==7.2.2",
-    "pyyaml==6.0.3",
-    "questionary>=2.1.1",
-    "requests==2.34.2",
+    "boto3~=1.43",
+    "boto3-stubs[essential]~=1.43",
+    "click~=8.5",
+    "click-spinner~=0.2",
+    "packaging~=26.3",
+    "psutil~=7.2",
+    "pyyaml~=6.0",
+    "questionary~=2.1",
+    "requests~=2.34",
 ]
 dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
-    "build==1.6.0",
-    "coverage==7.15.4",
-    "pre-commit==4.6.2",
-    "pytest==9.1.1",
-    "sphinx==8.1.3",
-    "sphinx-tabs==3.5.0",
-    "sphinx-rtd-theme==3.1.0",
+    "build!=1.6",
+    "coverage~=7.15",
+    "pre-commit~=4.6",
+    "pytest~=9.1",
+    "sphinx~=8.1",
+    "sphinx-tabs~=3.5",
+    "sphinx-rtd-theme~=3.1",
 ]
 
 
