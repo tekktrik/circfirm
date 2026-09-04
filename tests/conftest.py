@@ -6,6 +6,7 @@
 Author(s): Alec Delaney
 """
 
+import contextlib
 import os
 import pathlib
 import shutil
@@ -56,10 +57,8 @@ def pytest_sessionfinish(
     session: pytest.Session, exitstatus: int | pytest.ExitCode
 ) -> None:
     """Restore the previous cache and settings after testing."""
-    try:
+    with contextlib.suppress(FileNotFoundError):
         shutil.rmtree(APP_DIR)
-    except FileNotFoundError:  # pragma: no cover
-        pass
     if CONFIG_EXISTS:  # pragma: no cover
         shutil.move("tests/backup/circfirm", APP_DIR.parent)
 

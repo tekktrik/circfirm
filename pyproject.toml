@@ -97,7 +97,17 @@ source = [
 ]
 
 [tool.ruff.lint]
-select = ["D", "PL", "UP", "I", "F", "B", "S", "C"]
+select = [
+    "B",
+    "C",
+    "D",
+    "F",
+    "I",
+    "PL",
+    "S",
+    "SIM",
+    "UP",
+]
 ignore = ["D213", "D203"]
 
 [tool.ruff.lint.per-file-ignores]
