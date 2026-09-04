@@ -40,7 +40,7 @@ def download_uf2(board_id: str, version: str, language: str = "en_US") -> None:
     file = circfirm.backend.get_uf2_filename(board_id, version, language=language)
     uf2_file = get_uf2_filepath(board_id, version, language=language)
     url = f"https://downloads.circuitpython.org/bin/{board_id}/{language}/{file}"
-    response = requests.get(url)
+    response = requests.get(url, timeout=60)
 
     SUCCESS = 200
     if response.status_code != SUCCESS:

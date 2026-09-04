@@ -47,6 +47,7 @@ def get_rate_limit() -> tuple[int, int, datetime.datetime]:
     response = requests.get(
         url="https://api.github.com/rate_limit",
         headers=BASE_REQUESTS_HEADERS,
+        timeout=60,
     )
     limit_info: RateLimit = response.json()["rate"]
     available: int = limit_info["remaining"]
@@ -67,6 +68,7 @@ def get_board_id_list(token: str) -> list[str]:
             "recursive": True,
         },
         headers=headers,
+        timeout=60,
     )
     try:
         tree_items: list[GitTreeItem] = response.json()["tree"]

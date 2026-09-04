@@ -18,6 +18,6 @@ for root, dirs, files in os.walk(target):
     children = dirs + files
     for name in children:
         filepath = os.path.join(root, name)
-        os.chmod(filepath, 0o777)
+        os.chmod(filepath, 0o777)  # noqa: S103
 
 shutil.rmtree(target)
