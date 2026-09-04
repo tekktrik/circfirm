@@ -26,7 +26,9 @@ def cli(ctx: click.Context) -> None:
             click.echo("No boards connected in either CIRCUITPY or bootloader modes")
             return
 
-        for device_path, is_circuitpy in sorted(zip(devices, are_circuitpys)):
+        for device_path, is_circuitpy in sorted(
+            zip(devices, are_circuitpys, strict=True)
+        ):
             if is_circuitpy:
                 name, version = circfirm.backend.device.get_board_info_from_circuitpy(
                     device_path

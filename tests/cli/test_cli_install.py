@@ -70,7 +70,7 @@ def test_install_successful_multiple_boards(
         with create_pipe_input() as pipe:
             with create_app_session(input=pipe, output=DummyOutput()):
                 extra_input = ""
-                for i in range(mount_index):
+                for _ in range(mount_index):
                     extra_input += "\x1b[B"
                 extra_input += "\r"
 

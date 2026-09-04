@@ -77,7 +77,7 @@ def cli(  # noqa: PLR0913
                 device_path, timeout=timeout
             )
         except OSError as err:
-            raise click.ClickException(err.args[0])
+            raise click.ClickException(err.args[0]) from None
     elif not board_id:
         circfirm.cli.warn_not_circuitpy_mode()
     else:
@@ -104,7 +104,7 @@ def cli(  # noqa: PLR0913
     try:
         new_versions = circfirm.backend.s3.get_board_versions(board_id, language)
     except botocore.exceptions.ConnectionError as err:
-        raise click.exceptions.ClickException(err.args[0])
+        raise click.exceptions.ClickException(err.args[0]) from None
 
     if not pre_release:
         new_versions = [

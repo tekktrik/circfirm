@@ -74,7 +74,7 @@ def maybe_select_device(
         return device_paths[0]
 
     formatted_options = []
-    for dp, ic in zip(device_paths, is_circuitpy):
+    for dp, ic in zip(device_paths, is_circuitpy, strict=True):
         if ic:
             n, v = circfirm.backend.device.get_board_info_from_circuitpy(dp)
             appended = "[CIRCUITPY mode]" if specify_devices else ""
@@ -233,13 +233,15 @@ def load_subcmd_folder(path: str, super_import_name: str) -> None:
         for subcmd_name in subcmd_names
     ]
 
-    for (subcmd_name, ispkg), subcmd_path in zip(subcmd_names, subcmd_paths):
+    for (subcmd_name, ispkg), subcmd_path in zip(
+        subcmd_names, subcmd_paths, strict=True
+    ):
         import_name = ".".join([super_import_name, subcmd_name])
         import_path = subcmd_path if ispkg else subcmd_path + ".py"
         module_spec = importlib.util.spec_from_file_location(import_name, import_path)
         module = importlib.util.module_from_spec(module_spec)
         module_spec.loader.exec_module(module)
-        source_cli: click.MultiCommand = getattr(module, "cli")
+        source_cli: click.MultiCommand = module.cli
         if isinstance(source_cli, click.Group):
             subcmd = click.Group(
                 name=subcmd_name,

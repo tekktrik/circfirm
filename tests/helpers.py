@@ -68,7 +68,7 @@ def get_mount(mount_index: int = 0, missing_ok: bool = False) -> str:
     try:
         system = platform.system()
     except KeyError:  # pragma: no cover
-        raise RuntimeError("Unsupported OS detected")
+        raise RuntimeError("Unsupported OS detected") from None
     drivefile, directory = contents[system][mount_index]
 
     if platform.system() == "Windows":  # pragma: no cover

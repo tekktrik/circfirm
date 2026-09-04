@@ -48,7 +48,7 @@ def cli(version: str, language: str, board_id: str | None, timeout: int) -> None
                 device_path, timeout=timeout
             )
         except OSError as err:
-            raise click.ClickException(err.args[0])
+            raise click.ClickException(err.args[0]) from None
     elif not board_id:
         circfirm.cli.warn_not_circuitpy_mode()
     else:

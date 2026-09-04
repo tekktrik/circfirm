@@ -42,7 +42,7 @@ def config_view(setting: str) -> None:
             settings = settings[extra_arg]
         value = settings[config_args[-1]]
     except KeyError:
-        raise click.ClickException(f"Setting {setting} does not exist")
+        raise click.ClickException(f"Setting {setting} does not exist") from None
 
     # Show the specified setting
     output = yaml.safe_dump(value, indent=4)
@@ -100,15 +100,15 @@ def config_edit(
             raise TypeError
         target_setting[config_args[-1]] = prev_value_type(value)
     except KeyError:
-        raise click.ClickException(f"Setting {setting} does not exist")
+        raise click.ClickException(f"Setting {setting} does not exist") from None
     except TypeError:
         raise click.ClickException(
             f"Cannot use that value for this setting, must be of type {prev_value_type}"
-        )
+        ) from None
     except ValueError:
         raise click.ClickException(
             "Cannot change this setting, please change the sub-settings within it"
-        )
+        ) from None
 
     # Write the settings back to the file
     with open(circfirm.SETTINGS_FILE, mode="w", encoding="utf-8") as yamlfile:

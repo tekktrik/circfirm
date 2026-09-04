@@ -126,7 +126,7 @@ def cache_save(board_id: str, version: str, language: str) -> None:
             args=(board_id, version, language),
         )
     except ConnectionError as err:
-        raise click.exceptions.ClickException(err.args[0])
+        raise click.exceptions.ClickException(err.args[0]) from None
 
 
 @cli.command(name="latest")
@@ -151,8 +151,8 @@ def cache_latest(board_id: str, language: str, pre_release: bool) -> None:
             args=(board_id, version, language),
         )
     except ConnectionError as err:
-        raise click.exceptions.ClickException(err.args[0])
+        raise click.exceptions.ClickException(err.args[0]) from None
     except botocore.exceptions.ConnectionError:
         raise click.exceptions.ClickException(
             "Could not connect to the S3 bucket - check network connection"
-        )
+        ) from None

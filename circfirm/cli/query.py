@@ -49,11 +49,11 @@ def query_board_ids(regex: str) -> None:
         else:
             boards = circfirm.backend.github.get_board_id_list(gh_token)
     except ValueError as err:
-        raise click.ClickException(err.args[0])
+        raise click.ClickException(err.args[0]) from None
     except requests.ConnectionError:
         raise click.ClickException(
             "Issue with requesting information from git repository, check network connection"
-        )
+        ) from None
     for board in boards:
         board_id = board.strip()
         try:
@@ -61,7 +61,7 @@ def query_board_ids(regex: str) -> None:
         except re.error:
             raise click.exceptions.ClickException(
                 "Regex pattern error - please check the regex syntax"
-            )
+            ) from None
         if result:
             click.echo(board_id)
 
@@ -79,11 +79,11 @@ def query_versions(board_id: str, language: str, regex: str) -> None:
             board_id, language, regex=regex
         )
     except botocore.exceptions.ConnectionError as err:
-        raise click.exceptions.ClickException(err.args[0])
+        raise click.exceptions.ClickException(err.args[0]) from None
     except re.error:
         raise click.exceptions.ClickException(
             "Regex pattern error - please check the regex syntax"
-        )
+        ) from None
     for version in reversed(versions):
         click.echo(version)
 
@@ -105,6 +105,6 @@ def query_latest(board_id: str, language: str, pre_release: bool) -> None:
             board_id, language, pre_release
         )
     except botocore.exceptions.ConnectionError as err:
-        raise click.exceptions.ClickException(err.args[0])
+        raise click.exceptions.ClickException(err.args[0]) from None
     if version:
         click.echo(version)
