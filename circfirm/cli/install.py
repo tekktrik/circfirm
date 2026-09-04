@@ -39,9 +39,9 @@ def cli(version: str, language: str, board_id: str | None, timeout: int) -> None
 
     if device_path in circuitpys:
         board_id = (
-            circfirm.backend.device.get_board_info_from_circuitpy(device_path)[0]
-            if not board_id
-            else board_id
+            board_id
+            if board_id
+            else circfirm.backend.device.get_board_info_from_circuitpy(device_path)[0]
         )
         try:
             bootloader = circfirm.cli.ensure_bootloader_mode(

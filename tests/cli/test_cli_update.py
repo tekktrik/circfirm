@@ -143,12 +143,14 @@ def test_update_bootloader_mode(mock_with_bootloader: None) -> None:
 
 def test_upgrade_successful_various_boards(mock_with_various_boards: None) -> None:
     """Tests installing when both CIRCUITPY and bootloader boards are connected."""
-    with create_pipe_input() as pipe:
-        with create_app_session(input=pipe, output=DummyOutput()):
-            extra_input = "\x1b[B\r"
-            pipe.send_text(extra_input)
+    with (
+        create_pipe_input() as pipe,
+        create_app_session(input=pipe, output=DummyOutput()),
+    ):
+        extra_input = "\x1b[B\r"
+        pipe.send_text(extra_input)
 
-            result = RUNNER.invoke(cli, ["update"])
+        result = RUNNER.invoke(cli, ["update"])
 
     assert result.exit_code == ERR_IN_BOOTLOADER
 

@@ -67,19 +67,21 @@ def test_install_successful_multiple_boards(
 ) -> None:
     """Tests the successful use of the install command."""
     try:
-        with create_pipe_input() as pipe:
-            with create_app_session(input=pipe, output=DummyOutput()):
-                extra_input = ""
-                for _ in range(mount_index):
-                    extra_input += "\x1b[B"
-                extra_input += "\r"
+        with (
+            create_pipe_input() as pipe,
+            create_app_session(input=pipe, output=DummyOutput()),
+        ):
+            extra_input = ""
+            for _ in range(mount_index):
+                extra_input += "\x1b[B"
+            extra_input += "\r"
 
-                pipe.send_text(extra_input)
+            pipe.send_text(extra_input)
 
-                # Test successfully installing the firmware
-                tests.helpers.start_bootloader_copy_thread(mount_index)
+            # Test successfully installing the firmware
+            tests.helpers.start_bootloader_copy_thread(mount_index)
 
-                result = RUNNER.invoke(cli, ["install", VERSION])
+            result = RUNNER.invoke(cli, ["install", VERSION])
 
         assert result.exit_code == 0
         expected_uf2_filename = circfirm.backend.get_uf2_filename(
@@ -100,12 +102,14 @@ def test_install_successful_multiple_boards(
 
 def test_install_successful_various_boards(mock_with_various_boards: None) -> None:
     """Tests installing when both CIRCUITPY and bootloader boards are connected."""
-    with create_pipe_input() as pipe:
-        with create_app_session(input=pipe, output=DummyOutput()):
-            extra_input = "\x1b[B\r"
-            pipe.send_text(extra_input)
+    with (
+        create_pipe_input() as pipe,
+        create_app_session(input=pipe, output=DummyOutput()),
+    ):
+        extra_input = "\x1b[B\r"
+        pipe.send_text(extra_input)
 
-            result = RUNNER.invoke(cli, ["install", VERSION])
+        result = RUNNER.invoke(cli, ["install", VERSION])
 
     assert result.exit_code == ERR_IN_BOOTLOADER
 
@@ -149,15 +153,17 @@ def test_install_bad_version(mock_with_bootloader: None) -> None:
 def test_install_bootloader_no_board_id(mock_with_various_boards: None) -> None:
     """Tests the install command when a bootloader board is selected without a board ID provided."""
     try:
-        with create_pipe_input() as pipe:
-            with create_app_session(input=pipe, output=DummyOutput()):
-                extra_input = "\r"
-                pipe.send_text(extra_input)
+        with (
+            create_pipe_input() as pipe,
+            create_app_session(input=pipe, output=DummyOutput()),
+        ):
+            extra_input = "\r"
+            pipe.send_text(extra_input)
 
-                # Test successfully installing the firmware
-                tests.helpers.start_bootloader_copy_thread()
+            # Test successfully installing the firmware
+            tests.helpers.start_bootloader_copy_thread()
 
-                result = RUNNER.invoke(cli, ["install", VERSION])
+            result = RUNNER.invoke(cli, ["install", VERSION])
 
         assert result.exit_code == 0
         expected_uf2_filename = circfirm.backend.get_uf2_filename(
