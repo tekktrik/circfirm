@@ -25,7 +25,7 @@ keywords = [
     "install",
     "upload",
 ]
-license = {text = "MIT"}
+license = "MIT"
 classifiers = [
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Embedded Systems",
