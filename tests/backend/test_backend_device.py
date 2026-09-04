@@ -18,7 +18,7 @@ def test_find_circuitpys(mock_with_multiple_circuitpys: None) -> None:
     mount_location_1 = tests.helpers.get_mount(1)
     circuitpys = circfirm.backend.device.find_circuitpys()
     detected_mounts = set(circuitpys)
-    actual_mounts = set((mount_location_0, mount_location_1))
+    actual_mounts = {mount_location_0, mount_location_1}
     assert detected_mounts == actual_mounts
 
 
@@ -28,7 +28,7 @@ def test_find_bootloaders(mock_with_multiple_bootloaders: None) -> None:
     mount_location_1 = tests.helpers.get_mount(1)
     bootloaders = circfirm.backend.device.find_bootloaders()
     detected_mounts = set(bootloaders)
-    actual_mounts = set((mount_location_0, mount_location_1))
+    actual_mounts = {mount_location_0, mount_location_1}
     assert detected_mounts == actual_mounts
 
 

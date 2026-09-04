@@ -55,7 +55,7 @@ def config_view(setting: str) -> None:
 @cli.command(name="edit")
 @click.argument("setting", default="")
 @click.argument("value", default="")
-def config_edit(
+def config_edit(  # noqa: C901
     setting: str,
     value: str,
 ) -> None:
