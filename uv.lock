@@ -42,16 +42,16 @@ wheels = [
 
 [[package]]
 name = "boto3-stubs"
-version = "1.43.85"
+version = "1.43.88"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "botocore-stubs" },
     { name = "types-s3transfer" },
     { name = "typing-extensions", marker = "python_full_version < '3.12'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ca/9f/1b679a2c9b77401c924dee4a2f622008ebe6187811bca7468a7d33f60f2f/boto3_stubs-1.43.85.tar.gz", hash = "sha256:75fc6ae9b09c643ac3cf5941d156324c5a4d181815af54d24cf519b5e5b86afb", size = 104588, upload-time = "2026-09-01T01:43:25.744Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d6/c8/1870e13be5528f80ec80e1b0db4c97fb13d144a7ddf152efa8e3fe4d68e4/boto3_stubs-1.43.88.tar.gz", hash = "sha256:619e49bf83d3841ec1b8b0f955568c4b53dffce58ab80d3c4038d8cbf2d79029", size = 104602, upload-time = "2026-09-03T19:52:13.735Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/20/31/12e816fe4856f6a7648ce5d8b4ad289ebbeffa60a36ec62a0fc5079e3ad0/boto3_stubs-1.43.85-py3-none-any.whl", hash = "sha256:d3e6a306ff83e3d301a281501d3d2c7dc8eb2e408b6a5faf976045fa0c6df771", size = 71512, upload-time = "2026-09-01T01:43:14.094Z" },
+    { url = "https://files.pythonhosted.org/packages/15/df/8af1c1f4f39361e6a937e10d911622712b6ecaf2f77e4ad9753b17ddf348/boto3_stubs-1.43.88-py3-none-any.whl", hash = "sha256:d1966ef6c45cb1d93765c1f42fe5cc2e6d7de1e64814087a8148a8cafff8d51f", size = 71512, upload-time = "2026-09-03T19:52:10.577Z" },
 ]
 
 [package.optional-dependencies]
@@ -243,7 +243,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "boto3", specifier = "==1.43.85" },
-    { name = "boto3-stubs", extras = ["essential"], specifier = "==1.43.85" },
+    { name = "boto3-stubs", extras = ["essential"], specifier = "==1.43.88" },
     { name = "build", marker = "extra == 'dev'", specifier = "==1.6.0" },
     { name = "click", specifier = "==8.5.0" },
     { name = "click-spinner", specifier = "==0.2.0" },
